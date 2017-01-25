@@ -17,34 +17,121 @@ namespace FormulaTestCases
     public class UnitTests
     {
         /// <summary>
-        /// This tests that a syntactically incorrect parameter to Formula results
+        /// This tests that a syntax error with an invalid token results 
         /// in a FormulaFormatException.
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void Construct1()
+        public void ConstructInvalidToken()
         {
-            Formula f = new Formula("_");
+            Formula f = new Formula("2+_/5");
         }
 
         /// <summary>
-        /// This is another syntax error
+        /// This tests that a syntax error with no token results in a 
+        /// FormulaFormatException.
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void Construct2()
+        public void ConstructMissingToken()
         {
-            Formula f = new Formula("2++3");
+            Formula f = new Formula("");
         }
 
         /// <summary>
-        /// Another syntax error.
+        /// This tests that a syntax error with the number of closing parenthesis
+        /// being greater than the number of opening parenthesis 
+        /// results in a FormulaFormatException.
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(FormulaFormatException))]
-        public void Construct3()
+        public void ConstructMoreClosed()
         {
-            Formula f = new Formula("2 3");
+            Formula f = new Formula("4+6)");
+        }
+
+        /// <summary>
+        /// This tests that a syntax error with the number of opening parenthesis
+        /// is unequal to the number of closing parenthesis results in a
+        /// FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructMoreOpen()
+        {
+            Formula f = new Formula("(4+6");
+        }
+
+        /// <summary>
+        /// This tests that a syntax error with the first token being 
+        /// something other than a number, a variable, or an opening parenthesis
+        /// results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructFirstToken()
+        {
+            Formula f = new Formula("+6*2");
+        }
+
+
+        /// <summary>
+        /// This tests that a syntax error with the last token being 
+        /// something other than a number, a variable, or a closing parenthesis
+        /// results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructLastToken()
+        {
+            Formula f = new Formula("6*2*");
+        }
+
+        /// <summary>
+        /// This tests that a syntax error with multiple operators
+        /// results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructMultipleOperators()
+        {
+            Formula f = new Formula("2+/3");
+        }
+
+        /// <summary>
+        /// This tests that a syntax error with an open parenthesis 
+        /// having something other than a number, a variable, or an opening parenthesis
+        /// following it results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructOpenOperator()
+        {
+            Formula f = new Formula("2+(+6/3)");
+        }
+
+        /// <summary>
+        /// This tests that a syntax error with multiple variables
+        /// results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructMultipleVariables()
+        {
+            Formula f = new Formula("22+3 x");
+        }
+
+
+        /// <summary>
+        /// This tests that a syntax error with a closing parenthesis 
+        /// having something other than an operator or a closing parenthesis
+        /// following it results in a FormulaFormatException.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(FormulaFormatException))]
+        public void ConstructClosedVariable()
+        {
+            Formula f = new Formula("2+(6/3)6");
         }
 
         /// <summary>

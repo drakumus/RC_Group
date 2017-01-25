@@ -16,6 +16,7 @@ namespace Formulas
     /// </summary>
     public class Formula
     {
+        List<string> problem = new List<string>();
         /// <summary>
         /// Creates a Formula from a string that consists of a standard infix expression composed
         /// from non-negative floating-point numbers (using C#-like syntax for double/int literals), 
@@ -37,7 +38,64 @@ namespace Formulas
         /// explanatory Message.
         /// </summary>
         public Formula(String formula)
-        {
+        { 
+            int openParenthesis = 0;
+            bool wasVariable = false;
+            bool wasOperator = false;
+            bool wasOpen = false;
+            bool wasClosed = false;
+            foreach (string token in GetTokens(formula)) {
+                if ((wasOperator || wasOpen) && (IsOperator(token) || token == ")"))
+                {
+                    throw new FormulaFormatException("Open parenthesis or operators must be followed by a number, a variable, or an opening parenthesis");
+                }
+                if ((wasVariable || wasClosed) && (IsVariable(token) || token == "("))
+                {
+                    throw new FormulaFormatException("Closed parenthesis or variables must be followed by an operator or a closing parenthesis");
+                }
+                problem.Add(token);
+                wasOperator = IsOperator(token);
+                wasVariable = IsVariable(token);
+                if (token == "(")
+                {
+                    openParenthesis++;
+                    wasOpen = true;
+                    wasClosed = false;
+                }
+                else if (token == ")")
+                {
+                    openParenthesis--;
+                    wasOpen = false;
+                    wasClosed = true;
+                    if (openParenthesis < 0)
+                    {
+                        throw new FormulaFormatException("Closing paranthesis without an open beforehand");
+                    }
+                }
+                else
+                {
+                    wasOpen = false;
+                    wasClosed = false;
+                }
+            }
+            if(problem.Count < 3)
+            {
+                throw new FormulaFormatException("No formula exists");
+            }
+            if(openParenthesis != 0)
+            {
+                throw new FormulaFormatException("Unequal number of open and close parenthesis");
+            }
+            string first = problem[0];
+            if(!IsVariable(first) && first != "(")
+            {
+                throw new FormulaFormatException("First token must be a number, a variable, or an opening parenthesis");
+            }
+            string last = problem[problem.Count - 1];
+            if (!IsVariable(last) && last != ")")
+            {
+                throw new FormulaFormatException("Last token must be a number, a variable, or a closing parenthesis");
+            }
         }
         /// <summary>
         /// Evaluates this Formula, using the Lookup delegate to determine the values of variables.  (The
@@ -87,6 +145,28 @@ namespace Formulas
                     yield return s;
                 }
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private static bool IsOperator(string token)
+        {
+            string opPattern = @"[\+\-*/]";
+            return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private static bool IsVariable(string token)
+        {
+            String varPattern = @"^[0-9a-zA-Z]*$";
+            return Regex.IsMatch(token, varPattern, RegexOptions.Singleline);
         }
     }
 
