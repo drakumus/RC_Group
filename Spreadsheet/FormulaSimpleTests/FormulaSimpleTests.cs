@@ -24,7 +24,7 @@ namespace FormulaTestCases
         [ExpectedException(typeof(FormulaFormatException))]
         public void ConstructInvalidToken()
         {
-            Formula f = new Formula("2+_/5");
+            Formula f = new Formula("2 +_/5");
         }
 
         /// <summary>
@@ -131,7 +131,7 @@ namespace FormulaTestCases
         [ExpectedException(typeof(FormulaFormatException))]
         public void ConstructClosedVariable()
         {
-            Formula f = new Formula("2+(6.6/3)6");
+            Formula f = new Formula("2x+(6.6/3)y");
         }
 
         /// <summary>

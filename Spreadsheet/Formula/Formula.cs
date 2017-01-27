@@ -52,7 +52,7 @@ namespace Formulas
                 }
                 if ((wasValue || wasClosed) && (IsValue(token) || token == "("))
                 {
-                    throw new FormulaFormatException("Closed parenthesis or variables must be followed by an operator or a closing parenthesis");
+                    throw new FormulaFormatException("Closed parenthesis or values must be followed by an operator or a closing parenthesis");
                 }
                 problem.Add(token);
                 wasOperator = IsOperator(token);
@@ -72,6 +72,9 @@ namespace Formulas
                     {
                         throw new FormulaFormatException("Closing paranthesis without an open beforehand");
                     }
+                } if (!IsOperator(token) && !IsValue(token))
+                {
+                    throw new FormulaFormatException("Tnvalid token");
                 }
                 else
                 {
@@ -109,13 +112,162 @@ namespace Formulas
         /// </summary>
         public double Evaluate(Lookup lookup)
         {
-            Stack<int> values = new Stack<int>();
+            Stack<double> values = new Stack<double>();
             Stack<string> operators = new Stack<string>();
-            foreach(string token in problem)
+            foreach (string token in problem)
             {
-
+                double value;
+                if (double.TryParse(token, out value))
+                {
+                    if (operators.Count == 0 || values.Count == 0)
+                    {
+                        values.Push(value);
+                    }
+                    else
+                    {
+                        if (operators.Count != 0)
+                        {
+                            switch (operators.Peek())
+                            {
+                                case "*":
+                                    operators.Pop();
+                                    values.Push(values.Pop() * value);
+                                    break;
+                                case "/":
+                                    operators.Pop();
+                                    try
+                                    {
+                                        values.Push(values.Pop() / value);
+                                    }
+                                    catch (DivideByZeroException)
+                                    {
+                                        throw new System.DivideByZeroException("Cannot divide by zero");
+                                    }
+                                    break;
+                                default:
+                                    values.Push(value);
+                                    break;
+                            }
+                        }
+                    }
+                }
+                else if (token == "+" || token == "-")
+                {
+                    if(operators.Count == 0)
+                    {
+                        operators.Push(token);
+                    } else
+                    {
+                        AddSubt(values, operators);
+                        operators.Push(token);
+                    }
+                }
+                else if (token == "*" || token == "/")
+                {
+                    operators.Push(token);
+                }
+                else if (token == "(")
+                {
+                    operators.Push(token);
+                }
+                else if (token == ")")
+                {
+                    AddSubt(values, operators);
+                    operators.Pop();
+                    if (operators.Count != 0)
+                    {
+                        switch (operators.Peek())
+                        {
+                            case "*":
+                                operators.Pop();
+                                values.Push(values.Pop() * values.Pop());
+                                break;
+                            case "/":
+                                operators.Pop();
+                                try
+                                {
+                                    value = values.Pop();
+                                    values.Push(values.Pop() / value);
+                                }
+                                catch (DivideByZeroException)
+                                {
+                                    throw new System.DivideByZeroException("Cannot divide by zero");
+                                }
+                                break;
+                        }
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        value = lookup(token);
+                        if (operators.Count == 0 || values.Count == 0)
+                        {
+                            values.Push(value);
+                        }
+                        else
+                        {
+                            if (operators.Count != 0)
+                            {
+                                switch (operators.Peek())
+                                {
+                                    case "*":
+                                        operators.Pop();
+                                        values.Push(values.Pop() * value);
+                                        break;
+                                    case "/":
+                                        operators.Pop();
+                                        try
+                                        {
+                                            values.Push(values.Pop() / value);
+                                        }
+                                        catch (DivideByZeroException)
+                                        {
+                                            throw new System.DivideByZeroException("Cannot divide by zero");
+                                        }
+                                        break;
+                                    default:
+                                        values.Push(value);
+                                        break;
+                                }
+                            }
+                        }
+                    }
+                    catch (UndefinedVariableException)
+                    {
+                        throw new FormulaEvaluationException("Undefined variable(s): cannot Lookup");
+                    }
+                }
             }
-            return 0;
+            if(operators.Count == 1)
+            {
+                AddSubt(values, operators);
+            }
+            return values.Pop();
+        }
+
+        /// <summary>
+        /// Method to attempt to add or subtract 2 values in the value stack
+        /// </summary>
+        /// <param name="values"></param>
+        /// <param name="operators"></param>
+        private static void AddSubt(Stack<double> values, Stack<string> operators)
+        {
+            if(operators.Count != 0)
+            {
+                switch (operators.Peek())
+                {
+                    case "+":
+                        operators.Pop();
+                        values.Push(values.Pop() + values.Pop());
+                        break;
+                    case "-":
+                        operators.Pop();
+                        values.Push(-values.Pop() + values.Pop());
+                        break;
+                }
+            }
         }
 
         /// <summary>
@@ -172,14 +324,14 @@ namespace Formulas
         /// <returns></returns>
         private static bool IsVariable(string token)
         {
-            String varPattern = @"^[0-9a-zA-Z]*$";
+            String varPattern = @"^[a-zA-Z][0-9a-zA-Z]*$";
             return Regex.IsMatch(token, varPattern, RegexOptions.Singleline);
         }
 
         private static bool IsDouble(string token)
         {
-            String doublePattern = @"^\\d+(\\.\\d+)?$";
-            return Regex.IsMatch(token, doublePattern, RegexOptions.Singleline);
+            double value;
+            return double.TryParse(token, out value);
         }
 
         private static bool IsValue(string token)
