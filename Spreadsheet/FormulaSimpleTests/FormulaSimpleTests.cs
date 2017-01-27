@@ -131,7 +131,7 @@ namespace FormulaTestCases
         [ExpectedException(typeof(FormulaFormatException))]
         public void ConstructClosedVariable()
         {
-            Formula f = new Formula("2+(6/3)6");
+            Formula f = new Formula("2+(6.6/3)6");
         }
 
         /// <summary>
