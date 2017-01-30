@@ -48,6 +48,7 @@ namespace Formulas
             foreach (string token in GetTokens(formula)) {
                 if ((wasOperator || wasOpen) && (IsOperator(token) || token == ")"))
                 {
+                    bool t = IsOperator(token);
                     throw new FormulaFormatException("Open parenthesis or operators must be followed by a number, a variable, or an opening parenthesis");
                 }
                 if ((wasValue || wasClosed) && (IsValue(token) || token == "("))
@@ -72,7 +73,7 @@ namespace Formulas
                     {
                         throw new FormulaFormatException("Closing paranthesis without an open beforehand");
                     }
-                } if (!IsOperator(token) && !IsValue(token))
+                } else if (!IsOperator(token) && !IsValue(token))
                 {
                     throw new FormulaFormatException("Tnvalid token");
                 }
@@ -82,7 +83,7 @@ namespace Formulas
                     wasClosed = false;
                 }
             }
-            if(problem.Count < 3)
+            if(problem.Count == 0)
             {
                 throw new FormulaFormatException("No formula exists");
             }
@@ -135,13 +136,13 @@ namespace Formulas
                                     break;
                                 case "/":
                                     operators.Pop();
-                                    try
+                                    if(value != 0)
                                     {
                                         values.Push(values.Pop() / value);
                                     }
-                                    catch (DivideByZeroException)
+                                    else
                                     {
-                                        throw new System.DivideByZeroException("Cannot divide by zero");
+                                        throw new FormulaEvaluationException("Cannot divide by zero");
                                     }
                                     break;
                                 default:
@@ -184,14 +185,14 @@ namespace Formulas
                                 break;
                             case "/":
                                 operators.Pop();
-                                try
+                                if (values.Peek() != 0)
                                 {
                                     value = values.Pop();
                                     values.Push(values.Pop() / value);
                                 }
-                                catch (DivideByZeroException)
+                                else
                                 {
-                                    throw new System.DivideByZeroException("Cannot divide by zero");
+                                    throw new FormulaEvaluationException("Cannot divide by zero");
                                 }
                                 break;
                         }
@@ -218,13 +219,13 @@ namespace Formulas
                                         break;
                                     case "/":
                                         operators.Pop();
-                                        try
+                                        if (value != 0)
                                         {
                                             values.Push(values.Pop() / value);
                                         }
-                                        catch (DivideByZeroException)
+                                        else
                                         {
-                                            throw new System.DivideByZeroException("Cannot divide by zero");
+                                            throw new FormulaEvaluationException("Cannot divide by zero");
                                         }
                                         break;
                                     default:
@@ -234,7 +235,7 @@ namespace Formulas
                             }
                         }
                     }
-                    catch (UndefinedVariableException)
+                    catch (UndefinedVariableException e)
                     {
                         throw new FormulaEvaluationException("Undefined variable(s): cannot Lookup");
                     }
@@ -313,8 +314,13 @@ namespace Formulas
         /// <returns></returns>
         private static bool IsOperator(string token)
         {
-            string opPattern = @"[\+\-*/]";
-            return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
+            if(token == "+" || token == "-" || token == "*" || token == "/")
+            {
+                return true;
+            }
+            return false;
+            //string opPattern = @"[\+\-*/]";
+            //return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
         }
 
         /// <summary>
