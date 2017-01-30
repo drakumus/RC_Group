@@ -1,5 +1,5 @@
 ﻿// Written by Joe Zachary for CS 3500, January 2017.
-// Greg Rosich u0917936
+// Greg Rosich - u0917936
 
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
