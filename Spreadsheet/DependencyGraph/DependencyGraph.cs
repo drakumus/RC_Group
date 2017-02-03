@@ -49,8 +49,8 @@ namespace Dependencies
     /// </summary>
     public class DependencyGraph
     {
-        Dictionary<string, HashSet<string>> dependents;
-        Dictionary<string, HashSet<string>> dependees;
+        private Dictionary<string, HashSet<string>> dependees;
+        private Dictionary<string, HashSet<string>> dependents;
 
         /// <summary>
         /// Creates a DependencyGraph containing no dependencies.
@@ -66,7 +66,18 @@ namespace Dependencies
         /// </summary>
         public int Size
         {
-            get { return dependents.Count; }
+            get
+            {
+                int count = 0;
+                foreach(HashSet<string> dependents in dependees.Values)
+                {
+                    foreach(string dependent in dependents)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
         }
 
         /// <summary>
@@ -74,7 +85,12 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return dependents[s] != null;
+            if (!dependees.ContainsKey(s))
+            {
+                throw new UndefinedDependencyException(s);
+            }
+            
+            return dependees[s].Count != 0;
         }
 
         /// <summary>
@@ -82,7 +98,12 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return dependees[s] != null;
+            if (!dependents.ContainsKey(s))
+            {
+                throw new UndefinedDependencyException(s);
+            }
+
+            return dependents[s].Count != 0;
         }
 
         /// <summary>
@@ -90,7 +111,12 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            foreach(string t in dependents[s])
+            if (!dependees.ContainsKey(s))
+            {
+                throw new UndefinedDependencyException(s);
+            }
+
+            foreach (string t in dependees[s])
             {
                 yield return t;
             }
@@ -101,7 +127,12 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            foreach (string t in dependees[s])
+            if (!dependents.ContainsKey(s))
+            {
+                throw new UndefinedDependencyException(s);
+            }
+
+            foreach (string t in dependents[s])
             {
                 yield return t;
             }
@@ -114,21 +145,31 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
-            if(dependents[s] == null)
-            {
-                // creates set for dependent if one doesnt already exist
-                dependents[s] = new HashSet<string>();
-            }
-            // adds dependee t to dependent s
-            dependents[s].Add(t);
-
-            if (dependees[t] == null)
+            if(!dependees.ContainsKey(s))
             {
                 // creates set for dependee if one doesnt already exist
+                dependees[s] = new HashSet<string>();
+            }
+            if (!dependents.ContainsKey(s))
+            {
+                // creates set for dependee as dependent if one doesnt already exist
+                dependents[s] = new HashSet<string>();
+            }
+            // adds dependent t to dependee s
+            dependees[s].Add(t);
+
+            if (!dependents.ContainsKey(t))
+            {
+                // creates set for dependent if one doesnt already exist
+                dependents[t] = new HashSet<string>();
+            }
+            if (!dependees.ContainsKey(t))
+            {
+                // creates set for dependent as dependee if one doesnt already exist
                 dependees[t] = new HashSet<string>();
             }
-            // adds dependent s to dependee t
-            dependees[t].Add(s);
+            // adds dependee s to dependent t
+            dependents[t].Add(s);
 
         }
 
@@ -139,19 +180,25 @@ namespace Dependencies
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
-            // removes dependee t from dependent s
-            dependents[s].Remove(t);
-            if(dependents[s].Count == 0)
+            if (!dependees.ContainsKey(s) || !dependees[s].Contains(t))
             {
-                // no more dependees so remove s
+                return;
+            }
+            // removes dependent t from dependees s
+            dependees[s].Remove(t);
+            if(dependees[s].Count == 0 && dependents[s].Count == 0)
+            {
+                // no more dependees or dependents relating to s so remove s
+                dependees.Remove(s);
                 dependents.Remove(s);
             }
 
-            // removes dependent s from dependee t
-            dependees[t].Remove(s);
-            if (dependees[t].Count == 0)
+            // removes dependee s from dependent t
+            dependents[t].Remove(s);
+            if (dependents[t].Count == 0 && dependees[t].Count == 0)
             {
-                // no more dependents so remove t
+                // no more dependents or dependees relating to t so remove t
+                dependents.Remove(t);
                 dependees.Remove(t);
             }
         }
@@ -163,11 +210,16 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
-            foreach(string r in dependents[s])
+            // checks if dependee s exists
+            if (dependees.ContainsKey(s))
             {
-                RemoveDependency(s, r);
+                // removes all dependents from dependee s
+                foreach (string r in dependees[s])
+                {
+                    RemoveDependency(s, r);
+                }
             }
-
+            // adds all new dependents to dependee s
             foreach(string t in newDependents)
             {
                 AddDependency(s, t);
@@ -181,15 +233,36 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
-            foreach (string r in dependees[t])
+            // checks if dependent t exists
+            if (dependents.ContainsKey(t))
             {
-                RemoveDependency(r, t);
+                //removes all dependees from dependent t
+                foreach (string r in dependents[t])
+                {
+                    RemoveDependency(r, t);
+                }
             }
-
+            // adds all new dependees to dependent t
             foreach (string s in newDependees)
             {
                 AddDependency(s, t);
             }
         }
     }
+
+    /// <summary>
+    /// Used to report that a dependency value does no exist
+    /// </summary>
+    public class UndefinedDependencyException: Exception
+    {
+        /// <summary>
+        /// constructs an UndefinedDependencyException whose message is the 
+        /// name of the dependency
+        /// </summary>
+        /// <param name="s"></param>
+        public UndefinedDependencyException(string s) : base(s)
+        {
+        }
+    }
+
 }
