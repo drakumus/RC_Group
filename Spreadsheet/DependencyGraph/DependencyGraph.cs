@@ -49,13 +49,16 @@ namespace Dependencies
     /// </summary>
     public class DependencyGraph
     {
-        
+        Dictionary<string, HashSet<string>> dependents;
+        Dictionary<string, HashSet<string>> dependees;
 
         /// <summary>
         /// Creates a DependencyGraph containing no dependencies.
         /// </summary>
         public DependencyGraph()
         {
+            dependents = new Dictionary<string, HashSet<string>>();
+            dependees = new Dictionary<string, HashSet<string>>();
         }
 
         /// <summary>
@@ -63,7 +66,7 @@ namespace Dependencies
         /// </summary>
         public int Size
         {
-            get { return 0; }
+            get { return dependents.Count; }
         }
 
         /// <summary>
@@ -71,7 +74,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return false;
+            return dependents[s] != null;
         }
 
         /// <summary>
@@ -79,7 +82,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            return false;
+            return dependees[s] != null;
         }
 
         /// <summary>
@@ -87,7 +90,10 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            return null;
+            foreach(string t in dependents[s])
+            {
+                yield return t;
+            }
         }
 
         /// <summary>
@@ -95,7 +101,10 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            return null;
+            foreach (string t in dependees[s])
+            {
+                yield return t;
+            }
         }
 
         /// <summary>
@@ -105,6 +114,22 @@ namespace Dependencies
         /// </summary>
         public void AddDependency(string s, string t)
         {
+            if(dependents[s] == null)
+            {
+                // creates set for dependent if one doesnt already exist
+                dependents[s] = new HashSet<string>();
+            }
+            // adds dependee t to dependent s
+            dependents[s].Add(t);
+
+            if (dependees[t] == null)
+            {
+                // creates set for dependee if one doesnt already exist
+                dependees[t] = new HashSet<string>();
+            }
+            // adds dependent s to dependee t
+            dependees[t].Add(s);
+
         }
 
         /// <summary>
@@ -114,6 +139,21 @@ namespace Dependencies
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
+            // removes dependee t from dependent s
+            dependents[s].Remove(t);
+            if(dependents[s].Count == 0)
+            {
+                // no more dependees so remove s
+                dependents.Remove(s);
+            }
+
+            // removes dependent s from dependee t
+            dependees[t].Remove(s);
+            if (dependees[t].Count == 0)
+            {
+                // no more dependents so remove t
+                dependees.Remove(t);
+            }
         }
 
         /// <summary>
@@ -123,6 +163,15 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            foreach(string r in dependents[s])
+            {
+                RemoveDependency(s, r);
+            }
+
+            foreach(string t in newDependents)
+            {
+                AddDependency(s, t);
+            }
         }
 
         /// <summary>
@@ -132,6 +181,15 @@ namespace Dependencies
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
+            foreach (string r in dependees[t])
+            {
+                RemoveDependency(r, t);
+            }
+
+            foreach (string s in newDependees)
+            {
+                AddDependency(s, t);
+            }
         }
     }
 }
