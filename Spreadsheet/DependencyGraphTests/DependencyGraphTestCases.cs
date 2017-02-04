@@ -13,34 +13,10 @@ namespace DependencyGraphTests
     public class DependencyGraphTestCases
     {
         /// <summary>
-        /// Tests to make sure that HasDependents throws if key doesnt exist
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(UndefinedDependencyException))]
-        public void TestMethod1()
-        {
-            DependencyGraph graph = new DependencyGraph();
-            graph.AddDependency("a", "b");
-            graph.HasDependents("c");
-        }
-
-        /// <summary>
-        /// Tests to make sure that HasDependees throws if key doesnt exist
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(UndefinedDependencyException))]
-        public void TestMethod2()
-        {
-            DependencyGraph graph = new DependencyGraph();
-            graph.AddDependency("a", "b");
-            graph.HasDependents("c");
-        }
-
-        /// <summary>
         /// Tests to make sure that a has dependents
         /// </summary>
         [TestMethod]
-        public void TestMethod3()
+        public void TestMethod1()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
@@ -52,7 +28,7 @@ namespace DependencyGraphTests
         /// Tests to make sure that the graph size is 2
         /// </summary>
         [TestMethod]
-        public void TestMethod4()
+        public void TestMethod2()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
@@ -64,7 +40,7 @@ namespace DependencyGraphTests
         /// Tests to make sure that b and c have dependees
         /// </summary>
         [TestMethod]
-        public void TestMethod5()
+        public void TestMethod3()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
@@ -77,7 +53,7 @@ namespace DependencyGraphTests
         /// Tests to make sure ReplaceDependees and RemoveDependency works
         /// </summary>
         [TestMethod]
-        public void TestMethod6()
+        public void TestMethod4()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
@@ -85,6 +61,35 @@ namespace DependencyGraphTests
             graph.ReplaceDependees("d", graph.GetDependents("a"));
             graph.RemoveDependency("c", "d");
             Assert.AreEqual(graph.Size, 3);
+        }
+
+        /// <summary>
+        /// Tests to make sure ReplaceDependents and ReplaceDependees works
+        /// </summary>
+        [TestMethod]
+        public void TestMethod5()
+        {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("a", "c");
+            graph.AddDependency("b", "c");
+            graph.ReplaceDependees("2", graph.GetDependents("a"));
+            Assert.AreEqual(graph.Size, 5);
+        }
+
+
+        /// <summary>
+        /// Tests to make sure ReplaceDependents and ReplaceDependees works
+        /// </summary>
+        [TestMethod]
+        public void TestMethod6()
+        {
+            DependencyGraph graph = new DependencyGraph();
+            graph.AddDependency("a", "b");
+            graph.AddDependency("a", "c");
+            graph.AddDependency("b", "c");
+            graph.ReplaceDependents("b", graph.GetDependents("a"));
+            Assert.AreEqual(graph.Size, 4);
         }
 
         /// <summary>

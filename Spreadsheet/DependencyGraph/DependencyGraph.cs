@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Dependencies
 {
@@ -85,11 +86,6 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            if (!dependees.ContainsKey(s))
-            {
-                throw new UndefinedDependencyException(s);
-            }
-            
             return dependees[s].Count != 0;
         }
 
@@ -98,11 +94,6 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            if (!dependents.ContainsKey(s))
-            {
-                throw new UndefinedDependencyException(s);
-            }
-
             return dependents[s].Count != 0;
         }
 
@@ -111,11 +102,6 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            if (!dependees.ContainsKey(s))
-            {
-                throw new UndefinedDependencyException(s);
-            }
-
             foreach (string t in dependees[s])
             {
                 yield return t;
@@ -127,11 +113,6 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            if (!dependents.ContainsKey(s))
-            {
-                throw new UndefinedDependencyException(s);
-            }
-
             foreach (string t in dependents[s])
             {
                 yield return t;
@@ -213,10 +194,11 @@ namespace Dependencies
             // checks if dependee s exists
             if (dependees.ContainsKey(s))
             {
+                var list = dependees[s].ToList();
                 // removes all dependents from dependee s
-                foreach (string r in dependees[s])
+                for (int i = dependees[s].Count - 1; i >= 0; i--)
                 {
-                    RemoveDependency(s, r);
+                    RemoveDependency(s, list[i]);
                 }
             }
             // adds all new dependents to dependee s
@@ -236,10 +218,11 @@ namespace Dependencies
             // checks if dependent t exists
             if (dependents.ContainsKey(t))
             {
+                var list = dependents[t].ToList();
                 //removes all dependees from dependent t
-                foreach (string r in dependents[t])
+                for(int i = dependents[t].Count - 1; i >= 0; i--)
                 {
-                    RemoveDependency(r, t);
+                    RemoveDependency(list[i], t);
                 }
             }
             // adds all new dependees to dependent t
@@ -249,20 +232,4 @@ namespace Dependencies
             }
         }
     }
-
-    /// <summary>
-    /// Used to report that a dependency value does no exist
-    /// </summary>
-    public class UndefinedDependencyException: Exception
-    {
-        /// <summary>
-        /// constructs an UndefinedDependencyException whose message is the 
-        /// name of the dependency
-        /// </summary>
-        /// <param name="s"></param>
-        public UndefinedDependencyException(string s) : base(s)
-        {
-        }
-    }
-
 }
