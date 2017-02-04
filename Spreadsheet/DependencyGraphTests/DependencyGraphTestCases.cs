@@ -108,5 +108,6 @@ namespace DependencyGraphTests
                 Assert.AreEqual(s, "a");
             }
         }
+
     }
 }
