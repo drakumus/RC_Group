@@ -48,7 +48,6 @@ namespace Formulas
             foreach (string token in GetTokens(formula)) {
                 if ((wasOperator || wasOpen) && (IsOperator(token) || token == ")"))
                 {
-                    bool t = IsOperator(token);
                     throw new FormulaFormatException("Open parenthesis or operators must be followed by a number, a variable, or an opening parenthesis");
                 }
                 if ((wasValue || wasClosed) && (IsValue(token) || token == "("))
@@ -73,9 +72,11 @@ namespace Formulas
                     {
                         throw new FormulaFormatException("Closing paranthesis without an open beforehand");
                     }
-                } else if (!IsOperator(token) && !IsValue(token))
+                }
+                // NOTE: Forgot an else so that condition only checks if first two fail
+                else if (!IsOperator(token) && !IsValue(token))
                 {
-                    throw new FormulaFormatException("Tnvalid token");
+                    throw new FormulaFormatException("Invalid token");
                 }
                 else
                 {
@@ -83,6 +84,7 @@ namespace Formulas
                     wasClosed = false;
                 }
             }
+            // NOTE: Assumed that if there were > 3 values throws exception but should have just been 0
             if(problem.Count == 0)
             {
                 throw new FormulaFormatException("No formula exists");
@@ -136,7 +138,8 @@ namespace Formulas
                                     break;
                                 case "/":
                                     operators.Pop();
-                                    if(value != 0)
+                                    // NOTE: Divide by Zero exception wasnt throwing
+                                    if (value != 0)
                                     {
                                         values.Push(values.Pop() / value);
                                     }
@@ -185,6 +188,7 @@ namespace Formulas
                                 break;
                             case "/":
                                 operators.Pop();
+                                // NOTE: Divide by Zero exception wasnt throwing
                                 if (values.Peek() != 0)
                                 {
                                     value = values.Pop();
@@ -219,6 +223,7 @@ namespace Formulas
                                         break;
                                     case "/":
                                         operators.Pop();
+                                        // NOTE: Divide by Zero exception wasnt throwing
                                         if (value != 0)
                                         {
                                             values.Push(values.Pop() / value);
@@ -235,7 +240,7 @@ namespace Formulas
                             }
                         }
                     }
-                    catch (UndefinedVariableException e)
+                    catch (UndefinedVariableException)
                     {
                         throw new FormulaEvaluationException("Undefined variable(s): cannot Lookup");
                     }
@@ -314,13 +319,9 @@ namespace Formulas
         /// <returns></returns>
         private static bool IsOperator(string token)
         {
-            if(token == "+" || token == "-" || token == "*" || token == "/")
-            {
-                return true;
-            }
-            return false;
-            //string opPattern = @"[\+\-*/]";
-            //return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
+            // NOTE: added anchors
+            string opPattern = @"^[\+\-*/]$";
+            return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
         }
 
         /// <summary>
