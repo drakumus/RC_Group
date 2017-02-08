@@ -86,7 +86,15 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            return dependees[s].Count != 0;
+            // added try catch to catch exception
+            try
+            {
+                return dependees[s].Count != 0;
+            }
+            catch (System.Collections.Generic.KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -94,8 +102,15 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-
-            return dependents[s].Count != 0;
+            // added try catch to catch exception
+            try
+            {
+                return dependents[s].Count != 0;
+            }
+            catch(System.Collections.Generic.KeyNotFoundException)
+            {
+                return false;
+            }
         }
 
         /// <summary>
