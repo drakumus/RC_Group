@@ -94,6 +94,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
+
             return dependents[s].Count != 0;
         }
 
