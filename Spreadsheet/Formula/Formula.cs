@@ -106,7 +106,13 @@ namespace Formulas
 
         public Formula(string formula, Normalizer normalizer, Validator validator): this(formula)
         {
-            
+            foreach(string token in problem)
+            {
+                if (IsVariable(token))
+                {
+                    normalizer(token);
+                }
+            }
         }
 
         /// <summary>
