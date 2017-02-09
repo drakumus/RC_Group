@@ -14,9 +14,9 @@ namespace Formulas
     /// the four binary operator symbols +, -, *, and /.  (The unary operators + and -
     /// are not allowed.)
     /// </summary>
-    public class Formula
+    public struct Formula
     {
-        private List<string> problem = new List<string>();
+        private List<string> problem;
 
         /// <summary>
         /// Creates a Formula from a string that consists of a standard infix expression composed
@@ -39,7 +39,8 @@ namespace Formulas
         /// explanatory Message.
         /// </summary>
         public Formula(String formula)
-        { 
+        {
+            problem = new List<string>();
             int openParenthesis = 0;
             bool wasValue = false;
             bool wasOperator = false;
@@ -73,7 +74,6 @@ namespace Formulas
                         throw new FormulaFormatException("Closing paranthesis without an open beforehand");
                     }
                 }
-                // NOTE: Forgot an else so that condition only checks if first two fail
                 else if (!IsOperator(token) && !IsValue(token))
                 {
                     throw new FormulaFormatException("Invalid token");
@@ -84,7 +84,6 @@ namespace Formulas
                     wasClosed = false;
                 }
             }
-            // NOTE: Assumed that if there were > 3 values throws exception but should have just been 0
             if(problem.Count == 0)
             {
                 throw new FormulaFormatException("No formula exists");
@@ -104,6 +103,12 @@ namespace Formulas
                 throw new FormulaFormatException("Last token must be a number, a variable, or a closing parenthesis");
             }
         }
+
+        public Formula(string formula, Normalizer normalizer, Validator validator): this(formula)
+        {
+            
+        }
+
         /// <summary>
         /// Evaluates this Formula, using the Lookup delegate to determine the values of variables.  (The
         /// delegate takes a variable name as a parameter and returns its value (if it has one) or throws
@@ -115,6 +120,10 @@ namespace Formulas
         /// </summary>
         public double Evaluate(Lookup lookup)
         {
+            if(problem == null)
+            {
+                return 0;
+            }
             Stack<double> values = new Stack<double>();
             Stack<string> operators = new Stack<string>();
             foreach (string token in problem)
@@ -138,7 +147,6 @@ namespace Formulas
                                     break;
                                 case "/":
                                     operators.Pop();
-                                    // NOTE: Divide by Zero exception wasnt throwing
                                     if (value != 0)
                                     {
                                         values.Push(values.Pop() / value);
@@ -188,7 +196,6 @@ namespace Formulas
                                 break;
                             case "/":
                                 operators.Pop();
-                                // NOTE: Divide by Zero exception wasnt throwing
                                 if (values.Peek() != 0)
                                 {
                                     value = values.Pop();
@@ -223,7 +230,6 @@ namespace Formulas
                                         break;
                                     case "/":
                                         operators.Pop();
-                                        // NOTE: Divide by Zero exception wasnt throwing
                                         if (value != 0)
                                         {
                                             values.Push(values.Pop() / value);
@@ -319,7 +325,6 @@ namespace Formulas
         /// <returns></returns>
         private static bool IsOperator(string token)
         {
-            // NOTE: added anchors
             string opPattern = @"^[\+\-*/]$";
             return Regex.IsMatch(token, opPattern, RegexOptions.Singleline);
         }
@@ -357,6 +362,21 @@ namespace Formulas
     /// don't is up to the implementation of the method.
     /// </summary>
     public delegate double Lookup(string var);
+
+    /// <summary>
+    /// Converts variables into a canonical form
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public delegate string Normalizer(string s);
+
+    /// <summary>
+    /// Imposes extra restrictions on the validity of a variable,
+    /// beyond the ones already built into the formula definition
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public delegate bool Validator(string s);
 
     /// <summary>
     /// Used to report that a Lookup delegate is unable to determine the value
