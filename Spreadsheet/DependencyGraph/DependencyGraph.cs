@@ -86,7 +86,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependents(string s)
         {
-            // added try catch to catch exception
+            // NOTE: added try catch to catch exception
             try
             {
                 return dependees[s].Count != 0;
@@ -102,7 +102,7 @@ namespace Dependencies
         /// </summary>
         public bool HasDependees(string s)
         {
-            // added try catch to catch exception
+            // NOTE: added try catch to catch exception
             try
             {
                 return dependents[s].Count != 0;
@@ -118,6 +118,11 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
+            // NOTE: Now checks if key exists
+            if (!dependees.ContainsKey(s))
+            {
+                yield break;
+            }
             foreach (string t in dependees[s])
             {
                 yield return t;
@@ -129,6 +134,11 @@ namespace Dependencies
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
+            // NOTE: Now checks if key exists
+            if (!dependents.ContainsKey(s))
+            {
+                yield break;
+            }
             foreach (string t in dependents[s])
             {
                 yield return t;
