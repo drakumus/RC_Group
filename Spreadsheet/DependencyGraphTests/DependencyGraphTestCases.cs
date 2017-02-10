@@ -13,55 +13,53 @@ namespace DependencyGraphTests
     public class DependencyGraphTestCases
     {
         /// <summary>
-        /// Tests to make sure that a has dependents
+        /// Tests to make sure that add dependancy throws Argument Null Exception
         /// </summary>
         [TestMethod]
-        []
+        [ExpectedException(typeof(ArgumentNullException))]
         public void TestMethod1()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency(null, "b");
-            graph.AddDependency("a", "c");
-            Assert.AreEqual(graph.HasDependents("a"), true);
         }
 
         /// <summary>
-        /// Tests to make sure that the graph size is 2
+        /// Tests to make sure that HasDependents throws ArgumentNullException
         /// </summary>
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void TestMethod2()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
             graph.AddDependency("a", "c");
-            Assert.AreEqual(graph.Size, 2);
+            Assert.AreEqual(graph.HasDependents(null), true);
         }
 
         /// <summary>
-        /// Tests to make sure that b and c have dependees
+        /// Tests to make sure that HasDependees throws ArgumentNullException
         /// </summary>
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void TestMethod3()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
             graph.AddDependency("a", "c");
-            Assert.AreEqual(graph.HasDependees("b"), true);
-            Assert.AreEqual(graph.HasDependees("c"), true);
+            Assert.AreEqual(graph.HasDependees(null), true);
         }
 
         /// <summary>
-        /// Tests to make sure ReplaceDependees and RemoveDependency works
+        /// Tests to make sure GetDependents throws ArgumentNullException
         /// </summary>
         [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void TestMethod4()
         {
             DependencyGraph graph = new DependencyGraph();
             graph.AddDependency("a", "b");
             graph.AddDependency("a", "c");
-            graph.ReplaceDependees("d", graph.GetDependents("a"));
-            graph.RemoveDependency("c", "d");
-            Assert.AreEqual(graph.Size, 3);
+            graph.ReplaceDependees("d", graph.GetDependents(null));
         }
 
         /// <summary>
