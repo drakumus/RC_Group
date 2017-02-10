@@ -16,7 +16,7 @@ namespace Formulas
     /// </summary>
     public struct Formula
     {
-        private List<string> problem;
+        private List<string> tokens;
 
         /// <summary>
         /// Creates a Formula from a string that consists of a standard infix expression composed
@@ -38,53 +38,55 @@ namespace Formulas
         /// If the formula is syntacticaly invalid, throws a FormulaFormatException with an 
         /// explanatory Message.
         /// </summary>
-        public Formula(String formula)
+        public Formula(string formula) : this(formula, n => n, v => true)
         {
-            problem = new List<string>();
+
+        }
+
+        /// <summary>
+        /// Creates a Formula from a string that consists of a standard infix expression composed
+        /// from non-negative floating-point numbers (using C#-like syntax for double/int literals), 
+        /// variable symbols (a letter followed by zero or more letters and/or digits), left and right
+        /// parentheses, and the four binary operator symbols +, -, *, and /.  White space is
+        /// permitted between tokens, but is not required.
+        /// 
+        /// If the formula contains variables, they are "normalized" though the normalizer
+        /// and then validated through the validator.
+        /// 
+        /// If the formula is syntacticaly invalid, throws a FormulaFormatException with an 
+        /// explanatory Message.
+        /// </summary>
+        /// <param name="formula"></param>
+        /// <param name="normalizer"></param>
+        /// <param name="validator"></param>
+        public Formula(String formula, Normalizer normalizer, Validator validator)
+        {
+            tokens = new List<string>();
+            string prevToken = "";
             int openParenthesis = 0;
-            bool wasValue = false;
-            bool wasOperator = false;
-            bool wasOpen = false;
-            bool wasClosed = false;
             foreach (string token in GetTokens(formula)) {
-                if ((wasOperator || wasOpen) && (IsOperator(token) || token == ")"))
+                checkFormat(token, prevToken, ref openParenthesis);
+                if (IsVariable(token))
                 {
-                    throw new FormulaFormatException("Open parenthesis or operators must be followed by a number, a variable, or an opening parenthesis");
-                }
-                if ((wasValue || wasClosed) && (IsValue(token) || token == "("))
-                {
-                    throw new FormulaFormatException("Closed parenthesis or values must be followed by an operator or a closing parenthesis");
-                }
-                problem.Add(token);
-                wasOperator = IsOperator(token);
-                wasValue = IsValue(token);
-                if (token == "(")
-                {
-                    openParenthesis++;
-                    wasOpen = true;
-                    wasClosed = false;
-                }
-                else if (token == ")")
-                {
-                    openParenthesis--;
-                    wasOpen = false;
-                    wasClosed = true;
-                    if (openParenthesis < 0)
+                    string normalized = normalizer(token);
+                    foreach (string normToken in GetTokens(normalized))
                     {
-                        throw new FormulaFormatException("Closing paranthesis without an open beforehand");
+                        checkFormat(normToken, prevToken, ref openParenthesis);
+                        if (!validator(normToken))
+                        {
+                            throw new FormulaFormatException("Variable not valid according to validatior");
+                        }
+                        tokens.Add(normToken);
+                        prevToken = normToken;
                     }
-                }
-                else if (!IsOperator(token) && !IsValue(token))
-                {
-                    throw new FormulaFormatException("Invalid token");
                 }
                 else
                 {
-                    wasOpen = false;
-                    wasClosed = false;
+                    tokens.Add(token);
+                    prevToken = token;
                 }
             }
-            if(problem.Count == 0)
+            if(tokens.Count == 0)
             {
                 throw new FormulaFormatException("No formula exists");
             }
@@ -92,26 +94,15 @@ namespace Formulas
             {
                 throw new FormulaFormatException("Unequal number of open and close parenthesis");
             }
-            string first = problem[0];
+            string first = tokens[0];
             if(!IsValue(first) && first != "(")
             {
                 throw new FormulaFormatException("First token must be a number, a variable, or an opening parenthesis");
             }
-            string last = problem[problem.Count - 1];
+            string last = tokens[tokens.Count - 1];
             if (!IsValue(last) && last != ")")
             {
                 throw new FormulaFormatException("Last token must be a number, a variable, or a closing parenthesis");
-            }
-        }
-
-        public Formula(string formula, Normalizer normalizer, Validator validator): this(formula)
-        {
-            foreach(string token in problem)
-            {
-                if (IsVariable(token))
-                {
-                    normalizer(token);
-                }
             }
         }
 
@@ -126,13 +117,13 @@ namespace Formulas
         /// </summary>
         public double Evaluate(Lookup lookup)
         {
-            if(problem == null)
+            if(tokens == null)
             {
                 return 0;
             }
             Stack<double> values = new Stack<double>();
             Stack<string> operators = new Stack<string>();
-            foreach (string token in problem)
+            foreach (string token in tokens)
             {
                 double value;
                 if (double.TryParse(token, out value))
@@ -285,6 +276,41 @@ namespace Formulas
                         values.Push(-values.Pop() + values.Pop());
                         break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Checks the current token and previous token to make sure that they do not
+        /// break any formatting rules
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="prevToken"></param>
+        private static void checkFormat(string token, string prevToken, ref int openParenthesis)
+        {
+            if ((IsOperator(prevToken) || prevToken == "(") && (IsOperator(token) || token == ")"))
+            {
+                throw new FormulaFormatException("Open parenthesis or operators must be followed by a number, a variable, or an opening parenthesis");
+            }
+            if ((IsValue(prevToken) || prevToken == ")") && (IsValue(token) || token == "("))
+            {
+                throw new FormulaFormatException("Closed parenthesis or values must be followed by an operator or a closing parenthesis");
+            }
+
+            if (token == "(")
+            {
+                openParenthesis++;
+            }
+            else if (token == ")")
+            {
+                openParenthesis--;
+                if (openParenthesis < 0)
+                {
+                    throw new FormulaFormatException("Closing paranthesis without an open beforehand");
+                }
+            }
+            else if (!IsOperator(token) && !IsValue(token))
+            {
+                throw new FormulaFormatException("Invalid token");
             }
         }
 
