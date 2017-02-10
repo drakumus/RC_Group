@@ -61,6 +61,10 @@ namespace Formulas
         /// <param name="validator"></param>
         public Formula(String formula, Normalizer normalizer, Validator validator)
         {
+            if (formula == null || normalizer == null || validator == null)
+            {
+                throw new ArgumentNullException("Cannot pass null perameter");
+            }
             tokens = new List<string>();
             string prevToken = "";
             int openParenthesis = 0;
@@ -120,6 +124,10 @@ namespace Formulas
             if(tokens == null)
             {
                 return 0;
+            }
+            if(lookup == null)
+            {
+                throw new ArgumentNullException("Cannot pass null perameter");
             }
             Stack<double> values = new Stack<double>();
             Stack<string> operators = new Stack<string>();
@@ -351,6 +359,23 @@ namespace Formulas
         }
 
         /// <summary>
+        /// Gets a set of the variables
+        /// </summary>
+        /// <returns></returns>
+        public ISet<string> GetVariables()
+        {
+            HashSet<string> variables = new HashSet<string>();
+            foreach(string token in tokens)
+            {
+                if (IsVariable(token))
+                {
+                    variables.Add(token);
+                }
+            }
+            return variables;
+        }
+
+        /// <summary>
         /// Given a token, determines if the token is an operator
         /// </summary>
         /// <param name="token"></param>
@@ -362,7 +387,7 @@ namespace Formulas
         }
 
         /// <summary>
-        /// Given a token, determines if the token is a number or variable
+        /// Given a token, determines if the token is a variable
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
@@ -372,17 +397,41 @@ namespace Formulas
             return Regex.IsMatch(token, varPattern, RegexOptions.Singleline);
         }
 
+        /// <summary>
+        /// Given a token, determines if the token is a number
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private static bool IsDouble(string token)
         {
             double value;
             return double.TryParse(token, out value);
         }
 
+        /// <summary>
+        /// Given a token, determines if the token is a number or variable
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         private static bool IsValue(string token)
         {
             bool var = IsVariable(token);
             bool doub = IsDouble(token);
             return var || doub;
+        }
+
+        /// <summary>
+        /// Converts all tokens into a formula
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string s = "";
+            foreach(string token in tokens)
+            {
+                s += token;
+            }
+            return s;
         }
     }
 
