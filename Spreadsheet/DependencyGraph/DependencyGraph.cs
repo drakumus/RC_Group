@@ -31,9 +31,6 @@ namespace Dependencies
     ///     dependees("b") = {"a"}
     ///     dependees("c") = {"a"}
     ///     dependees("d") = {"b", "d"}
-    ///     
-    /// All of the methods below require their string parameters to be non-null.  This means that 
-    /// the behavior of the method is undefined when a string parameter is null.  
     ///
     /// IMPORTANT IMPLEMENTATION NOTE
     /// 
@@ -62,6 +59,12 @@ namespace Dependencies
             dependees = new Dictionary<string, HashSet<string>>();
         }
 
+        public DependencyGraph(DependencyGraph dg)
+        {
+            dependents = dg.dependents;
+            dependees = dg.dependees;
+        }
+
         /// <summary>
         /// The number of dependencies in the DependencyGraph.
         /// </summary>
@@ -82,11 +85,14 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Reports whether dependents(s) is non-empty.  Requires s != null.
+        /// Reports whether dependents(s) is non-empty.
         /// </summary>
         public bool HasDependents(string s)
         {
-            // NOTE: added try catch to catch exception
+            if(s == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             try
             {
                 return dependees[s].Count != 0;
@@ -98,11 +104,14 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Reports whether dependees(s) is non-empty.  Requires s != null.
+        /// Reports whether dependees(s) is non-empty.
         /// </summary>
         public bool HasDependees(string s)
         {
-            // NOTE: added try catch to catch exception
+            if (s == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             try
             {
                 return dependents[s].Count != 0;
@@ -114,11 +123,14 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Enumerates dependents(s).  Requires s != null.
+        /// Enumerates dependents(s).
         /// </summary>
         public IEnumerable<string> GetDependents(string s)
         {
-            // NOTE: Now checks if key exists
+            if (s == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             if (!dependees.ContainsKey(s))
             {
                 yield break;
@@ -130,11 +142,14 @@ namespace Dependencies
         }
 
         /// <summary>
-        /// Enumerates dependees(s).  Requires s != null.
+        /// Enumerates dependees(s).
         /// </summary>
         public IEnumerable<string> GetDependees(string s)
         {
-            // NOTE: Now checks if key exists
+            if (s == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             if (!dependents.ContainsKey(s))
             {
                 yield break;
@@ -148,11 +163,14 @@ namespace Dependencies
         /// <summary>
         /// Adds the dependency (s,t) to this DependencyGraph.
         /// This has no effect if (s,t) already belongs to this DependencyGraph.
-        /// Requires s != null and t != null.
         /// </summary>
         public void AddDependency(string s, string t)
         {
-            if(!dependees.ContainsKey(s))
+            if (s == null || t == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
+            if (!dependees.ContainsKey(s))
             {
                 // creates set for dependee if one doesnt already exist
                 dependees[s] = new HashSet<string>();
@@ -183,10 +201,13 @@ namespace Dependencies
         /// <summary>
         /// Removes the dependency (s,t) from this DependencyGraph.
         /// Does nothing if (s,t) doesn't belong to this DependencyGraph.
-        /// Requires s != null and t != null.
         /// </summary>
         public void RemoveDependency(string s, string t)
         {
+            if (s == null || t == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             if (!dependees.ContainsKey(s) || !dependees[s].Contains(t))
             {
                 return;
@@ -213,10 +234,14 @@ namespace Dependencies
         /// <summary>
         /// Removes all existing dependencies of the form (s,r).  Then, for each
         /// t in newDependents, adds the dependency (s,t).
-        /// Requires s != null and t != null.
+        /// If newDependents contains a null value, throws an ArgumentNullException.
         /// </summary>
         public void ReplaceDependents(string s, IEnumerable<string> newDependents)
         {
+            if (s == null || newDependents == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             // checks if dependee s exists
             if (dependees.ContainsKey(s))
             {
@@ -230,6 +255,10 @@ namespace Dependencies
             // adds all new dependents to dependee s
             foreach(string t in newDependents)
             {
+                if(t == null)
+                {
+                    throw new ArgumentNullException("Cannot pass null parameter");
+                }
                 AddDependency(s, t);
             }
         }
@@ -237,10 +266,14 @@ namespace Dependencies
         /// <summary>
         /// Removes all existing dependencies of the form (r,t).  Then, for each 
         /// s in newDependees, adds the dependency (s,t).
-        /// Requires s != null and t != null.
+        /// If newDependents contains a null value, throws an ArgumentNullException.
         /// </summary>
         public void ReplaceDependees(string t, IEnumerable<string> newDependees)
         {
+            if (t == null || newDependees == null)
+            {
+                throw new ArgumentNullException("Cannot pass null parameter");
+            }
             // checks if dependent t exists
             if (dependents.ContainsKey(t))
             {
@@ -254,6 +287,10 @@ namespace Dependencies
             // adds all new dependees to dependent t
             foreach (string s in newDependees)
             {
+                if(s == null)
+                {
+                    throw new ArgumentNullException("Cannot pass null parameter");
+                }
                 AddDependency(s, t);
             }
         }
