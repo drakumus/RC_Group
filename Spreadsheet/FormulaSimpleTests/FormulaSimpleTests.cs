@@ -192,7 +192,8 @@ namespace FormulaTestCases
         public void Evaluate5 ()
         {
             Formula f = new Formula("(x + y) * (z / x) * 1.0");
-            Assert.AreEqual(f.Evaluate(Lookup4), 20.0, 1e-6);
+            f.GetVariables();
+            f.ToString();
         }
 
         /// <summary>
