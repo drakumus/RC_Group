@@ -16,10 +16,11 @@ namespace DependencyGraphTests
         /// Tests to make sure that a has dependents
         /// </summary>
         [TestMethod]
+        []
         public void TestMethod1()
         {
             DependencyGraph graph = new DependencyGraph();
-            graph.AddDependency("a", "b");
+            graph.AddDependency(null, "b");
             graph.AddDependency("a", "c");
             Assert.AreEqual(graph.HasDependents("a"), true);
         }
