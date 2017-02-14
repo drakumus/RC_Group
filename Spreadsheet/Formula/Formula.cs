@@ -364,13 +364,21 @@ namespace Formulas
         /// <returns></returns>
         public ISet<string> GetVariables()
         {
+            // NOTE: Added try catch
             HashSet<string> variables = new HashSet<string>();
-            foreach(string token in tokens)
+            try
             {
-                if (IsVariable(token))
+                foreach (string token in tokens)
                 {
-                    variables.Add(token);
+                    if (IsVariable(token))
+                    {
+                        variables.Add(token);
+                    }
                 }
+            }
+            catch (NullReferenceException)
+            {
+                
             }
             return variables;
         }
@@ -426,10 +434,17 @@ namespace Formulas
         /// <returns></returns>
         public override string ToString()
         {
+            // NOTE: Added try catch
             string s = "";
-            foreach(string token in tokens)
+            try
             {
-                s += token;
+                foreach (string token in tokens)
+                {
+                    s += token;
+                }
+            } catch(NullReferenceException)
+            {
+                return "0";
             }
             return s;
         }
