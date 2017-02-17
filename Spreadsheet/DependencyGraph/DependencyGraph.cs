@@ -61,8 +61,17 @@ namespace Dependencies
 
         public DependencyGraph(DependencyGraph dg)
         {
-            dependents = dg.dependents;
-            dependees = dg.dependees;
+            // NOTE: Fixed references
+            dependents = new Dictionary<string, HashSet<string>>();
+            dependees = new Dictionary<string, HashSet<string>>();
+
+            foreach(string value in dg.dependees.Keys)
+            {
+                foreach(string relationship in dg.dependees[value])
+                {
+                    AddDependency(value, relationship);
+                }
+            }
         }
 
         /// <summary>
