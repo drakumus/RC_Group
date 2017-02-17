@@ -21,7 +21,7 @@ namespace SpreadsheetTests
         public void InvalidName2()
         {
             Spreadsheet ss = new Spreadsheet();
-            ss.GetCellContents("hello");
+            ss.SetCellContents("hello", new Formula());
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace SpreadsheetTests
         public void InvalidName3()
         {
             Spreadsheet ss = new Spreadsheet();
-            ss.GetCellContents("15");
+            ss.SetCellContents("15", 2);
         }
 
         [TestMethod]
@@ -37,7 +37,15 @@ namespace SpreadsheetTests
         public void InvalidName4()
         {
             Spreadsheet ss = new Spreadsheet();
-            ss.GetCellContents("a3*");
+            ss.SetCellContents("a3*", "");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Null1()
+        {
+            Spreadsheet ss = new Spreadsheet();
+            ss.SetCellContents("a3*", null);
         }
 
         [TestMethod]
@@ -51,7 +59,36 @@ namespace SpreadsheetTests
         public void Test2()
         {
             Spreadsheet ss = new Spreadsheet();
-            ss.SetCellContents("a1", 10);
+            ss.SetCellContents("a1", "bloop");
+            int count = 0;
+            foreach (string name in ss.GetNamesOfAllNonemptyCells())
+            {
+                count++;
+            }
+            Assert.AreEqual(count, 1);
+            ss.SetCellContents("a1", "");
+            count = 0;
+            foreach(string name in ss.GetNamesOfAllNonemptyCells())
+            {
+                count++;
+            }
+            Assert.AreEqual(count, 0);
+        }
+
+        [TestMethod]
+        public void Test3()
+        {
+            Spreadsheet ss = new Spreadsheet();
+            ss.SetCellContents("a1", 20);
+            Assert.AreEqual(ss.GetCellContents("a3"), 20);
+        }        
+
+        [TestMethod]
+        public void Test4()
+        {
+            Spreadsheet ss = new Spreadsheet();
+            ss.SetCellContents("a1", new Formula("b2+c3"));
+            Assert.AreEqual(ss.GetCellContents("a3"), 20);
         }
     }
 }
