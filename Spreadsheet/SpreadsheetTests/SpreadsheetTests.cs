@@ -80,7 +80,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet ss = new Spreadsheet();
             ss.SetCellContents("a1", 20);
-            Assert.AreEqual(ss.GetCellContents("a3"), 20);
+            Assert.IsInstanceOfType(ss.GetCellContents("a1"), typeof(double));
         }        
 
         [TestMethod]
@@ -88,7 +88,7 @@ namespace SpreadsheetTests
         {
             Spreadsheet ss = new Spreadsheet();
             ss.SetCellContents("a1", new Formula("b2+c3"));
-            Assert.AreEqual(ss.GetCellContents("a3"), 20);
+            Assert.IsInstanceOfType(ss.GetCellContents("a1"), typeof(Formula));
         }
     }
 }
