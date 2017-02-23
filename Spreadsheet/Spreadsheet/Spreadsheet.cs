@@ -211,7 +211,8 @@ namespace SS
                 throw new InvalidNameException();
             }
 
-            return dg.GetDependents(name);
+            // NOTE: Was calling GetDependents instead of GetDependees
+            return dg.GetDependees(name);
         }
 
         /// <summary>
@@ -221,7 +222,8 @@ namespace SS
         /// <returns></returns>
         private bool ValidateName(string name)
         {
-            string pattern = @"^[a-z]+[1-9]\d*$";
+            // NOTE: Forgot capital letters
+            string pattern = @"^[a-zA-Z]+[1-9]\d*$";
             return Regex.IsMatch(name, pattern);
         }
 
