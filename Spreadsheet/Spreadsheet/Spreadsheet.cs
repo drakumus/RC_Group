@@ -116,13 +116,15 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-            cells[name] = new Cell(name, formula);
             foreach(string variable in formula.GetVariables())
             {
                 dg.AddDependency(name, variable);
             }
-            
-            return GetDependentCells(name);
+
+            // NOTE: Was setting the cell before checking for circular dependency
+            ISet<string> set = GetDependentCells(name);
+            cells[name] = new Cell(name, formula);
+            return set;
         }
 
         /// <summary>
