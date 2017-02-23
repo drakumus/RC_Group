@@ -120,8 +120,7 @@ namespace SS
             {
                 dg.AddDependency(name, variable);
             }
-
-            // NOTE: Was setting the cell before checking for circular dependency
+            
             ISet<string> set = GetDependentCells(name);
             cells[name] = new Cell(name, formula);
             return set;
@@ -212,8 +211,7 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-
-            // NOTE: Was calling GetDependents instead of GetDependees
+            
             return dg.GetDependees(name);
         }
 
@@ -224,7 +222,6 @@ namespace SS
         /// <returns></returns>
         private bool ValidateName(string name)
         {
-            // NOTE: Forgot capital letters
             string pattern = @"^[a-zA-Z]+[1-9]\d*$";
             return Regex.IsMatch(name, pattern);
         }
