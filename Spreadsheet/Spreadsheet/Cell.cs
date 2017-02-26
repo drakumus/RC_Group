@@ -14,22 +14,11 @@ namespace SS
     class Cell
     {
         public string Name { get; private set; }
-        public object Contents { get
-            {
-                if (Text != null)
-                {
-                    return Text;
-                }
-                if (formula != new Formula())
-                {
-                    return formula;
-                }
-                return Value;
-            }
-        }
-        public double Value { get; private set; }
-        private string Text { get; set; }
-        private Formula formula;
+        private double Value;
+        private string Text;
+        private Formula Formula;
+        private bool FormulaError;
+
 
         private Cell(string name)
         {
@@ -52,7 +41,7 @@ namespace SS
         /// <param name="formula"></param>
         public Cell(string name, Formula formula) : this(name)
         {
-            this.formula = formula;
+            this.Formula = formula;
         }
 
         /// <summary>
@@ -63,6 +52,34 @@ namespace SS
         public Cell(string name, string text) : this(name)
         {
             this.Text = text;
+        }
+        
+        public object GetContents()
+        {
+
+            {
+                if (Text != null)
+                {
+                    return Text;
+                }
+                if (Formula != new Formula())
+                {
+                    return Formula;
+                }
+                return Value;
+            }
+        }
+
+        public object GetValue()
+        {
+
+            {
+                if (Text != null)
+                {
+                    return Text;
+                }
+                return Value;
+            }
         }
     }
 }

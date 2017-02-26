@@ -55,6 +55,7 @@ namespace SS
     {
         DependencyGraph dg;
         Dictionary<string, Cell> cells;
+        Regex IsValid;
 
         /// <summary>
         /// True if this spreadsheet has been modified since it was created or saved
@@ -74,14 +75,59 @@ namespace SS
         }
 
         /// <summary>
-        /// Creats a new empty spreadsheet
+        /// Creates an empty Spreadsheet whose IsValid regular expression accepts every string.
         /// </summary>
         public Spreadsheet()
         {
             dg = new DependencyGraph();
             cells = new Dictionary<string, Cell>();
+            this.IsValid = new Regex(".*");
+            Changed = false;
         }
-        
+
+        /// <summary>
+        /// Creates an empty Spreadsheet whose IsValid regular expression is provided as the parameter
+        /// </summary>
+        /// <param name="isValid"></param>
+        public Spreadsheet(Regex isValid) : this()
+        {
+            this.IsValid = isValid;
+        }
+
+        /// Creates a Spreadsheet that is a duplicate of the spreadsheet saved in source.
+        ///
+        /// See the AbstractSpreadsheet.Save method and Spreadsheet.xsd for the file format 
+        /// specification.  
+        ///
+        /// If there's a problem reading source, throws an IOException.
+        ///
+        /// Else if the contents of source are not consistent with the schema in Spreadsheet.xsd, 
+        /// throws a SpreadsheetReadException.  
+        ///
+        /// Else if the IsValid string contained in source is not a valid C# regular expression, throws
+        /// a SpreadsheetReadException.  (If the exception is not thrown, this regex is referred to
+        /// below as oldIsValid.)
+        ///
+        /// Else if there is a duplicate cell name in the source, throws a SpreadsheetReadException.
+        /// (Two cell names are duplicates if they are identical after being converted to upper case.)
+        ///
+        /// Else if there is an invalid cell name or an invalid formula in the source, throws a 
+        /// SpreadsheetReadException.  (Use oldIsValid in place of IsValid in the definition of 
+        /// cell name validity.)
+        ///
+        /// Else if there is an invalid cell name or an invalid formula in the source, throws a
+        /// SpreadsheetVersionException.  (Use newIsValid in place of IsValid in the definition of
+        /// cell name validity.)
+        ///
+        /// Else if there's a formula that causes a circular dependency, throws a SpreadsheetReadException. 
+        ///
+        /// Else, create a Spreadsheet that is a duplicate of the one encoded in source except that
+        /// the new Spreadsheet's IsValid regular expression should be newIsValid.
+        public Spreadsheet(TextReader source, Regex newIsValid) : this(newIsValid)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// If name is null or invalid, throws an InvalidNameException.
         /// 
@@ -101,7 +147,7 @@ namespace SS
             {
                 return "";
             }
-            return cells[name].Contents;
+            return cells[name].GetContents();
         }
 
         /// <summary>
@@ -141,6 +187,8 @@ namespace SS
             
             ISet<string> set = GetDependentCells(name);
             cells[name] = new Cell(name, formula);
+
+            Changed = true;
             return set;
         }
 
@@ -177,7 +225,8 @@ namespace SS
             {
                 cells[name] = new Cell(name, text);
             }
-            
+
+            Changed = true;
             return GetDependentCells(name);
         }
 
@@ -199,6 +248,7 @@ namespace SS
             }
             cells[name] = new Cell(name, number);
 
+            Changed = true;
             return GetDependentCells(name);
         }
 
@@ -234,33 +284,6 @@ namespace SS
         }
 
         /// <summary>
-        /// Checks if the name supplied is a valid cell name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private bool ValidateName(string name)
-        {
-            string pattern = @"^[a-zA-Z]+[1-9]\d*$";
-            return Regex.IsMatch(name, pattern);
-        }
-
-        /// <summary>
-        /// Gets a set consisting of name plus the names of all other cells
-        /// whose value depends, directly or indirectly, on the named cell.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        private ISet<string> GetDependentCells(string name)
-        {
-            HashSet<string> set = new HashSet<string>() { name };
-            foreach (string dependent in GetCellsToRecalculate(name))
-            {
-                set.Add(dependent);
-            }
-            return set;
-        }
-
-        /// <summary>
         /// Writes the contents of this spreadsheet to dest using an XML format.
         /// The XML elements should be structured as follows:
         ///
@@ -281,7 +304,32 @@ namespace SS
         /// </summary>
         public override void Save(TextWriter dest)
         {
-            throw new NotImplementedException();
+            const string quote = "\"";
+
+            using (dest)
+            {
+                dest.WriteLine("<spreadsheet IsValid=" + quote + IsValid.ToString() + quote + ">");
+                foreach (string name in cells.Keys)
+                {
+                    string contents = "";
+                    object cellContents = cells[name].GetContents();
+                    if (cellContents is string)
+                    {
+                        contents = cellContents.ToString();
+                    }
+                    else if (cellContents is double)
+                    {
+                        contents = cellContents.ToString();
+                    }
+                    else if (cellContents is Formula)
+                    {
+                        contents = cellContents.ToString();
+                    }
+                    dest.WriteLine("\t<cell name=" + quote + name + quote + " contents=" + quote + contents + quote + "></cell>");
+                }
+                dest.WriteLine("</spreadsheet>");
+            }
+            Changed = false;
         }
 
         /// <summary>
@@ -301,7 +349,12 @@ namespace SS
             {
                 return "";
             }
-            return cells[name].Value;
+            object contents = cells[name].GetContents();
+            if(contents is Formula)
+            {
+                if
+            }
+            return contents;
         }
 
         /// <summary>
@@ -358,7 +411,47 @@ namespace SS
                 Formula f = new Formula(content, s => s.ToUpper(), s => ValidateName(s));
                 return SetCellContents(name, f);
             }
+
             return SetCellContents(name, content);
+        }
+
+        /// <summary>
+        /// Checks if the name supplied is a valid cell name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private bool ValidateName(string name)
+        {
+            string pattern = @"^[a-zA-Z]+[1-9]\d*$";
+            return Regex.IsMatch(name, pattern);
+        }
+
+        /// <summary>
+        /// Gets a set consisting of name plus the names of all other cells
+        /// whose value depends, directly or indirectly, on the named cell.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        private ISet<string> GetDependentCells(string name)
+        {
+            HashSet<string> set = new HashSet<string>() { name };
+            foreach (string dependent in GetCellsToRecalculate(name))
+            {
+                set.Add(dependent);
+            }
+            return set;
+        }
+
+        private object EvaluateFormula(Formula f)
+        {
+            try
+            {
+                f.Evaluate(s => (double)cells[s].GetValue());
+            }
+            catch ()
+            {
+
+            }
         }
     }
 }
