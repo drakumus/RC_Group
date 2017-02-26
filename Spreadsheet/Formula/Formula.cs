@@ -448,6 +448,16 @@ namespace Formulas
             }
             return s;
         }
+
+        public static bool operator ==(Formula f, Formula g)
+        {
+            return f.ToString() == g.ToString();
+        }
+
+        public static bool operator !=(Formula f, Formula g)
+        {
+            return f.ToString() != g.ToString();
+        }
     }
 
     /// <summary>

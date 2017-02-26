@@ -20,7 +20,7 @@ namespace SS
                 {
                     return Text;
                 }
-                if (!Object.ReferenceEquals(formula, null))
+                if (formula != new Formula())
                 {
                     return formula;
                 }
