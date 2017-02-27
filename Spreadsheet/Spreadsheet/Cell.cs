@@ -17,7 +17,7 @@ namespace SS
         private double Value;
         private string Text;
         private Formula Formula;
-        private bool FormulaError;
+        public bool FormulaError = false;
 
 
         private Cell(string name)
@@ -79,6 +79,22 @@ namespace SS
                     return Text;
                 }
                 return Value;
+            }
+        }
+
+        public void EvaluateFormula(Lookup lookup)
+        {
+            if(Formula == null)
+            {
+                throw new ArgumentNullException();
+            }
+            try
+            {
+                Value = Formula.Evaluate(lookup);
+            }
+            catch
+            {
+                FormulaError = true;
             }
         }
     }

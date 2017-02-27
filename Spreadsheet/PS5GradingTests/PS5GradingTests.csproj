@@ -50,8 +50,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="PS5GradingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PS5GradingTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DependencyGraph\DependencyGraph.csproj">

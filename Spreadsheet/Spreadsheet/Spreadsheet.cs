@@ -7,6 +7,7 @@ using Formulas;
 using System.Text.RegularExpressions;
 using Dependencies;
 using System.IO;
+using System.Xml;
 
 namespace SS
 {
@@ -180,13 +181,13 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-            foreach(string variable in formula.GetVariables())
-            {
-                dg.AddDependency(name, variable);
-            }
             
             ISet<string> set = GetDependentCells(name);
             cells[name] = new Cell(name, formula);
+            foreach (string variable in formula.GetVariables())
+            {
+                dg.AddDependency(name, variable);
+            }
 
             Changed = true;
             return set;
@@ -305,29 +306,35 @@ namespace SS
         public override void Save(TextWriter dest)
         {
             const string quote = "\"";
-
-            using (dest)
+            using (XmlWriter writer = XmlWriter.Create(dest))
             {
-                dest.WriteLine("<spreadsheet IsValid=" + quote + IsValid.ToString() + quote + ">");
+                writer.WriteStartDocument();
+                writer.WriteStartElement("spreadsheet");
+                writer.WriteAttributeString("IsValid", IsValid.ToString());
                 foreach (string name in cells.Keys)
                 {
+                    writer.WriteStartElement("cell");
+                    writer.WriteAttributeString("name", name);
+
                     string contents = "";
                     object cellContents = cells[name].GetContents();
-                    if (cellContents is string)
+                    if(cellContents is Formula)
+                    {
+                        contents = "=" + cellContents.ToString();
+                    }
+                    else if(cellContents is double)
                     {
                         contents = cellContents.ToString();
                     }
-                    else if (cellContents is double)
+                    else
                     {
-                        contents = cellContents.ToString();
+                        contents = (string)cellContents;
                     }
-                    else if (cellContents is Formula)
-                    {
-                        contents = cellContents.ToString();
-                    }
-                    dest.WriteLine("\t<cell name=" + quote + name + quote + " contents=" + quote + contents + quote + "></cell>");
+                    writer.WriteAttributeString("contents", contents);
+                    writer.WriteEndElement();
                 }
-                dest.WriteLine("</spreadsheet>");
+                writer.WriteEndElement();
+                writer.WriteEndDocument();
             }
             Changed = false;
         }
@@ -349,10 +356,15 @@ namespace SS
             {
                 return "";
             }
-            object contents = cells[name].GetContents();
+            Cell cell = cells[name];
+            object contents = cell.GetContents();
             if(contents is Formula)
             {
-                if
+                if(cell.FormulaError)
+                {
+                    return new FormulaError();
+                }
+                return cell.GetValue();
             }
             return contents;
         }
@@ -434,24 +446,17 @@ namespace SS
         /// <returns></returns>
         private ISet<string> GetDependentCells(string name)
         {
-            HashSet<string> set = new HashSet<string>() { name };
+            HashSet<string> set = new HashSet<string>();
             foreach (string dependent in GetCellsToRecalculate(name))
             {
                 set.Add(dependent);
+                Cell cell = cells[dependent];
+                if (cell.GetContents() is Formula)
+                {
+                    cell.EvaluateFormula(s => (double)cells[s].GetValue());
+                }
             }
             return set;
-        }
-
-        private object EvaluateFormula(Formula f)
-        {
-            try
-            {
-                f.Evaluate(s => (double)cells[s].GetValue());
-            }
-            catch ()
-            {
-
-            }
         }
     }
 }
