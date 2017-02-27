@@ -64,15 +64,9 @@ namespace SS
         /// </summary>
         public override bool Changed
         {
-            get
-            {
-                return Changed;
-            }
+            get;
 
-            protected set
-            {
-                Changed = value;
-            }
+            protected set;
         }
 
         /// <summary>
@@ -80,10 +74,10 @@ namespace SS
         /// </summary>
         public Spreadsheet()
         {
-            dg = new DependencyGraph();
-            cells = new Dictionary<string, Cell>();
-            this.IsValid = new Regex(".*");
-            Changed = false;
+            this.dg = new DependencyGraph();
+            this.cells = new Dictionary<string, Cell>();
+            this.IsValid = new Regex(@".*");
+            this.Changed = false;
         }
 
         /// <summary>
@@ -181,13 +175,14 @@ namespace SS
             {
                 throw new InvalidNameException();
             }
-            
-            ISet<string> set = GetDependentCells(name);
-            cells[name] = new Cell(name, formula);
+
             foreach (string variable in formula.GetVariables())
             {
                 dg.AddDependency(name, variable);
             }
+
+            ISet<string> set = GetDependentCells(name);
+            cells[name] = new Cell(name, formula);
 
             Changed = true;
             return set;
@@ -305,7 +300,6 @@ namespace SS
         /// </summary>
         public override void Save(TextWriter dest)
         {
-            const string quote = "\"";
             using (XmlWriter writer = XmlWriter.Create(dest))
             {
                 writer.WriteStartDocument();
@@ -419,7 +413,7 @@ namespace SS
             string pattern = @"^=";
             if (Regex.IsMatch(content, pattern))
             {
-                Regex.Replace(content, pattern, "");
+                content = content.Substring(1);
                 Formula f = new Formula(content, s => s.ToUpper(), s => ValidateName(s));
                 return SetCellContents(name, f);
             }
@@ -435,7 +429,7 @@ namespace SS
         private bool ValidateName(string name)
         {
             string pattern = @"^[a-zA-Z]+[1-9]\d*$";
-            return Regex.IsMatch(name, pattern);
+            return Regex.IsMatch(name, pattern) && IsValid.IsMatch(name);
         }
 
         /// <summary>
@@ -450,10 +444,13 @@ namespace SS
             foreach (string dependent in GetCellsToRecalculate(name))
             {
                 set.Add(dependent);
-                Cell cell = cells[dependent];
-                if (cell.GetContents() is Formula)
+                if(name != dependent)
                 {
-                    cell.EvaluateFormula(s => (double)cells[s].GetValue());
+                    Cell cell = cells[dependent];
+                    if (cell.GetContents() is Formula)
+                    {
+                        cell.EvaluateFormula(s => (double)cells[s].GetValue());
+                    }
                 }
             }
             return set;

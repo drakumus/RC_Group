@@ -91,6 +91,7 @@ namespace SS
             try
             {
                 Value = Formula.Evaluate(lookup);
+                FormulaError = false;
             }
             catch
             {
