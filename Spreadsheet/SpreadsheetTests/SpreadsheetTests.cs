@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using Formulas;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SpreadsheetTests
 {
@@ -77,7 +78,6 @@ namespace SpreadsheetTests
             Assert.AreEqual(s.GetCellValue("A1"), new FormulaError());
         }
 
-
         [TestMethod]
         public void Save1()
         {
@@ -88,6 +88,17 @@ namespace SpreadsheetTests
             s.SetContentsOfCell("A4", ("=A2+A5"));
             s.SetContentsOfCell("A5", "82.5");
             Assert.IsTrue(s.Changed);
+            StreamWriter sw = new StreamWriter("Test.xml");
+            s.Save(sw);
+            Assert.IsFalse(s.Changed);
+        }
+
+        [TestMethod]
+        public void Read1()
+        {
+            Spreadsheet s = new Spreadsheet(new StreamReader("Test.xml"), new Regex(@"^[a-zA-Z]+[1-9]\d*$"));
+            StreamWriter sw = new StreamWriter("Test1.xml");
+            s.Save(sw);
         }
     }
 }

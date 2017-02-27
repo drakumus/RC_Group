@@ -120,7 +120,41 @@ namespace SS
         /// the new Spreadsheet's IsValid regular expression should be newIsValid.
         public Spreadsheet(TextReader source, Regex newIsValid) : this(newIsValid)
         {
-            throw new NotImplementedException();
+            XmlReader reader = XmlReader.Create(source);
+            using (reader)
+            {
+                while (reader.Read())
+                {
+                    string name = reader.Name;
+                    if (name == "IsValid")
+                    {
+                        try
+                        {
+                            this.IsValid = new Regex(name);
+                        }
+                        catch
+                        {
+                            throw new SpreadsheetReadException("Invalid Regex");
+                        }
+                    }
+                    else if(name == "cell")
+                    {
+                        if (cells.ContainsKey(name.ToUpper()))
+                        {
+                            throw new SpreadsheetReadException("Duplicate cell name");
+                        }
+                        try
+                        {
+                            SetContentsOfCell(reader["name"].ToUpper(), reader["contents"]);
+                        }
+                        catch
+                        {
+                            throw new SpreadsheetReadException("Problem creating cell");
+                        }
+                    }
+                }
+                this.IsValid = newIsValid;
+            }
         }
 
         /// <summary>
@@ -300,7 +334,9 @@ namespace SS
         /// </summary>
         public override void Save(TextWriter dest)
         {
-            using (XmlWriter writer = XmlWriter.Create(dest))
+            XmlWriterSettings setting = new XmlWriterSettings();
+            setting.Indent = true;
+            using (XmlWriter writer = XmlWriter.Create(dest, setting))
             {
                 writer.WriteStartDocument();
                 writer.WriteStartElement("spreadsheet");
