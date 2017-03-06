@@ -17,8 +17,8 @@ namespace SS
         private double Value;
         private string Text;
         private Formula Formula;
-        public bool FormulaError = false;
-
+        // NOTE: Changed the way FormulaErrors are stored
+        public object Error;
 
         private Cell(string name)
         {
@@ -74,10 +74,10 @@ namespace SS
         {
 
             {
-                /*if(FormulaError == true)
+                if(Error != null)
                 {
-                    return new FormulaError();
-                }*/
+                    return Error;
+                }
                 if (Text != null)
                 {
                     return Text;
@@ -98,10 +98,10 @@ namespace SS
             }
             catch
             {
-                FormulaError = true;
+                Error = new FormulaError();
                 return;
             }
-            FormulaError = false;
+            Error = null;
         }
     }
 }

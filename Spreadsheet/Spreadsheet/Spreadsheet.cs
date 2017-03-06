@@ -215,14 +215,14 @@ namespace SS
                 dg.AddDependency(name, variable);
             }
 
-            ISet<string> set = GetDependentCells(name);
-            // NOTE: Forgot to evaluate the new cell
+            GetDependentCells(name);
+            // NOTE: Forgot to evaluate the new cell and then re-evaluate Dependent cells 
             Cell cell = new Cell(name, formula);
             cell.EvaluateFormula(s => (double)cells[s].GetValue());
             cells[name] = cell;
 
             Changed = true;
-            return set;
+            return GetDependentCells(name);
         }
 
         /// <summary>
@@ -393,9 +393,9 @@ namespace SS
             object contents = cell.GetContents();
             if(contents is Formula)
             {
-                if(cell.FormulaError)
+                if(cell.Error != null)
                 {
-                    return new FormulaError();
+                    return cell.Error;
                 }
                 return cell.GetValue();
             }
