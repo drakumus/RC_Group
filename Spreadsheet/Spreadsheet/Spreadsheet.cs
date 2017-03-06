@@ -167,7 +167,7 @@ namespace SS
         /// <returns></returns>
         public override object GetCellContents(string name)
         {
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -205,7 +205,7 @@ namespace SS
         /// </summary>
         protected override ISet<string> SetCellContents(string name, Formula formula)
         {
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -216,7 +216,10 @@ namespace SS
             }
 
             ISet<string> set = GetDependentCells(name);
-            cells[name] = new Cell(name, formula);
+            // NOTE: Forgot to evaluate the new cell
+            Cell cell = new Cell(name, formula);
+            cell.EvaluateFormula(s => (double)cells[s].GetValue());
+            cells[name] = cell;
 
             Changed = true;
             return set;
@@ -240,7 +243,7 @@ namespace SS
             {
                 throw new ArgumentNullException();
             }
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -272,7 +275,7 @@ namespace SS
         /// </summary>
         protected override ISet<string> SetCellContents(string name, double number)
         {
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -305,7 +308,7 @@ namespace SS
             {
                 throw new ArgumentNullException();
             }
-            if (!ValidateName(name))
+            if (!ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -377,7 +380,7 @@ namespace SS
         /// </summary>
         public override object GetCellValue(string name)
         {
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -436,7 +439,7 @@ namespace SS
             {
                 throw new ArgumentNullException();
             }
-            if (name == null || !ValidateName(name))
+            if (name == null || !ValidateName(ref name))
             {
                 throw new InvalidNameException();
             }
@@ -450,7 +453,7 @@ namespace SS
             if (Regex.IsMatch(content, pattern))
             {
                 content = content.Substring(1);
-                Formula f = new Formula(content, s => s.ToUpper(), s => ValidateName(s));
+                Formula f = new Formula(content, s => s.ToUpper(), s => ValidateName(ref s));
                 return SetCellContents(name, f);
             }
 
@@ -462,8 +465,10 @@ namespace SS
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private bool ValidateName(string name)
+        private bool ValidateName(ref string name)
         {
+            // NOTE: Forgot to normalize all names
+            name = name.ToUpper();
             string pattern = @"^[a-zA-Z]+[1-9]\d*$";
             return Regex.IsMatch(name, pattern) && IsValid.IsMatch(name);
         }

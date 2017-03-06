@@ -74,6 +74,10 @@ namespace SS
         {
 
             {
+                /*if(FormulaError == true)
+                {
+                    return new FormulaError();
+                }*/
                 if (Text != null)
                 {
                     return Text;
@@ -91,12 +95,13 @@ namespace SS
             try
             {
                 Value = Formula.Evaluate(lookup);
-                FormulaError = false;
             }
             catch
             {
                 FormulaError = true;
+                return;
             }
+            FormulaError = false;
         }
     }
 }
