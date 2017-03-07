@@ -92,13 +92,5 @@ namespace SpreadsheetTests
             s.Save(sw);
             Assert.IsFalse(s.Changed);
         }
-
-        [TestMethod]
-        public void Read1()
-        {
-            Spreadsheet s = new Spreadsheet(new StreamReader("Test.xml"), new Regex(@"^[a-zA-Z]+[1-9]\d*$"));
-            StreamWriter sw = new StreamWriter("Test1.xml");
-            s.Save(sw);
-        }
     }
 }

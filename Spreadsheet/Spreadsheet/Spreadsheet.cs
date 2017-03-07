@@ -174,7 +174,14 @@ namespace SS
                         {
                             throw new SpreadsheetVersionException("Source is not valid with newIsValid");
                         }
-                        SetContentsOfCell(cellName, cellContents);
+                        try
+                        {
+                            SetContentsOfCell(cellName, cellContents);
+                        }
+                        catch
+                        {
+                            throw new SpreadsheetVersionException("");
+                        }
                     }
                 }
             }
