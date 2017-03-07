@@ -118,43 +118,67 @@ namespace SS
         ///
         /// Else, create a Spreadsheet that is a duplicate of the one encoded in source except that
         /// the new Spreadsheet's IsValid regular expression should be newIsValid.
-        public Spreadsheet(TextReader source, Regex newIsValid) : this(newIsValid)
+        public Spreadsheet(TextReader source, Regex newIsValid) : this()
         {
+            // NOTE: Cleaned up this constructor so that errors are clear
             XmlReader reader = XmlReader.Create(source);
             using (reader)
             {
+                bool firstSSAttribute = true;
                 while (reader.Read())
                 {
                     string name = reader.Name;
-                    if (name == "IsValid")
+                    if (name == "spreadsheet")
                     {
-                        try
+                        if (firstSSAttribute)
                         {
-                            this.IsValid = new Regex(name);
-                        }
-                        catch
-                        {
-                            throw new SpreadsheetReadException("Invalid Regex");
+                            string isValid = reader.GetAttribute("IsValid");
+                            if(isValid == null)
+                            {
+                                throw new SpreadsheetReadException("Missing attribute: IsValid");
+                            }
+                            try
+                            {
+                                
+                                this.IsValid = new Regex(isValid);
+                            }
+                            catch
+                            {
+                                throw new SpreadsheetReadException("Invalid Regex");
+                            }
+                            firstSSAttribute = false;
                         }
                     }
                     else if(name == "cell")
                     {
-                        if (cells.ContainsKey(name.ToUpper()))
+                        // NOTE: Added correct checks for getting cell attributes
+                        string cellName = reader.GetAttribute("name");
+                        string cellContents = reader.GetAttribute("contents");
+                        if(cellName == null)
+                        {
+                            throw new SpreadsheetReadException("Missing attribute: name");
+                        }
+                        if(cellContents == null)
+                        {
+                            throw new SpreadsheetReadException("Missing attribute: contents");
+                        }
+                        if (cells.ContainsKey(cellName.ToUpper()))
                         {
                             throw new SpreadsheetReadException("Duplicate cell name");
                         }
-                        try
+                        if (!IsValid.IsMatch(cellName))
                         {
-                            SetContentsOfCell(reader["name"].ToUpper(), reader["contents"]);
+                            throw new SpreadsheetReadException("Source is not valid with its own IsValid");
                         }
-                        catch
+                        if (!newIsValid.IsMatch(cellName))
                         {
-                            throw new SpreadsheetReadException("Problem creating cell");
+                            throw new SpreadsheetVersionException("Source is not valid with newIsValid");
                         }
+                        SetContentsOfCell(cellName, cellContents);
                     }
                 }
-                this.IsValid = newIsValid;
             }
+            this.IsValid = newIsValid;
         }
 
         /// <summary>
