@@ -36,6 +36,13 @@ namespace SpreadsheetPractice
             updateBoxes(startCol, startRow);
         }
 
+        /// <summary>
+        /// Takes col, row input and updates the text for the active cell's cell and value box
+        /// which are read only for the user. This is primarily used to update current selection
+        /// on spreadsheet load, cell update, or New spreadsheet.
+        /// </summary>
+        /// <param name="col"></param>
+        /// <param name="row"></param>
         private void updateBoxes(int col, int row)
         {
             currentCell = translateCell(col, row);
@@ -45,6 +52,10 @@ namespace SpreadsheetPractice
             contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
         }
 
+        /// <summary>
+        /// Translates to col, row form for identifying cell then updates boxes see updateBoxes(int col, int row)
+        /// </summary>
+        /// <param name="cell"></param>
         private void updateBoxes(string cell)
         {
             var translatedCell = translateRowCol(cell);
@@ -277,21 +288,24 @@ namespace SpreadsheetPractice
         }
 
         /// <summary>
-        /// Open...will be renamed in future
-        /// Also Not Redrawing as intended...
+        /// Opens an xml.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
             StreamReader reader;
+            StreamWriter writer; //used for save function so user isn't prompted to save after opening an unchanged spreadsheet.
 
             int col;
             int row;
 
             if (sheet.Changed == false)
             {
+                //prompts for OpenFileDialog and saves the result if selection is OK to filePath.
+                //filePath is then used to initialize a new spreadsheet
                 var result = new System.Windows.Forms.OpenFileDialog();
+                spreadsheetPanel1.Clear(); //clears spreadsheet for full refresh.
                 if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     string filePath = result.FileName;
@@ -313,10 +327,14 @@ namespace SpreadsheetPractice
                         row = rowCol[1];
                         spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cell).ToString());
                     }
+                    //updates the Cell and Value box currently selected
                     spreadsheetPanel1.GetSelection(out col, out row);
 
                     updateBoxes(col, row);
-                    
+
+                    //saves so the Changed bool is flipped to false.
+                    sheet.Save(writer = new StreamWriter(filePath));
+                    writer.Close(); //note that all writers/readers must be closed to avoid "File Already in Use" errors
                 }
 
             }
@@ -418,6 +436,10 @@ namespace SpreadsheetPractice
 
         }
 
-        
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HelpForm help = new HelpForm();
+            help.Show();
+        }
     }
 }
