@@ -265,6 +265,16 @@ namespace SpreadsheetPractice
         }
 
         /// <summary>
+        /// Open...will be renamed in future
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        /// <summary>
         /// on menu Select File>New clears current spreadsheet for a new one
         /// </summary>
         /// <param name="sender"></param>
@@ -348,5 +358,6 @@ namespace SpreadsheetPractice
 
         }
 
+        
     }
 }
