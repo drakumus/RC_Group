@@ -17,8 +17,7 @@ namespace SpreadsheetPractice
     public partial class Form1 : Form
     {
         private Spreadsheet sheet;
-        private int row;
-        private int col;
+
         private string currentCell;
 
         public Form1()
@@ -28,12 +27,16 @@ namespace SpreadsheetPractice
             spreadsheetPanel1.SelectionChanged += displaySelection;
             spreadsheetPanel1.SetSelection(2, 3);
             currentCell = "";
-            row = 0;
-            col = 0;
         }
 
+        /// <summary>
+        /// Event for when a cell is clicked in the spreadsheetPanel.
+        /// </summary>
+        /// <param name="ss">current SpreadsheetPanel</param>
         private void displaySelection(SpreadsheetPanel ss)
         {
+            int row;
+            int col;
             ss.GetSelection(out col, out row);
 
             currentCell = translateCell(row, col);
@@ -43,6 +46,13 @@ namespace SpreadsheetPractice
             contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
         }
 
+        /// <summary>
+        /// Translates row, col integers to respective Cell.
+        /// i.e. col 3, row 2; will return D3
+        /// </summary>
+        /// <param name="row">row integer</param>
+        /// <param name="col">collumn integer</param>
+        /// <returns>string Cell</returns>
         private string translateCell(int row, int col)
         {
             int rowInt = row + 1;
@@ -131,6 +141,114 @@ namespace SpreadsheetPractice
             return colString + rowInt.ToString();
         }
 
+        /// <summary>
+        /// Translates a given Cell i.e. "C1" to its respective col, row 
+        /// i.e. for "C1" col 2 will be returned in index 0 and row 0 will be returned in index 1
+        /// see editButton_Click for implementation
+        /// </summary>
+        /// <param name="cell">cell name i.e. C1</param>
+        /// <returns>
+        /// int[]
+        /// int[0] = col
+        /// int[1] = row
+        /// </returns>
+        private int[] translateRowCol (string cell)
+        {
+            string colS = cell.Substring(0, 1);
+            int col = 0;
+            int row;
+            Int32.TryParse(cell.Substring(1, cell.Length-1), out row);
+            row--;
+            switch (colS)
+            {
+                case "A":
+                    col = 0;
+                    break;
+                case "B":
+                    col = 1;
+                    break;
+                case "C":
+                    col = 2;
+                    break;
+                case "D":
+                    col = 3;
+                    break;
+                case "E":
+                    col = 4;
+                    break;
+                case "F":
+                    col = 5;
+                    break;
+                case "G":
+                    col = 6;
+                    break;
+                case "H":
+                    col = 7;
+                    break;
+                case "I":
+                    col = 8;
+                    break;
+                case "J":
+                    col = 9;
+                    break;
+                case "K":
+                    col = 10;
+                    break;
+                case "L":
+                    col = 11;
+                    break;
+                case "M":
+                    col = 12;
+                    break;
+                case "N":
+                    col = 13;
+                    break;
+                case "O":
+                    col = 14;
+                    break;
+                case "P":
+                    col = 15;
+                    break;
+                case "Q":
+                    col = 16;
+                    break;
+                case "R":
+                    col = 17;
+                    break;
+                case "S":
+                    col = 18;
+                    break;
+                case "T":
+                    col = 19;
+                    break;
+                case "U":
+                    col = 20;
+                    break;
+                case "V":
+                    col = 21;
+                    break;
+                case "W":
+                    col = 22;
+                    break;
+                case "X":
+                    col = 23;
+                    break;
+                case "Y":
+                    col = 24;
+                    break;
+                case "Z":
+                    col = 25;
+                    break;
+            }
+
+            return new int[] { col, row };
+        }
+
+        /// <summary>
+        /// on menu select File>Close Closes the window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Close();
@@ -138,6 +256,8 @@ namespace SpreadsheetPractice
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            //destination can be fixed in the future. I know how to prompt for file selection view you see
+            //in most programs so dont worry this is temporary.
             var desktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
             var fullFileName = Path.Combine(desktopFolder, "Test.xml");
             var fs = new FileStream(fullFileName, FileMode.Create);
@@ -146,20 +266,35 @@ namespace SpreadsheetPractice
 
         private void editButton_Click(object sender, EventArgs e)
         {
+            int col;
+            int row;
             string value = "";
+
+            ISet<string> cellsToUpdate = new HashSet<string>();
 
             try
             {
-                sheet.SetContentsOfCell(currentCell, contentsBox.Text);
+                cellsToUpdate = sheet.SetContentsOfCell(currentCell, contentsBox.Text);
+
             }
             catch
             {
                 MessageBox.Show("Invalid Cell Input");
             }
-
-            value = sheet.GetCellValue(currentCell).ToString();
-            valueBox.Text = value;
-            spreadsheetPanel1.SetValue(col, row, value);
+            foreach (string cell in cellsToUpdate)
+            {
+                col = translateRowCol(cell)[0];
+                row = translateRowCol(cell)[1];
+                value = sheet.GetCellValue(cell).ToString();
+                //something wrong is happening here. When updating dependents it'll show dependent value instead of
+                //its own value.
+                valueBox.Text = value;
+                spreadsheetPanel1.SetValue(col, row, value);
+                
+            }
+            //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
+            //could be caused by how c# pointers work.
+            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
         }
     }
 }
