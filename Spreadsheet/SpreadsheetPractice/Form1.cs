@@ -12,6 +12,7 @@ using SSGui;
 using Formulas;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Xml;
 
 namespace SpreadsheetPractice
 {
@@ -30,12 +31,25 @@ namespace SpreadsheetPractice
 
             //initial cell setup
             spreadsheetPanel1.SetSelection(2, 3);
-            currentCell = translateCell(2, 3);
+            updateBoxes(2, 3);
+        }
+
+        private void updateBoxes(int col, int row)
+        {
+            currentCell = translateCell(col, row);
+
             cellBox.Text = currentCell;
             valueBox.Text = sheet.GetCellValue(currentCell).ToString();
             contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
         }
 
+        private void updateBoxes(string cell)
+        {
+            var translatedCell = translateRowCol(cell);
+            int col = translatedCell[0];
+            int row = translatedCell[1];
+            updateBoxes(col, row);
+        }
         /// <summary>
         /// Event for when a cell is clicked in the spreadsheetPanel.
         /// </summary>
@@ -46,11 +60,7 @@ namespace SpreadsheetPractice
             int col;
             ss.GetSelection(out col, out row);
 
-            currentCell = translateCell(col, row);
-
-            cellBox.Text = currentCell;
-            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
-            contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
+            updateBoxes(col, row);
         }
 
         /// <summary>
@@ -266,12 +276,40 @@ namespace SpreadsheetPractice
 
         /// <summary>
         /// Open...will be renamed in future
+        /// Also Not Redrawing as intended...
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            int col;
+            int row;
 
+            if (sheet.Changed == false)
+            {
+                var result = new System.Windows.Forms.OpenFileDialog();
+                if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string filePath = result.FileName;
+
+                    sheet = new Spreadsheet(new StreamReader(filePath), new Regex(".*"));
+                    var here = sheet.GetNamesOfAllNonemptyCells().ToArray<string>();
+                    foreach(string cell in sheet.GetNamesOfAllNonemptyCells())
+                    {
+                        var rowCol= translateRowCol(cell);
+                        col = rowCol[0];
+                        row = rowCol[1];
+                        spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cell).ToString());
+                    }
+                    spreadsheetPanel1.GetSelection(out col, out row);
+
+                    updateBoxes(col, row);
+                    
+                }
+
+            }
+            else
+                MessageBox.Show("Please save before attempting to create a new sheet");
         }
 
         /// <summary>
