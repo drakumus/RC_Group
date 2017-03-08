@@ -11,6 +11,7 @@ using SS;
 using SSGui;
 using Formulas;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace SpreadsheetPractice
 {
@@ -23,10 +24,16 @@ namespace SpreadsheetPractice
         public Form1()
         {
             InitializeComponent();
-            sheet = new Spreadsheet();
+            //TODO: Fix regex to accept what was listed in assignment
+            sheet = new Spreadsheet(new Regex(".*"));
             spreadsheetPanel1.SelectionChanged += displaySelection;
+
+            //initial cell setup
             spreadsheetPanel1.SetSelection(2, 3);
-            currentCell = "";
+            currentCell = translateCell(2, 3);
+            cellBox.Text = currentCell;
+            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
+            contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
         }
 
         /// <summary>
@@ -39,7 +46,7 @@ namespace SpreadsheetPractice
             int col;
             ss.GetSelection(out col, out row);
 
-            currentCell = translateCell(row, col);
+            currentCell = translateCell(col, row);
 
             cellBox.Text = currentCell;
             valueBox.Text = sheet.GetCellValue(currentCell).ToString();
@@ -53,7 +60,7 @@ namespace SpreadsheetPractice
         /// <param name="row">row integer</param>
         /// <param name="col">collumn integer</param>
         /// <returns>string Cell</returns>
-        private string translateCell(int row, int col)
+        private string translateCell(int col, int row)
         {
             int rowInt = row + 1;
             string colString = "";
@@ -251,7 +258,28 @@ namespace SpreadsheetPractice
         /// <param name="e"></param>
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Close();
+            if (sheet.Changed == false)
+                Close();
+            else
+                MessageBox.Show("Please save before attempting to close");
+        }
+
+        /// <summary>
+        /// on menu Select File>New clears current spreadsheet for a new one
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (sheet.Changed == false)
+            {
+                sheet = new Spreadsheet(new Regex(".*"));
+                spreadsheetPanel1.Clear();
+                valueBox.Text = "";
+                contentsBox.Text = "";
+            }
+            else
+                MessageBox.Show("Please save before attempting to create a new sheet");
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
@@ -272,11 +300,19 @@ namespace SpreadsheetPractice
 
             ISet<string> cellsToUpdate = new HashSet<string>();
 
+            bool isValidInput = true;
+
             try
             {
                 cellsToUpdate = sheet.SetContentsOfCell(currentCell, contentsBox.Text);
                 /* this logic won't work to prevent updates because for some reason certain cells are being
-                 * initialized as FormulaError...otherwise works as intended
+                 * initialized as FormulaError...otherwise would work as intended
+                 * goal is to stop any updates which means reverting cell value when formula error is found.
+                 * Some changes may need to be made to Spreedsheet otherwise old values must be stored here
+                 * and updated on fail. Question now is what event to check for for formula fail. Currently
+                 * any form of valid input results in a formula error no matter what so how do you check for
+                 * updated cells having a formula error if all valid input is interpreted from formula error.
+
                 foreach (string cell in cellsToUpdate)
                 {
                      
@@ -286,6 +322,8 @@ namespace SpreadsheetPractice
                     }
                 }
                 */
+
+                //updates contents of dependent cells including currentCell
                 foreach (string cell in cellsToUpdate)
                 {
                     col = translateRowCol(cell)[0];
@@ -297,15 +335,18 @@ namespace SpreadsheetPractice
                     spreadsheetPanel1.SetValue(col, row, value);
 
                 }
+                
+                //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
+                //could be caused by how c# pointers work.
+                valueBox.Text = sheet.GetCellValue(currentCell).ToString();
             }
             catch
             {
                 MessageBox.Show("Invalid Cell Input");
             }
 
-            //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
-            //could be caused by how c# pointers work.
-            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
+
         }
+
     }
 }
