@@ -291,9 +291,16 @@ namespace SpreadsheetPractice
                 if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     string filePath = result.FileName;
+                    try
+                    {
+                        sheet = new Spreadsheet(new StreamReader(filePath), new Regex(".*"));
+                    }
+                    catch (IOException)
+                    {
 
-                    sheet = new Spreadsheet(new StreamReader(filePath), new Regex(".*"));
-                    var here = sheet.GetNamesOfAllNonemptyCells().ToArray<string>();
+                    }
+                    //use below commented out code for discrepencies in file path testing
+                    //var here = sheet.GetNamesOfAllNonemptyCells().ToArray<string>();
                     foreach(string cell in sheet.GetNamesOfAllNonemptyCells())
                     {
                         var rowCol= translateRowCol(cell);
@@ -330,14 +337,21 @@ namespace SpreadsheetPractice
                 MessageBox.Show("Please save before attempting to create a new sheet");
         }
 
+        /// <summary>
+        /// Saves the spreadsheet to the specified path.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //destination can be fixed in the future. I know how to prompt for file selection view you see
-            //in most programs so dont worry this is temporary.
-            var desktopFolder = Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
-            var fullFileName = Path.Combine(desktopFolder, "Test.xml");
-            var fs = new FileStream(fullFileName, FileMode.Create);
-            sheet.Save(new StreamWriter(fs));
+            var saveDialog = new System.Windows.Forms.SaveFileDialog();
+            saveDialog.Filter = "XML File (*.xml)|*.xml|All files (*.*)|*.*";
+            if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                string filePath = saveDialog.FileName;
+                sheet.Save(new StreamWriter(filePath));
+            }
+
         }
 
         private void editButton_Click(object sender, EventArgs e)
