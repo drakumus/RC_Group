@@ -16,27 +16,31 @@ namespace SpreadsheetPractice
 {
     public partial class Form1 : Form
     {
-        Spreadsheet sheet;
+        private Spreadsheet sheet;
+        private int row;
+        private int col;
+        private string currentCell;
+
         public Form1()
         {
             InitializeComponent();
             sheet = new Spreadsheet();
             spreadsheetPanel1.SelectionChanged += displaySelection;
             spreadsheetPanel1.SetSelection(2, 3);
+            currentCell = "";
+            row = 0;
+            col = 0;
         }
 
         private void displaySelection(SpreadsheetPanel ss)
         {
-            int row, col;
-            String value;
             ss.GetSelection(out col, out row);
-            ss.GetValue(col, row, out value);
 
-            string cell = translateCell(row, col);
+            currentCell = translateCell(row, col);
 
-            cellBox.Text = cell;
-            valueBox.Text = value;
-            contentsBox.Text = sheet.GetCellContents(cell).ToString();
+            cellBox.Text = currentCell;
+            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
+            contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
         }
 
         private string translateCell(int row, int col)
@@ -138,6 +142,24 @@ namespace SpreadsheetPractice
             var fullFileName = Path.Combine(desktopFolder, "Test.xml");
             var fs = new FileStream(fullFileName, FileMode.Create);
             sheet.Save(new StreamWriter(fs));
+        }
+
+        private void editButton_Click(object sender, EventArgs e)
+        {
+            string value = "";
+
+            try
+            {
+                sheet.SetContentsOfCell(currentCell, contentsBox.Text);
+            }
+            catch
+            {
+                MessageBox.Show("Invalid Cell Input");
+            }
+
+            value = sheet.GetCellValue(currentCell).ToString();
+            valueBox.Text = value;
+            spreadsheetPanel1.SetValue(col, row, value);
         }
     }
 }

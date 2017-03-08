@@ -40,12 +40,13 @@
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // spreadsheetPanel1
             // 
-            this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 74);
+            this.spreadsheetPanel1.Location = new System.Drawing.Point(0, 55);
             this.spreadsheetPanel1.Name = "spreadsheetPanel1";
             this.spreadsheetPanel1.Size = new System.Drawing.Size(803, 453);
             this.spreadsheetPanel1.TabIndex = 0;
@@ -53,7 +54,7 @@
             // cellLabel
             // 
             this.cellLabel.AutoSize = true;
-            this.cellLabel.Location = new System.Drawing.Point(12, 49);
+            this.cellLabel.Location = new System.Drawing.Point(12, 30);
             this.cellLabel.Name = "cellLabel";
             this.cellLabel.Size = new System.Drawing.Size(27, 13);
             this.cellLabel.TabIndex = 1;
@@ -61,7 +62,7 @@
             // 
             // cellBox
             // 
-            this.cellBox.Location = new System.Drawing.Point(42, 46);
+            this.cellBox.Location = new System.Drawing.Point(42, 27);
             this.cellBox.Name = "cellBox";
             this.cellBox.ReadOnly = true;
             this.cellBox.Size = new System.Drawing.Size(100, 20);
@@ -70,7 +71,7 @@
             // valueLable
             // 
             this.valueLable.AutoSize = true;
-            this.valueLable.Location = new System.Drawing.Point(148, 49);
+            this.valueLable.Location = new System.Drawing.Point(148, 30);
             this.valueLable.Name = "valueLable";
             this.valueLable.Size = new System.Drawing.Size(37, 13);
             this.valueLable.TabIndex = 3;
@@ -78,7 +79,7 @@
             // 
             // valueBox
             // 
-            this.valueBox.Location = new System.Drawing.Point(191, 46);
+            this.valueBox.Location = new System.Drawing.Point(191, 27);
             this.valueBox.Name = "valueBox";
             this.valueBox.ReadOnly = true;
             this.valueBox.Size = new System.Drawing.Size(159, 20);
@@ -87,7 +88,7 @@
             // contentsLabel
             // 
             this.contentsLabel.AutoSize = true;
-            this.contentsLabel.Location = new System.Drawing.Point(356, 49);
+            this.contentsLabel.Location = new System.Drawing.Point(356, 30);
             this.contentsLabel.Name = "contentsLabel";
             this.contentsLabel.Size = new System.Drawing.Size(52, 13);
             this.contentsLabel.TabIndex = 5;
@@ -95,9 +96,9 @@
             // 
             // contentsBox
             // 
-            this.contentsBox.Location = new System.Drawing.Point(414, 46);
+            this.contentsBox.Location = new System.Drawing.Point(414, 27);
             this.contentsBox.Name = "contentsBox";
-            this.contentsBox.Size = new System.Drawing.Size(359, 20);
+            this.contentsBox.Size = new System.Drawing.Size(287, 20);
             this.contentsBox.TabIndex = 6;
             // 
             // menuStrip1
@@ -140,11 +141,22 @@
             this.closeToolStripMenuItem.Text = "Close";
             this.closeToolStripMenuItem.Click += new System.EventHandler(this.closeToolStripMenuItem_Click);
             // 
+            // editButton
+            // 
+            this.editButton.Location = new System.Drawing.Point(707, 25);
+            this.editButton.Name = "editButton";
+            this.editButton.Size = new System.Drawing.Size(75, 23);
+            this.editButton.TabIndex = 8;
+            this.editButton.Text = "Edit";
+            this.editButton.UseVisualStyleBackColor = true;
+            this.editButton.Click += new System.EventHandler(this.editButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(804, 528);
+            this.Controls.Add(this.editButton);
             this.Controls.Add(this.contentsBox);
             this.Controls.Add(this.contentsLabel);
             this.Controls.Add(this.valueBox);
@@ -177,6 +189,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.Button editButton;
     }
 }
 
