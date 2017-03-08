@@ -30,8 +30,10 @@ namespace SpreadsheetPractice
             spreadsheetPanel1.SelectionChanged += displaySelection;
 
             //initial cell setup
-            spreadsheetPanel1.SetSelection(2, 3);
-            updateBoxes(2, 3);
+            int startRow = 0;
+            int startCol = 0;
+            spreadsheetPanel1.SetSelection(startCol, startRow);
+            updateBoxes(startCol, startRow);
         }
 
         private void updateBoxes(int col, int row)
@@ -282,6 +284,8 @@ namespace SpreadsheetPractice
         /// <param name="e"></param>
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
         {
+            StreamReader reader;
+
             int col;
             int row;
 
@@ -293,7 +297,8 @@ namespace SpreadsheetPractice
                     string filePath = result.FileName;
                     try
                     {
-                        sheet = new Spreadsheet(new StreamReader(filePath), new Regex(".*"));
+                        sheet = new Spreadsheet(reader = new StreamReader(filePath), new Regex(".*"));
+                        reader.Close();
                     }
                     catch (IOException)
                     {
@@ -344,12 +349,15 @@ namespace SpreadsheetPractice
         /// <param name="e"></param>
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            StreamWriter writer;
+
             var saveDialog = new System.Windows.Forms.SaveFileDialog();
             saveDialog.Filter = "XML File (*.xml)|*.xml|All files (*.*)|*.*";
             if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = saveDialog.FileName;
-                sheet.Save(new StreamWriter(filePath));
+                sheet.Save(writer = new StreamWriter(filePath));
+                writer.Close();
             }
 
         }
