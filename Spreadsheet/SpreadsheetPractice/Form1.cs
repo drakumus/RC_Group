@@ -279,7 +279,7 @@ namespace SpreadsheetPractice
                  * initialized as FormulaError...otherwise works as intended
                 foreach (string cell in cellsToUpdate)
                 {
-                    
+                     
                     if((Type)sheet.GetCellValue(cell) == typeof(FormulaError))
                     {
                         throw new InvalidExpressionException();
