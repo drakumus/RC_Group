@@ -275,23 +275,34 @@ namespace SpreadsheetPractice
             try
             {
                 cellsToUpdate = sheet.SetContentsOfCell(currentCell, contentsBox.Text);
+                /* this logic won't work to prevent updates because for some reason certain cells are being
+                 * initialized as FormulaError...otherwise works as intended
+                foreach (string cell in cellsToUpdate)
+                {
+                    
+                    if((Type)sheet.GetCellValue(cell) == typeof(FormulaError))
+                    {
+                        throw new InvalidExpressionException();
+                    }
+                }
+                */
+                foreach (string cell in cellsToUpdate)
+                {
+                    col = translateRowCol(cell)[0];
+                    row = translateRowCol(cell)[1];
+                    value = sheet.GetCellValue(cell).ToString();
+                    //something wrong is happening here. When updating dependents it'll show dependent value instead of
+                    //its own value.
+                    valueBox.Text = value;
+                    spreadsheetPanel1.SetValue(col, row, value);
 
+                }
             }
             catch
             {
                 MessageBox.Show("Invalid Cell Input");
             }
-            foreach (string cell in cellsToUpdate)
-            {
-                col = translateRowCol(cell)[0];
-                row = translateRowCol(cell)[1];
-                value = sheet.GetCellValue(cell).ToString();
-                //something wrong is happening here. When updating dependents it'll show dependent value instead of
-                //its own value.
-                valueBox.Text = value;
-                spreadsheetPanel1.SetValue(col, row, value);
-                
-            }
+
             //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
             //could be caused by how c# pointers work.
             valueBox.Text = sheet.GetCellValue(currentCell).ToString();
