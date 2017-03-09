@@ -16,13 +16,13 @@ using System.Xml;
 
 namespace SpreadsheetPractice
 {
-    public partial class Form1 : Form
+    public partial class SpreadsheetController : Form
     {
         private Spreadsheet sheet;
 
         private string currentCell;
 
-        public Form1()
+        public SpreadsheetController()
         {
             InitializeComponent();
             //TODO: Fix regex to accept what was listed in assignment
@@ -305,19 +305,16 @@ namespace SpreadsheetPractice
                 //prompts for OpenFileDialog and saves the result if selection is OK to filePath.
                 //filePath is then used to initialize a new spreadsheet
                 var result = new System.Windows.Forms.OpenFileDialog();
-                spreadsheetPanel1.Clear(); //clears spreadsheet for full refresh.
+                
                 if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
+                    spreadsheetPanel1.Clear(); //clears spreadsheet for full refresh. TODO: make sure this only clears if load successful. Add Error Handling for faulty spreadsheet load.
                     string filePath = result.FileName;
-                    try
+                    using(reader = new StreamReader(filePath))
                     {
-                        sheet = new Spreadsheet(reader = new StreamReader(filePath), new Regex(".*"));
-                        reader.Close();
+                        sheet = new Spreadsheet(reader, new Regex(".*"));
                     }
-                    catch (IOException)
-                    {
 
-                    }
                     //use below commented out code for discrepencies in file path testing
                     //var here = sheet.GetNamesOfAllNonemptyCells().ToArray<string>();
                     foreach(string cell in sheet.GetNamesOfAllNonemptyCells())
@@ -333,8 +330,10 @@ namespace SpreadsheetPractice
                     updateBoxes(col, row);
 
                     //saves so the Changed bool is flipped to false.
-                    sheet.Save(writer = new StreamWriter(filePath));
-                    writer.Close(); //note that all writers/readers must be closed to avoid "File Already in Use" errors
+                    using (writer = new StreamWriter(filePath))
+                    {
+                        sheet.Save(writer);
+                    }
                 }
 
             }
