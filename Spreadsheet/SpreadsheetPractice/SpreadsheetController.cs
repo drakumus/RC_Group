@@ -373,8 +373,10 @@ namespace SpreadsheetPractice
             if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = saveDialog.FileName;
-                sheet.Save(writer = new StreamWriter(filePath));
-                writer.Close();
+                using(writer = new StreamWriter(filePath))
+                {
+                    sheet.Save(writer);
+                }
             }
 
         }
