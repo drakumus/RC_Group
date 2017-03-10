@@ -12,7 +12,7 @@ using System.Data;
 
 namespace SpreadsheetController
 {
-    class Controller
+    public class Controller
     {
         private ISpreadsheetView window;
         private Spreadsheet sheet;

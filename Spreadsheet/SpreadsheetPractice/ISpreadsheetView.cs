@@ -10,7 +10,7 @@ namespace SpreadsheetController
     /// <summary>
     /// Controllable interface of SpreadsheetWindow
     /// </summary>
-    interface ISpreadsheetView
+    public interface ISpreadsheetView
     {
         event Action CloseEvent;
 
