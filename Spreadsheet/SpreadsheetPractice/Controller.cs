@@ -48,7 +48,6 @@ namespace SpreadsheetController
             int startRow = 0;
             int startCol = 0;
             updateBoxes(startCol, startRow);
-
         }
 
         /// <summary>
