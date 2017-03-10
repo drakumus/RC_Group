@@ -83,6 +83,15 @@ namespace SS
         ///  The reason why this FormulaError was created.
         /// </summary>
         public string Reason { get; private set; }
+
+        /// <summary>
+        /// Makes formula error display Formula Error
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return "Formula Error";
+        }
     }
 
 

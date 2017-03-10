@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SpreadsheetPractice
+namespace SpreadsheetController
 {
     static class Program
     {
@@ -16,7 +16,10 @@ namespace SpreadsheetPractice
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new SpreadsheetController());
+
+            var context = SpreadsheetControllerApplicationContext.GetContext();
+            context.RunNew();
+            Application.Run(context);
         }
     }
 }

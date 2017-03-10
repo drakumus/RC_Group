@@ -14,7 +14,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace SpreadsheetPractice
+namespace SpreadsheetController
 {
     public partial class SpreadsheetController : Form
     {
@@ -22,11 +22,12 @@ namespace SpreadsheetPractice
 
         private string currentCell;
 
+        string regPattern = @"^[a-zA-Z][1-9]\d?$";
+
         public SpreadsheetController()
         {
             InitializeComponent();
-            //TODO: Fix regex to accept what was listed in assignment
-            sheet = new Spreadsheet(new Regex(".*"));
+            this.sheet = new Spreadsheet(new Regex(regPattern));
             spreadsheetPanel1.SelectionChanged += displaySelection;
 
             //initial cell setup
@@ -34,6 +35,25 @@ namespace SpreadsheetPractice
             int startCol = 0;
             spreadsheetPanel1.SetSelection(startCol, startRow);
             updateBoxes(startCol, startRow);
+        }
+
+        public SpreadsheetController(string filePath) : this()
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                this.sheet = new Spreadsheet(reader, new Regex(regPattern));
+            }
+
+            // update the values of cells in the view
+            int col;
+            int row;
+            foreach (string cell in this.sheet.GetNamesOfAllNonemptyCells())
+            {
+                var rowCol = translateRowCol(cell);
+                col = rowCol[0];
+                row = rowCol[1];
+                this.spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cell).ToString());
+            }
         }
 
         /// <summary>
@@ -292,14 +312,8 @@ namespace SpreadsheetPractice
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void toolStripMenuItem1_Click(object sender, EventArgs e)
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            StreamReader reader;
-            StreamWriter writer; //used for save function so user isn't prompted to save after opening an unchanged spreadsheet.
-
-            int col;
-            int row;
-
             if (sheet.Changed == false)
             {
                 //prompts for OpenFileDialog and saves the result if selection is OK to filePath.
@@ -308,31 +322,18 @@ namespace SpreadsheetPractice
                 
                 if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    spreadsheetPanel1.Clear(); //clears spreadsheet for full refresh. TODO: make sure this only clears if load successful. Add Error Handling for faulty spreadsheet load.
                     string filePath = result.FileName;
-                    using(reader = new StreamReader(filePath))
+                    try
                     {
-                        sheet = new Spreadsheet(reader, new Regex(".*"));
+                        SpreadsheetControllerApplicationContext.GetContext().RunNew(new SpreadsheetController(filePath));
                     }
-
-                    //use below commented out code for discrepencies in file path testing
-                    //var here = sheet.GetNamesOfAllNonemptyCells().ToArray<string>();
-                    foreach(string cell in sheet.GetNamesOfAllNonemptyCells())
+                    catch (SpreadsheetReadException)
                     {
-                        var rowCol= translateRowCol(cell);
-                        col = rowCol[0];
-                        row = rowCol[1];
-                        spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cell).ToString());
+                        MessageBox.Show("File data cannot be opened as a spreadhsheet");
                     }
-                    //updates the Cell and Value box currently selected
-                    spreadsheetPanel1.GetSelection(out col, out row);
-
-                    updateBoxes(col, row);
-
-                    //saves so the Changed bool is flipped to false.
-                    using (writer = new StreamWriter(filePath))
+                    catch (SpreadsheetVersionException)
                     {
-                        sheet.Save(writer);
+                        MessageBox.Show("File data contains data that conflicts with itself");
                     }
                 }
 
@@ -348,15 +349,7 @@ namespace SpreadsheetPractice
         /// <param name="e"></param>
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (sheet.Changed == false)
-            {
-                sheet = new Spreadsheet(new Regex(".*"));
-                spreadsheetPanel1.Clear();
-                valueBox.Text = "";
-                contentsBox.Text = "";
-            }
-            else
-                MessageBox.Show("Please save before attempting to create a new sheet");
+            SpreadsheetControllerApplicationContext.GetContext().RunNew();
         }
 
         /// <summary>
@@ -390,6 +383,7 @@ namespace SpreadsheetPractice
             ISet<string> cellsToUpdate = new HashSet<string>();
 
             bool isValidInput = true;
+            object oldContent = sheet.GetCellContents(currentCell);
 
             try
             {
@@ -404,8 +398,7 @@ namespace SpreadsheetPractice
 
                 foreach (string cell in cellsToUpdate)
                 {
-                     
-                    if((Type)sheet.GetCellValue(cell) == typeof(FormulaError))
+                    if(Object.Equals(sheet.GetCellValue(cell), new FormulaError()))
                     {
                         throw new InvalidExpressionException();
                     }
@@ -429,8 +422,19 @@ namespace SpreadsheetPractice
                 //could be caused by how c# pointers work.
                 valueBox.Text = sheet.GetCellValue(currentCell).ToString();
             }
-            catch
+            catch (FormulaFormatException)
             {
+                sheet.SetContentsOfCell(currentCell, oldContent.ToString());
+                MessageBox.Show("Invalid Cell Input");
+            }
+            catch (UndefinedVariableException)
+            {
+                sheet.SetContentsOfCell(currentCell, oldContent.ToString());
+                MessageBox.Show("Cell is not on spreadsheet");
+            }
+            catch (InvalidExpressionException)
+            {
+                sheet.SetContentsOfCell(currentCell, oldContent.ToString());
                 MessageBox.Show("Invalid Cell Input");
             }
 

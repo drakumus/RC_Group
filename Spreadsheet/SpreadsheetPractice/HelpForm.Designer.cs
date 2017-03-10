@@ -1,4 +1,4 @@
-﻿namespace SpreadsheetPractice
+﻿namespace SpreadsheetController
 {
     partial class HelpForm
     {

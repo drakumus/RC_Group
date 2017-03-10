@@ -183,6 +183,10 @@ namespace SS
                             throw new SpreadsheetVersionException("");
                         }
                     }
+                    else if(name != "" || name != "xml")
+                    {
+                        throw new SpreadsheetReadException("Incorrect name");
+                    }
                 }
             }
             this.IsValid = newIsValid;

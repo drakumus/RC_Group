@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SpreadsheetPractice.Properties
+namespace SpreadsheetController.Properties
 {
 
 
