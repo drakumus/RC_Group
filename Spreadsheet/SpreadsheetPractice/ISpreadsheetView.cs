@@ -9,6 +9,7 @@ namespace SpreadsheetController
 {
     /// <summary>
     /// Controllable interface of SpreadsheetWindow
+    /// used for interactions between controller and view.
     /// </summary>
     interface ISpreadsheetView
     {
