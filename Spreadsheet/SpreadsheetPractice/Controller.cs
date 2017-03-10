@@ -36,7 +36,6 @@ namespace SpreadsheetController
             int startRow = 0;
             int startCol = 0;
             updateBoxes(startCol, startRow);
-
         }
         public Controller(ISpreadsheetView window, string filePath) : this(window)
         {

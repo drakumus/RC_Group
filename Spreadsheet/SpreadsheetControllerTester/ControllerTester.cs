@@ -5,7 +5,7 @@ using SpreadsheetController;
 namespace SpreadsheetControllerTester
 {
     [TestClass]
-    public class UnitTest1
+    public class ControllerTester
     {
         [TestMethod]
         public void TestMethod1()
