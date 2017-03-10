@@ -382,29 +382,12 @@ namespace SpreadsheetController
             string value = "";
 
             ISet<string> cellsToUpdate = new HashSet<string>();
-
-            bool isValidInput = true;
+            
             object oldContent = sheet.GetCellContents(currentCell);
 
             try
             {
                 cellsToUpdate = sheet.SetContentsOfCell(currentCell, contentsBox.Text);
-                /* this logic won't work to prevent updates because for some reason certain cells are being
-                 * initialized as FormulaError...otherwise would work as intended
-                 * goal is to stop any updates which means reverting cell value when formula error is found.
-                 * Some changes may need to be made to Spreedsheet otherwise old values must be stored here
-                 * and updated on fail. Question now is what event to check for for formula fail. Currently
-                 * any form of valid input results in a formula error no matter what so how do you check for
-                 * updated cells having a formula error if all valid input is interpreted from formula error.
-
-                foreach (string cell in cellsToUpdate)
-                {
-                    if(Object.Equals(sheet.GetCellValue(cell), new FormulaError()))
-                    {
-                        throw new InvalidExpressionException();
-                    }
-                }
-                */
 
                 //updates contents of dependent cells including currentCell
                 foreach (string cell in cellsToUpdate)
@@ -412,11 +395,7 @@ namespace SpreadsheetController
                     col = translateRowCol(cell)[0];
                     row = translateRowCol(cell)[1];
                     value = sheet.GetCellValue(cell).ToString();
-                    //something wrong is happening here. When updating dependents it'll show dependent value instead of
-                    //its own value.
-                    valueBox.Text = value;
                     spreadsheetPanel1.SetValue(col, row, value);
-
                 }
                 
                 //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
@@ -438,8 +417,10 @@ namespace SpreadsheetController
                 sheet.SetContentsOfCell(currentCell, oldContent.ToString());
                 MessageBox.Show("Invalid Cell Input");
             }
-
-
+            catch (CircularException)
+            {
+                MessageBox.Show("Cell cannot reference itself");
+            }
         }
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
