@@ -93,18 +93,6 @@ namespace SpreadsheetController
         }
 
         /// <summary>
-        /// Translates to col, row form for identifying cell then updates boxes see updateBoxes(int col, int row)
-        /// </summary>
-        /// <param name="cell"></param>
-        private void updateBoxes(string cell)
-        {
-            var translatedCell = translateRowCol(cell);
-            int col = translatedCell[0];
-            int row = translatedCell[1];
-            updateBoxes(col, row);
-        }
-
-        /// <summary>
         /// Translates row, col integers to respective Cell.
         /// i.e. col 3, row 2; will return D3
         /// because regex 2 hard m8
@@ -401,11 +389,6 @@ namespace SpreadsheetController
                 //refreshes value being presented in valueBox stored in currentCell
                 window.Value = sheet.GetCellValue(currentCell).ToString();
             }
-            catch (FormulaFormatException)
-            {
-                sheet.SetContentsOfCell(currentCell, oldContent.ToString());
-                window.Message = "Invalid Cell Input";
-            }
             catch (UndefinedVariableException)
             {
                 sheet.SetContentsOfCell(currentCell, oldContent.ToString());
@@ -419,6 +402,11 @@ namespace SpreadsheetController
             catch (CircularException)
             {
                 window.Message = "Cell cannot reference itself";
+            }
+            catch (FormulaFormatException)
+            {
+                sheet.SetContentsOfCell(currentCell, oldContent.ToString());
+                window.Message = "Invalid Cell Input";
             }
         }
     }
