@@ -6,29 +6,29 @@ namespace SpreadsheetController
     /// Keeps track of how many top-level forms are running, shuts down
     /// the application when there are no more.
     /// </summary>
-    class SpreadsheetControllerApplicationContext : ApplicationContext
+    class SpreadsheetApplicationContext : ApplicationContext
     {
         // Number of open forms
         private int windowCount = 0;
 
         // Singleton ApplicationContext
-        private static SpreadsheetControllerApplicationContext context;
+        private static SpreadsheetApplicationContext context;
 
         /// <summary>
         /// Private constructor for singleton pattern
         /// </summary>
-        private SpreadsheetControllerApplicationContext()
+        private SpreadsheetApplicationContext()
         {
         }
 
         /// <summary>
         /// Returns the one SpreadsheetControllerApplicationContext.
         /// </summary>
-        public static SpreadsheetControllerApplicationContext GetContext()
+        public static SpreadsheetApplicationContext GetContext()
         {
             if (context == null)
             {
-                context = new SpreadsheetControllerApplicationContext();
+                context = new SpreadsheetApplicationContext();
             }
             return context;
         }
@@ -39,7 +39,8 @@ namespace SpreadsheetController
         public void RunNew()
         {
             // Create the window
-            SpreadsheetController window = new SpreadsheetController();
+            SpreadsheetWindow window = new SpreadsheetWindow();
+            new Controller(window);
 
             // One more form is running
             windowCount++;
@@ -55,8 +56,11 @@ namespace SpreadsheetController
         /// Runs a form in this application context with the window
         /// </summary>
         /// <param name="window"></param>
-        public void RunNew(SpreadsheetController window)
+        public void RunNew(string filePath)
         {
+            SpreadsheetWindow window = new SpreadsheetWindow();
+            new Controller(window, filePath);
+
             // One more form is running
             windowCount++;
 

@@ -1,6 +1,6 @@
 ﻿namespace SpreadsheetController
 {
-    partial class SpreadsheetController
+    partial class SpreadsheetWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -197,7 +197,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "SpreadsheetController";
-            this.Text = "Form1";
+            this.Text = "Spreadsheet";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

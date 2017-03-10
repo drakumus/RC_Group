@@ -7,8 +7,8 @@
     <ProjectGuid>{37336939-58FD-4D05-8B2E-6B142583F495}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpreadsheetPractice</RootNamespace>
-    <AssemblyName>SpreadsheetPractice</AssemblyName>
+    <RootNamespace>SpreadsheetController</RootNamespace>
+    <AssemblyName>SpreadsheetController</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -46,12 +46,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SpreadsheetControllerApplicationContext.cs" />
-    <Compile Include="SpreadsheetController.cs">
+    <Compile Include="Controller.cs" />
+    <Compile Include="ISpreadsheetView.cs" />
+    <Compile Include="SpreadsheetApplicationContext.cs" />
+    <Compile Include="SpreadsheetWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SpreadsheetController.Designer.cs">
-      <DependentUpon>SpreadsheetController.cs</DependentUpon>
+    <Compile Include="SpreadsheetWindow.Designer.cs">
+      <DependentUpon>SpreadsheetWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="HelpForm.cs">
       <SubType>Form</SubType>
@@ -64,8 +66,8 @@
     <EmbeddedResource Include="HelpForm.resx">
       <DependentUpon>HelpForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SpreadsheetController.resx">
-      <DependentUpon>SpreadsheetController.cs</DependentUpon>
+    <EmbeddedResource Include="SpreadsheetWindow.resx">
+      <DependentUpon>SpreadsheetWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -75,6 +77,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

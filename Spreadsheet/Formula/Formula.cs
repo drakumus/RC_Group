@@ -435,7 +435,7 @@ namespace Formulas
         public override string ToString()
         {
             // NOTE: Added try catch
-            string s = "=";
+            string s = "";
             try
             {
                 foreach (string token in tokens)

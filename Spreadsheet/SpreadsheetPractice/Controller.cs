@@ -1,43 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using SS;
+using System.Text.RegularExpressions;
+using System.IO;
 using SSGui;
 using Formulas;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Xml;
+using System.Data;
 
 namespace SpreadsheetController
 {
-    public partial class SpreadsheetController : Form
+    class Controller
     {
+        private ISpreadsheetView window;
         private Spreadsheet sheet;
 
         private string currentCell;
 
         string regPattern = @"^[a-zA-Z][1-9]\d?$";
 
-        public SpreadsheetController()
+        public Controller(ISpreadsheetView window)
         {
-            InitializeComponent();
             this.sheet = new Spreadsheet(new Regex(regPattern));
-            spreadsheetPanel1.SelectionChanged += displaySelection;
+            this.window = window;
+            window.CloseEvent += HandleClose;
+            window.EditEvent += HandleEdit;
+            window.FileChosenEvent += HandleFileChosen;
+            window.SaveEvent += HandleSave;
+            window.NewEvent += HandleNew;
+            window.UpdateEvent += updateBoxes;
 
             //initial cell setup
             int startRow = 0;
             int startCol = 0;
-            spreadsheetPanel1.SetSelection(startCol, startRow);
             updateBoxes(startCol, startRow);
-        }
 
-        public SpreadsheetController(string filePath) : this()
+        }
+        public Controller(ISpreadsheetView window, string filePath) : this(window)
         {
             using (StreamReader reader = new StreamReader(filePath))
             {
@@ -52,7 +53,7 @@ namespace SpreadsheetController
                 var rowCol = translateRowCol(cell);
                 col = rowCol[0];
                 row = rowCol[1];
-                this.spreadsheetPanel1.SetValue(col, row, sheet.GetCellValue(cell).ToString());
+                window.SetValue(col, row, sheet.GetCellValue(cell).ToString());
             }
         }
 
@@ -67,9 +68,9 @@ namespace SpreadsheetController
         {
             currentCell = translateCell(col, row);
 
-            cellBox.Text = currentCell;
-            valueBox.Text = sheet.GetCellValue(currentCell).ToString();
-            contentsBox.Text = sheet.GetCellContents(currentCell).ToString();
+            window.Cell = currentCell;
+            window.Value = sheet.GetCellValue(currentCell).ToString();
+            window.Contents = sheet.GetCellContents(currentCell).ToString();
         }
 
         /// <summary>
@@ -81,18 +82,6 @@ namespace SpreadsheetController
             var translatedCell = translateRowCol(cell);
             int col = translatedCell[0];
             int row = translatedCell[1];
-            updateBoxes(col, row);
-        }
-        /// <summary>
-        /// Event for when a cell is clicked in the spreadsheetPanel.
-        /// </summary>
-        /// <param name="ss">current SpreadsheetPanel</param>
-        private void displaySelection(SpreadsheetPanel ss)
-        {
-            int row;
-            int col;
-            ss.GetSelection(out col, out row);
-
             updateBoxes(col, row);
         }
 
@@ -202,12 +191,12 @@ namespace SpreadsheetController
         /// int[0] = col
         /// int[1] = row
         /// </returns>
-        private int[] translateRowCol (string cell)
+        private int[] translateRowCol(string cell)
         {
             string colS = cell.Substring(0, 1);
             int col = 0;
             int row;
-            Int32.TryParse(cell.Substring(1, cell.Length-1), out row);
+            Int32.TryParse(cell.Substring(1, cell.Length - 1), out row);
             row--;
             switch (colS)
             {
@@ -294,71 +283,40 @@ namespace SpreadsheetController
             return new int[] { col, row };
         }
 
-        /// <summary>
-        /// on menu select File>Close Closes the window.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void closeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (sheet.Changed == false)
-                Close();
-            else
-                MessageBox.Show("Please save before attempting to close");
-        }
-
-        /// <summary>
-        /// Opens an xml.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HandleClose()
         {
             if (sheet.Changed == false)
             {
-                //prompts for OpenFileDialog and saves the result if selection is OK to filePath.
-                //filePath is then used to initialize a new spreadsheet
-                var result = new System.Windows.Forms.OpenFileDialog();
-                result.Filter = "Spreadsheet Files (*.ss)|*.ss|All files (*.*)|*.*";
-
-                if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                {
-                    string filePath = result.FileName;
-                    try
-                    {
-                        SpreadsheetControllerApplicationContext.GetContext().RunNew(new SpreadsheetController(filePath));
-                    }
-                    catch (SpreadsheetReadException)
-                    {
-                        MessageBox.Show("File data cannot be opened as a spreadsheet");
-                    }
-                    catch (SpreadsheetVersionException)
-                    {
-                        MessageBox.Show("File data contains data that conflicts with itself");
-                    }
-                }
-
+                window.DoClose();
             }
             else
-                MessageBox.Show("Please save before attempting to create a new sheet");
+            {
+                window.Message = "Please save before attempting to close";
+            }
         }
 
-        /// <summary>
-        /// on menu Select File>New clears current spreadsheet for a new one
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HandleNew()
         {
-            SpreadsheetControllerApplicationContext.GetContext().RunNew();
+            window.OpenNew();
         }
 
-        /// <summary>
-        /// Saves the spreadsheet to the specified path.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        private void HandleFileChosen(string filePath)
+        {
+            try
+            {
+                window.OpenNew(filePath);
+            }
+            catch (SpreadsheetReadException)
+            {
+                window.Message = "File data cannot be opened as a spreadsheet";
+            }
+            catch (SpreadsheetVersionException)
+            {
+                window.Message = "File data contains data that conflicts with itself";
+            }
+        }
+
+        private void HandleSave()
         {
             StreamWriter writer;
 
@@ -367,27 +325,26 @@ namespace SpreadsheetController
             if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = saveDialog.FileName;
-                using(writer = new StreamWriter(filePath))
+                using (writer = new StreamWriter(filePath))
                 {
                     sheet.Save(writer);
                 }
             }
-
         }
 
-        private void editButton_Click(object sender, EventArgs e)
+        private void HandleEdit(string contents)
         {
             int col;
             int row;
             string value = "";
 
             ISet<string> cellsToUpdate = new HashSet<string>();
-            
+
             object oldContent = sheet.GetCellContents(currentCell);
 
             try
             {
-                cellsToUpdate = sheet.SetContentsOfCell(currentCell, contentsBox.Text);
+                cellsToUpdate = sheet.SetContentsOfCell(currentCell, contents);
 
                 //updates contents of dependent cells including currentCell
                 foreach (string cell in cellsToUpdate)
@@ -395,38 +352,32 @@ namespace SpreadsheetController
                     col = translateRowCol(cell)[0];
                     row = translateRowCol(cell)[1];
                     value = sheet.GetCellValue(cell).ToString();
-                    spreadsheetPanel1.SetValue(col, row, value);
+                    window.SetValue(col, row, value);
                 }
-                
+
                 //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
                 //could be caused by how c# pointers work.
-                valueBox.Text = sheet.GetCellValue(currentCell).ToString();
+                window.Value = sheet.GetCellValue(currentCell).ToString();
             }
             catch (FormulaFormatException)
             {
                 sheet.SetContentsOfCell(currentCell, oldContent.ToString());
-                MessageBox.Show("Invalid Cell Input");
+                window.Message = "Invalid Cell Input";
             }
             catch (UndefinedVariableException)
             {
                 sheet.SetContentsOfCell(currentCell, oldContent.ToString());
-                MessageBox.Show("Cell is not on spreadsheet");
+                window.Message = "Cell is not on spreadsheet";
             }
             catch (InvalidExpressionException)
             {
                 sheet.SetContentsOfCell(currentCell, oldContent.ToString());
-                MessageBox.Show("Invalid Cell Input");
+                window.Message = "Invalid Cell Input";
             }
             catch (CircularException)
             {
-                MessageBox.Show("Cell cannot reference itself");
+                window.Message = "Cell cannot reference itself";
             }
-        }
-
-        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            HelpForm help = new HelpForm();
-            help.Show();
         }
     }
 }

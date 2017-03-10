@@ -17,7 +17,7 @@ namespace SpreadsheetController
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            var context = SpreadsheetControllerApplicationContext.GetContext();
+            var context = SpreadsheetApplicationContext.GetContext();
             context.RunNew();
             Application.Run(context);
         }
