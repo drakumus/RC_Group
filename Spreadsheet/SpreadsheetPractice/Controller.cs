@@ -14,17 +14,29 @@ namespace SpreadsheetController
 {
     public class Controller
     {
+        //Interface to hand Events and Sets for the underlying view.
         private ISpreadsheetView window;
+
+        //Module Implementation in controller
         private Spreadsheet sheet;
 
+        //stores current cell used commonly between multiple methods
         private string currentCell;
 
+        //accepted regex.
         string regPattern = @"^[a-zA-Z][1-9]\d?$";
 
+        /// <summary>
+        /// Takes a window as input to be manipulated by controller.
+        /// </summary>
+        /// <param name="window">View Input</param>
         public Controller(ISpreadsheetView window)
         {
+            //initialize view and sheet
             this.sheet = new Spreadsheet(new Regex(regPattern));
             this.window = window;
+
+            //add event handlers for each event used by window
             window.CloseEvent += HandleClose;
             window.EditEvent += HandleEdit;
             window.FileChosenEvent += HandleFileChosen;
@@ -37,8 +49,16 @@ namespace SpreadsheetController
             int startCol = 0;
             updateBoxes(startCol, startRow);
         }
+
+        /// <summary>
+        /// Takes a View input along with a file path to be used when opening
+        /// a preexisting spreadsheet.
+        /// </summary>
+        /// <param name="window">View Input</param>
+        /// <param name="filePath">file path for the already existing spreadsheet</param>
         public Controller(ISpreadsheetView window, string filePath) : this(window)
         {
+            //initializes the new spreadsheet with the file found at filePath
             using (StreamReader reader = new StreamReader(filePath))
             {
                 this.sheet = new Spreadsheet(reader, new Regex(regPattern));
@@ -61,8 +81,8 @@ namespace SpreadsheetController
         /// which are read only for the user. This is primarily used to update current selection
         /// on spreadsheet load, cell update, or New spreadsheet.
         /// </summary>
-        /// <param name="col"></param>
-        /// <param name="row"></param>
+        /// <param name="col">column</param>
+        /// <param name="row">row</param>
         private void updateBoxes(int col, int row)
         {
             currentCell = translateCell(col, row);
@@ -87,6 +107,7 @@ namespace SpreadsheetController
         /// <summary>
         /// Translates row, col integers to respective Cell.
         /// i.e. col 3, row 2; will return D3
+        /// because regex 2 hard m8
         /// </summary>
         /// <param name="row">row integer</param>
         /// <param name="col">collumn integer</param>
@@ -182,7 +203,7 @@ namespace SpreadsheetController
         /// <summary>
         /// Translates a given Cell i.e. "C1" to its respective col, row 
         /// i.e. for "C1" col 2 will be returned in index 0 and row 0 will be returned in index 1
-        /// see editButton_Click for implementation
+        /// because regex 2 hard m8
         /// </summary>
         /// <param name="cell">cell name i.e. C1</param>
         /// <returns>
@@ -282,6 +303,11 @@ namespace SpreadsheetController
             return new int[] { col, row };
         }
 
+        /// <summary>
+        /// Handler for Close
+        /// calls DoClose on the window (just closes the window)
+        /// and handles Changed = true;
+        /// </summary>
         private void HandleClose()
         {
             if (sheet.Changed == false)
@@ -294,11 +320,20 @@ namespace SpreadsheetController
             }
         }
 
+        /// <summary>
+        /// Handles opening a new window
+        /// see OpenNew for more details
+        /// </summary>
         private void HandleNew()
         {
             window.OpenNew();
         }
 
+        /// <summary>
+        /// Handler for file selection again see OpenNew for more details on implementation
+        /// This also handles exceptions that occur for the use of one of the SpreadSheet Constructors
+        /// </summary>
+        /// <param name="filePath">desired file path</param>
         private void HandleFileChosen(string filePath)
         {
             try
@@ -315,6 +350,10 @@ namespace SpreadsheetController
             }
         }
 
+        /// <summary>
+        /// Handler for save. Handles getting file path and passes a writer with said file path
+        /// to the Save in SpreadSheet if dialog selection is OK.
+        /// </summary>
         private void HandleSave()
         {
             StreamWriter writer;
@@ -331,6 +370,11 @@ namespace SpreadsheetController
             }
         }
 
+        /// <summary>
+        /// Handler for the Edit Button
+        /// and handles errors encountered when View calls SetValue
+        /// </summary>
+        /// <param name="contents"></param>
         private void HandleEdit(string contents)
         {
             int col;
@@ -354,8 +398,7 @@ namespace SpreadsheetController
                     window.SetValue(col, row, value);
                 }
 
-                //work around refreshing current cell value box at end. stored value is corrent but displayed value isnt.
-                //could be caused by how c# pointers work.
+                //refreshes value being presented in valueBox stored in currentCell
                 window.Value = sheet.GetCellValue(currentCell).ToString();
             }
             catch (FormulaFormatException)

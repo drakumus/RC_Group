@@ -16,9 +16,11 @@ using System.Xml;
 
 namespace SpreadsheetController
 {
+    //View for SpreadsheetController
     public partial class SpreadsheetWindow : Form, ISpreadsheetView
     {
 
+        //adds displaySelection as an event for Selection Changed and initializes spreadsheet selection
         public SpreadsheetWindow()
         {
             InitializeComponent();
@@ -63,7 +65,7 @@ namespace SpreadsheetController
         }
 
         /// <summary>
-        /// Shows the message in the UI.
+        /// Setter for MessageBox in the UI.
         /// </summary>
         public string Message
         {
@@ -95,6 +97,8 @@ namespace SpreadsheetController
             int col;
             ss.GetSelection(out col, out row);
 
+            //Calls update event here so the controller can use data from sheet to update
+            //current cell's cell and value boxes
             if (UpdateEvent != null)
             {
                 UpdateEvent(col, row);
@@ -158,6 +162,13 @@ namespace SpreadsheetController
             }
         }
 
+        /// <summary>
+        /// event called by the UI for editButton clicked
+        /// utilizes EditEvent for functionality and passes the required info from
+        /// contentsBox.Text to update the controller's sheet.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void editButton_Click(object sender, EventArgs e)
         {
             if (EditEvent != null)
@@ -166,27 +177,53 @@ namespace SpreadsheetController
             }
         }
 
+        /// <summary>
+        /// Generates a new form using HelpForm
+        /// used to present usage of SpreadSheet UI
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             HelpForm help = new HelpForm();
             help.Show();
         }
 
+        /// <summary>
+        /// Calls Close() on context window
+        /// </summary>
         public void DoClose()
         {
             Close();
         }
 
+        /// <summary>
+        /// Creates a new window in the current context.
+        /// Number of windows and the opening and closing of different levels is handled by
+        /// SpreadsheetApplicationContext
+        /// </summary>
         public void OpenNew()
         {
             SpreadsheetApplicationContext.GetContext().RunNew();
         }
 
+        /// <summary>
+        /// Opens a new window with a filePath specified so when a controller is initialized
+        /// in SpreadsheetApplicationContext it can be passed a file for its Constructor to handle
+        /// </summary>
+        /// <param name="filePath"></param>
         public void OpenNew(string filePath)
         {
             SpreadsheetApplicationContext.GetContext().RunNew(filePath);
         }
 
+        /// <summary>
+        /// SetValue used by SpreadsheetPanel this exists here so we can
+        /// update cell contents from the controller.
+        /// </summary>
+        /// <param name="col">column</param>
+        /// <param name="row">row</param>
+        /// <param name="cellValue">Cell Value stored in specified col+row</param>
         public void SetValue(int col, int row, string cellValue)
         {
             spreadsheetPanel1.SetValue(col, row, cellValue);
