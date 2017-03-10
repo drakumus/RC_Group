@@ -319,7 +319,8 @@ namespace SpreadsheetController
                 //prompts for OpenFileDialog and saves the result if selection is OK to filePath.
                 //filePath is then used to initialize a new spreadsheet
                 var result = new System.Windows.Forms.OpenFileDialog();
-                
+                result.Filter = "Spreadsheet Files (*.ss)|*.ss|All files (*.*)|*.*";
+
                 if (result.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     string filePath = result.FileName;
@@ -329,7 +330,7 @@ namespace SpreadsheetController
                     }
                     catch (SpreadsheetReadException)
                     {
-                        MessageBox.Show("File data cannot be opened as a spreadhsheet");
+                        MessageBox.Show("File data cannot be opened as a spreadsheet");
                     }
                     catch (SpreadsheetVersionException)
                     {
@@ -362,7 +363,7 @@ namespace SpreadsheetController
             StreamWriter writer;
 
             var saveDialog = new System.Windows.Forms.SaveFileDialog();
-            saveDialog.Filter = "XML File (*.xml)|*.xml|All files (*.*)|*.*";
+            saveDialog.Filter = "Spreadsheet Files (*.ss)|*.ss|All files (*.*)|*.*";
             if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string filePath = saveDialog.FileName;
