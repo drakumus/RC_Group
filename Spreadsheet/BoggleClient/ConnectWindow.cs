@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class ConnectWindow : Form, IServer
+    public partial class ConnectWindow : Form, IConnect
     {
         public ConnectWindow()
         {

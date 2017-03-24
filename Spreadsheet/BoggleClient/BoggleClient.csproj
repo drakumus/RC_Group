@@ -71,7 +71,7 @@
     </Compile>
     <Compile Include="IBoggleView.cs" />
     <Compile Include="IGameOver.cs" />
-    <Compile Include="IServer.cs" />
+    <Compile Include="IConnect.cs" />
     <Compile Include="ITime.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

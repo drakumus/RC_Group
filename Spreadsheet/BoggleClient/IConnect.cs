@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    interface IServer
+    interface IConnect
     {
         event Action CloseEvent;
         event Action<string, string> ConfirmServer; //event for when server+name are selected
