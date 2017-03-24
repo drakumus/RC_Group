@@ -50,11 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Form1.cs">
+    <Compile Include="Controller.cs" />
+    <Compile Include="BoggleWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <Compile Include="BoggleWindow.Designer.cs">
+      <DependentUpon>BoggleWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="GameOverForm.cs">
       <SubType>Form</SubType>
@@ -76,8 +77,8 @@
     <Compile Include="ServerForm.Designer.cs">
       <DependentUpon>ServerForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
+    <EmbeddedResource Include="BoggleWindow.resx">
+      <DependentUpon>BoggleWindow.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="GameOverForm.resx">
       <DependentUpon>GameOverForm.cs</DependentUpon>
