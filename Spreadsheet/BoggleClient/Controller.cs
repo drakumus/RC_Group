@@ -31,7 +31,7 @@ namespace BoggleClient
         private static string ip;
 
         private bool connecting;
-        private bool joiningGame;
+        private string gameState;
 
         /// <summary>
         /// For canceling the current operation
@@ -45,7 +45,7 @@ namespace BoggleClient
             ip = "";
             gameID = "";
             connecting = false;
-            joiningGame = false;
+            gameState = "not connected";
 
             // Add Events
             window.ConnectEvent += HandleConnect;
@@ -68,6 +68,11 @@ namespace BoggleClient
         /// <param name="server"></param>
         private async void HandleConnect(string name, string server)
         {
+            if(server == "")
+            {
+                window.MessageBoxText = "Please enter a server IP";
+                return;
+            }
             if (connecting)
             {
                 Cancel();
@@ -97,36 +102,38 @@ namespace BoggleClient
                         dynamic data = JsonConvert.DeserializeObject(result);
                         userToken = data.UserToken;
                         window.Connected = true;
-                        window.ConnectButtonText = "Connected";
                     }
                     else
                     {
+                        window.MessageBoxText = "Error registering: " + response.StatusCode;
                         Console.WriteLine("Error registering: " + response.StatusCode);
                         Console.WriteLine(response.ReasonPhrase);
-                        window.ConnectButtonText = "Connect";
                     }
                 }
             }
             catch (TaskCanceledException)
             {
+                connecting = false;
                 window.ConnectButtonText = "Connect";
             }
             finally
             {
+                window.ConnectButtonText = "Connect";
                 connecting = false;
             }
         }
 
         private async void HandleCreateGame(string timeLimit)
         {
-            if (joiningGame)
+            if (gameState == "pending")
             {
-                Cancel();
+                CancelJoinRequest();
                 return;
             }
             try
             {
-                joiningGame = true;
+                gameState = "pending";
+                window.GameState = gameState;
                 window.CreateGameButtonText = "Cancel";
 
                 using (HttpClient client = CreateClient())
@@ -147,22 +154,85 @@ namespace BoggleClient
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
                         gameID = data.GameID;
+                        Refresh();
                     }
                     else
                     {
+                        window.MessageBoxText = "Error Joining: " + response.StatusCode;
                         Console.WriteLine("Error Joining: " + response.StatusCode);
                         Console.WriteLine(response.ReasonPhrase);
+
+                        window.CreateGameButtonText = "Join Game";
+                        gameState = "not connected";
+                        window.GameState = gameState;
                     }
                 }
             }
             catch (TaskCanceledException)
             {
-
+                window.CreateGameButtonText = "Join Game";
+                gameState = "not connected";
+                window.GameState = gameState;
             }
             finally
             {
-                window.CreateGameButtonText = "Join Game";
-                joiningGame = false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void CancelJoinRequest()
+        {
+            Cancel();
+
+            using (HttpClient client = CreateClient())
+            {
+                // Create the parameter
+                dynamic game = new ExpandoObject();
+                game.UserToken = userToken;
+
+                // Compose and send the request
+                StringContent content = new StringContent(JsonConvert.SerializeObject(game), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PutAsync("games", content).Result;
+
+                // Deal with the response
+                if (response.IsSuccessStatusCode)
+                {
+                    window.CreateGameButtonText = "Join Game";
+                    gameState = "not connected";
+                    window.GameState = gameState;
+                }
+                else
+                {
+                    window.MessageBoxText = "Error cancelling: " + response.StatusCode;
+                    Console.WriteLine("Error cancelling: " + response.StatusCode);
+                    Console.WriteLine(response.ReasonPhrase);
+                    Refresh();
+                }
+            }
+        }
+
+        private void Refresh()
+        {
+            using (HttpClient client = CreateClient())
+            {
+                // Compose and send the request
+                string url = string.Format("games?GameID={0}", gameID);
+                HttpResponseMessage response = client.GetAsync(url).Result;
+
+                // Deal with the response
+                if (response.IsSuccessStatusCode)
+                {
+                    String result = response.Content.ReadAsStringAsync().Result;
+                    dynamic data = JsonConvert.DeserializeObject(result);
+                    gameState = data.GameState;
+                    window.GameState = gameState;
+                    if(gameState != "pending")
+                    {
+
+                    }
+                }
             }
         }
 
