@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class BoggleGame
+    public class BoggleGame
     {
         /// <summary>
         /// The ip the user is connected to, or "" if not connected
@@ -42,9 +42,19 @@ namespace BoggleClient
         public Player player1;
         public Player player2;
 
+        /// <summary>
+        /// The characters contained in the boardstate
+        /// </summary>
         public char[] boardState;
 
+        /// <summary>
+        /// The words the local player has played
+        /// </summary>
         public List<Word> wordsPlayed;
+
+        /// <summary>
+        /// Constructs a new boggle game
+        /// </summary>
         public BoggleGame()
         {
             userToken = "0";
@@ -58,6 +68,10 @@ namespace BoggleClient
             wordsPlayed = new List<Word>();
         }
 
+        /// <summary>
+        /// Updates a boggle game with Json data
+        /// </summary>
+        /// <param name="data"></param>
         public void UpdateGame(dynamic data)
         {
             try

@@ -28,6 +28,10 @@ namespace BoggleClient
         /// </summary>
         private CancellationTokenSource tokenSource;
 
+        /// <summary>
+        /// Creates a controller instance with the specified window it should control
+        /// </summary>
+        /// <param name="window"></param>
         public Controller(IBoggleView window)
         {
             this.window = window;
@@ -55,7 +59,7 @@ namespace BoggleClient
         }
 
         /// <summary>
-        /// 
+        /// Event for connecting to a server
         /// </summary>
         /// <param name="name"></param>
         /// <param name="server"></param>
@@ -119,6 +123,10 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Attempts to connect to/join a game
+        /// </summary>
+        /// <param name="timeLimit"></param>
         private async void HandleCreateGame(string timeLimit)
         {
             if (game.gameState == "pending")
@@ -177,7 +185,7 @@ namespace BoggleClient
         }
 
         /// <summary>
-        /// 
+        /// Cancels a join game request
         /// </summary>
         private void CancelJoinRequest()
         {
@@ -210,6 +218,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Gets the game status and updates the UI
+        /// </summary>
         private void Refresh()
         {
             using (HttpClient client = CreateClient())
@@ -244,8 +255,10 @@ namespace BoggleClient
                             GameOverWindow gameOver = new GameOverWindow();
                             gameOver.Player1Name = game.player1.name;
                             gameOver.Player1Score = game.player1.score;
+                            gameOver.Player1Words = game.player1.wordsPlayed;
                             gameOver.Player2Name = game.player2.name;
                             gameOver.Player2Score = game.player2.score;
+                            gameOver.Player2Words = game.player2.wordsPlayed;
                             gameOver.Show();
                         }
                     }
@@ -264,7 +277,7 @@ namespace BoggleClient
         }
 
         /// <summary>
-        /// 
+        /// Event for CountdownTimer Elapsed, decrements the timeRemaining by 1
         /// </summary>
         /// <param name="source"></param>
         /// <param name="e"></param>
@@ -280,6 +293,10 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Event for submitting a word to the server
+        /// </summary>
+        /// <param name="word"></param>
         private void HandleWordAdded(string word)
         {
             using (HttpClient client = CreateClient())
