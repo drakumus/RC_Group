@@ -97,7 +97,14 @@ namespace BoggleClient
 
         private void connectButton_Click(object sender, EventArgs e)
         {
-            ConnectEvent(nameBox.Text, serverBox.Text);
+            if(nameBox.Text != null && serverBox.Text != null)
+            {
+                ConnectEvent(nameBox.Text, serverBox.Text);
+            }
+            else
+            {
+                // TODO: Needs values alert
+            }
         }
 
         private void createGameButton_Click(object sender, EventArgs e)
