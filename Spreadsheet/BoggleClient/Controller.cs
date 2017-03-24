@@ -149,7 +149,7 @@ namespace BoggleClient
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
-                        game.gameID = data.GameID;
+                        game.ID = data.GameID;
                         Refresh();
                         refreshTimer.Enabled = true;
                     }
@@ -215,13 +215,13 @@ namespace BoggleClient
             using (HttpClient client = CreateClient())
             {
                 // Compose and send the request
-                string url = string.Format("games/{0}", game.gameID);
+                string url = string.Format("games/{0}", game.ID);
                 HttpResponseMessage response = client.GetAsync(url).Result;
 
                 // Deal with the response
                 if (response.IsSuccessStatusCode)
                 {
-                    String result = response.Content.ReadAsStringAsync().Result;
+                    string result = response.Content.ReadAsStringAsync().Result;
                     dynamic data = JsonConvert.DeserializeObject(result);
                     game.gameState = data.GameState;
                     window.GameState = game.gameState;
@@ -273,7 +273,33 @@ namespace BoggleClient
 
         private void HandleWordAdded(string word)
         {
+            using (HttpClient client = CreateClient())
+            {
+                // Create the parameter
+                dynamic playWord = new ExpandoObject();
+                playWord.UserToken = game.userToken;
+                playWord.Word = word;
 
+                // Compose and send the request
+                string url = string.Format("games/{0}", game.ID);
+                StringContent content = new StringContent(JsonConvert.SerializeObject(playWord), Encoding.UTF8, "application/json");
+                HttpResponseMessage response = client.PutAsync(url, content).Result;
+
+                // Deal with the response
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    dynamic data = JsonConvert.DeserializeObject(result);
+                    Word playedWord = new Word(word, data.Score);
+                    game.wordsPlayed.Add(playedWord);
+                }
+                else
+                {
+                    window.MessageBoxText = "Error playing word: " + response.StatusCode;
+                    Console.WriteLine("Error playing word: " + response.StatusCode);
+                    Console.WriteLine(response.ReasonPhrase);
+                }
+            }
         }
 
         /// <summary>
