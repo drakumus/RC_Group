@@ -61,10 +61,10 @@
             // 
             this.player2ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2ScoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2ScoreLabel.Location = new System.Drawing.Point(252, 48);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(260, 48);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
-            this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.player2ScoreLabel.Size = new System.Drawing.Size(20, 20);
+            this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.player2ScoreLabel.Size = new System.Drawing.Size(68, 20);
             this.player2ScoreLabel.TabIndex = 16;
             this.player2ScoreLabel.Text = "0";
             this.player2ScoreLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
