@@ -256,9 +256,9 @@ namespace BoggleClient
                         if (game.gameState == "completed")
                         {
                             refreshTimer.Enabled = false;
+                            window.PlayingGame = false;
 
-                            GameOverWindow gameOver = new GameOverWindow();
-                            ShowGameOver(gameOver);
+                            ShowGameOver();
                         }
                     }
                 }
@@ -328,13 +328,17 @@ namespace BoggleClient
             }
         }
 
-        public void ShowGameOver(GameOverWindow gameOver)
+        /// <summary>
+        /// Shows the game over window
+        /// </summary>
+        public void ShowGameOver()
         {
             if (window.InvokeRequired)
             {
-                window.Invoke((MethodInvoker)delegate { ShowGameOver(gameOver); });
+                window.Invoke((MethodInvoker)delegate { ShowGameOver(); });
                 return;
             }
+            GameOverWindow gameOver = new GameOverWindow();
             gameOver.Player1Name = game.player1.name;
             gameOver.Player1Score = game.player1.score;
             gameOver.Player1Words = game.player1.wordsPlayed;
