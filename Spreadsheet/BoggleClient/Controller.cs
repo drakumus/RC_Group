@@ -8,13 +8,15 @@ namespace BoggleClient
 {
     class Controller
     {
-        private BoggleWindow window;
+        private IBoggleView window;
 
-        public Controller(BoggleWindow window)
+        public Controller(IBoggleView window)
         {
             this.window = window;
 
             // Add Events
+            window.CloseEvent += HandleClose;
+            window.ConnectEvent += HandleConnect;
 
 
         }

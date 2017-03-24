@@ -35,5 +35,6 @@ namespace BoggleClient
 
         public event Action CloseEvent;
         public event Action<string> WordAdded;
+        public event Action ConnectEvent;
     }
 }
