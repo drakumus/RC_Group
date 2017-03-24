@@ -10,11 +10,23 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class TimeForm : Form
+    public partial class TimeForm : Form, ITime
     {
         public TimeForm()
         {
             InitializeComponent();
         }
+
+        public string status
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public event Action CancelTime;
+        public event Action CloseEvent;
+        public event Action<int> ConfirmTime;
     }
 }
