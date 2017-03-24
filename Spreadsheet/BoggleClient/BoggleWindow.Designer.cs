@@ -29,13 +29,9 @@
         private void InitializeComponent()
         {
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ConnectButton = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.nameLabel = new System.Windows.Forms.Label();
-            this.serverLabel = new System.Windows.Forms.Label();
             this.player1Label = new System.Windows.Forms.Label();
             this.score1Label = new System.Windows.Forms.Label();
             this.WordsListBox = new System.Windows.Forms.ListBox();
@@ -62,6 +58,12 @@
             this.TimeLabelText = new System.Windows.Forms.Label();
             this.TimeLabel = new System.Windows.Forms.Label();
             this.WordButton = new System.Windows.Forms.Button();
+            this.nameBox = new System.Windows.Forms.TextBox();
+            this.serverBox = new System.Windows.Forms.TextBox();
+            this.timeBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.connectButton = new System.Windows.Forms.Button();
+            this.createGameButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -69,28 +71,12 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(282, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(389, 28);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // fileToolStripMenuItem
-            // 
-            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.ConnectButton});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(44, 24);
-            this.fileToolStripMenuItem.Text = "File";
-            // 
-            // ConnectButton
-            // 
-            this.ConnectButton.Name = "ConnectButton";
-            this.ConnectButton.Size = new System.Drawing.Size(181, 26);
-            this.ConnectButton.Text = "Connect";
-            this.ConnectButton.Click += new System.EventHandler(this.connectToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -110,29 +96,11 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 68);
+            this.label2.Location = new System.Drawing.Point(12, 73);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(54, 17);
             this.label2.TabIndex = 2;
             this.label2.Text = "Server:";
-            // 
-            // nameLabel
-            // 
-            this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(82, 42);
-            this.nameLabel.Name = "nameLabel";
-            this.nameLabel.Size = new System.Drawing.Size(43, 17);
-            this.nameLabel.TabIndex = 3;
-            this.nameLabel.Text = "name";
-            // 
-            // serverLabel
-            // 
-            this.serverLabel.AutoSize = true;
-            this.serverLabel.Location = new System.Drawing.Point(82, 68);
-            this.serverLabel.Name = "serverLabel";
-            this.serverLabel.Size = new System.Drawing.Size(48, 17);
-            this.serverLabel.TabIndex = 4;
-            this.serverLabel.Text = "server";
             // 
             // player1Label
             // 
@@ -158,12 +126,12 @@
             this.WordsListBox.ItemHeight = 16;
             this.WordsListBox.Location = new System.Drawing.Point(12, 196);
             this.WordsListBox.Name = "WordsListBox";
-            this.WordsListBox.Size = new System.Drawing.Size(258, 84);
+            this.WordsListBox.Size = new System.Drawing.Size(373, 84);
             this.WordsListBox.TabIndex = 9;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(16, 333);
+            this.button1.Location = new System.Drawing.Point(58, 333);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(40, 40);
             this.button1.TabIndex = 10;
@@ -171,7 +139,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(85, 333);
+            this.button2.Location = new System.Drawing.Point(127, 333);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(40, 40);
             this.button2.TabIndex = 11;
@@ -179,7 +147,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(158, 333);
+            this.button3.Location = new System.Drawing.Point(200, 333);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(40, 40);
             this.button3.TabIndex = 12;
@@ -187,7 +155,7 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(230, 333);
+            this.button4.Location = new System.Drawing.Point(272, 333);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(40, 40);
             this.button4.TabIndex = 13;
@@ -195,7 +163,7 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(230, 390);
+            this.button8.Location = new System.Drawing.Point(272, 390);
             this.button8.Name = "button8";
             this.button8.Size = new System.Drawing.Size(40, 40);
             this.button8.TabIndex = 17;
@@ -203,7 +171,7 @@
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(158, 390);
+            this.button7.Location = new System.Drawing.Point(200, 390);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(40, 40);
             this.button7.TabIndex = 16;
@@ -211,7 +179,7 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(85, 390);
+            this.button6.Location = new System.Drawing.Point(127, 390);
             this.button6.Name = "button6";
             this.button6.Size = new System.Drawing.Size(40, 40);
             this.button6.TabIndex = 15;
@@ -219,7 +187,7 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(16, 390);
+            this.button5.Location = new System.Drawing.Point(58, 390);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(40, 40);
             this.button5.TabIndex = 14;
@@ -227,7 +195,7 @@
             // 
             // button16
             // 
-            this.button16.Location = new System.Drawing.Point(230, 502);
+            this.button16.Location = new System.Drawing.Point(272, 502);
             this.button16.Name = "button16";
             this.button16.Size = new System.Drawing.Size(40, 40);
             this.button16.TabIndex = 25;
@@ -235,7 +203,7 @@
             // 
             // button15
             // 
-            this.button15.Location = new System.Drawing.Point(158, 502);
+            this.button15.Location = new System.Drawing.Point(200, 502);
             this.button15.Name = "button15";
             this.button15.Size = new System.Drawing.Size(40, 40);
             this.button15.TabIndex = 24;
@@ -243,7 +211,7 @@
             // 
             // button14
             // 
-            this.button14.Location = new System.Drawing.Point(85, 502);
+            this.button14.Location = new System.Drawing.Point(127, 502);
             this.button14.Name = "button14";
             this.button14.Size = new System.Drawing.Size(40, 40);
             this.button14.TabIndex = 23;
@@ -251,7 +219,7 @@
             // 
             // button13
             // 
-            this.button13.Location = new System.Drawing.Point(16, 502);
+            this.button13.Location = new System.Drawing.Point(58, 502);
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(40, 40);
             this.button13.TabIndex = 22;
@@ -259,7 +227,7 @@
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(230, 445);
+            this.button12.Location = new System.Drawing.Point(272, 445);
             this.button12.Name = "button12";
             this.button12.Size = new System.Drawing.Size(40, 40);
             this.button12.TabIndex = 21;
@@ -267,7 +235,7 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(158, 445);
+            this.button11.Location = new System.Drawing.Point(200, 445);
             this.button11.Name = "button11";
             this.button11.Size = new System.Drawing.Size(40, 40);
             this.button11.TabIndex = 20;
@@ -275,7 +243,7 @@
             // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(85, 445);
+            this.button10.Location = new System.Drawing.Point(127, 445);
             this.button10.Name = "button10";
             this.button10.Size = new System.Drawing.Size(40, 40);
             this.button10.TabIndex = 19;
@@ -283,7 +251,7 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(16, 445);
+            this.button9.Location = new System.Drawing.Point(58, 445);
             this.button9.Name = "button9";
             this.button9.Size = new System.Drawing.Size(40, 40);
             this.button9.TabIndex = 18;
@@ -292,7 +260,7 @@
             // WordLabel
             // 
             this.WordLabel.AutoSize = true;
-            this.WordLabel.Location = new System.Drawing.Point(13, 299);
+            this.WordLabel.Location = new System.Drawing.Point(55, 299);
             this.WordLabel.Name = "WordLabel";
             this.WordLabel.Size = new System.Drawing.Size(50, 17);
             this.WordLabel.TabIndex = 26;
@@ -300,7 +268,7 @@
             // 
             // wordBox
             // 
-            this.wordBox.Location = new System.Drawing.Point(69, 299);
+            this.wordBox.Location = new System.Drawing.Point(111, 299);
             this.wordBox.Name = "wordBox";
             this.wordBox.Size = new System.Drawing.Size(143, 22);
             this.wordBox.TabIndex = 27;
@@ -308,7 +276,7 @@
             // score2Label
             // 
             this.score2Label.AutoSize = true;
-            this.score2Label.Location = new System.Drawing.Point(214, 176);
+            this.score2Label.Location = new System.Drawing.Point(329, 176);
             this.score2Label.Name = "score2Label";
             this.score2Label.Size = new System.Drawing.Size(16, 17);
             this.score2Label.TabIndex = 8;
@@ -317,7 +285,7 @@
             // player2Label
             // 
             this.player2Label.AutoSize = true;
-            this.player2Label.Location = new System.Drawing.Point(214, 159);
+            this.player2Label.Location = new System.Drawing.Point(329, 159);
             this.player2Label.Name = "player2Label";
             this.player2Label.Size = new System.Drawing.Size(56, 17);
             this.player2Label.TabIndex = 6;
@@ -326,7 +294,7 @@
             // TimeLabelText
             // 
             this.TimeLabelText.AutoSize = true;
-            this.TimeLabelText.Location = new System.Drawing.Point(13, 117);
+            this.TimeLabelText.Location = new System.Drawing.Point(11, 139);
             this.TimeLabelText.Name = "TimeLabelText";
             this.TimeLabelText.Size = new System.Drawing.Size(114, 17);
             this.TimeLabelText.TabIndex = 28;
@@ -335,7 +303,7 @@
             // TimeLabel
             // 
             this.TimeLabel.AutoSize = true;
-            this.TimeLabel.Location = new System.Drawing.Point(217, 117);
+            this.TimeLabel.Location = new System.Drawing.Point(332, 139);
             this.TimeLabel.Name = "TimeLabel";
             this.TimeLabel.Size = new System.Drawing.Size(16, 17);
             this.TimeLabel.TabIndex = 29;
@@ -343,18 +311,75 @@
             // 
             // WordButton
             // 
-            this.WordButton.Location = new System.Drawing.Point(220, 299);
+            this.WordButton.Location = new System.Drawing.Point(262, 299);
             this.WordButton.Name = "WordButton";
             this.WordButton.Size = new System.Drawing.Size(50, 23);
             this.WordButton.TabIndex = 30;
             this.WordButton.Text = "Enter";
             this.WordButton.UseVisualStyleBackColor = true;
+            this.WordButton.Click += new System.EventHandler(this.WordButton_Click);
+            // 
+            // nameBox
+            // 
+            this.nameBox.Location = new System.Drawing.Point(69, 42);
+            this.nameBox.Name = "nameBox";
+            this.nameBox.Size = new System.Drawing.Size(201, 22);
+            this.nameBox.TabIndex = 31;
+            // 
+            // serverBox
+            // 
+            this.serverBox.Location = new System.Drawing.Point(69, 73);
+            this.serverBox.Name = "serverBox";
+            this.serverBox.Size = new System.Drawing.Size(201, 22);
+            this.serverBox.TabIndex = 32;
+            // 
+            // timeBox
+            // 
+            this.timeBox.Location = new System.Drawing.Point(69, 104);
+            this.timeBox.Name = "timeBox";
+            this.timeBox.Size = new System.Drawing.Size(201, 22);
+            this.timeBox.TabIndex = 34;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 104);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(43, 17);
+            this.label3.TabIndex = 33;
+            this.label3.Text = "Time:";
+            // 
+            // connectButton
+            // 
+            this.connectButton.Location = new System.Drawing.Point(276, 42);
+            this.connectButton.Name = "connectButton";
+            this.connectButton.Size = new System.Drawing.Size(109, 53);
+            this.connectButton.TabIndex = 35;
+            this.connectButton.Text = "Connect";
+            this.connectButton.UseVisualStyleBackColor = true;
+            this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
+            // 
+            // createGameButton
+            // 
+            this.createGameButton.Location = new System.Drawing.Point(276, 102);
+            this.createGameButton.Name = "createGameButton";
+            this.createGameButton.Size = new System.Drawing.Size(109, 23);
+            this.createGameButton.TabIndex = 36;
+            this.createGameButton.Text = "Create Game";
+            this.createGameButton.UseVisualStyleBackColor = true;
+            this.createGameButton.Click += new System.EventHandler(this.createGameButton_Click);
             // 
             // BoggleWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(282, 552);
+            this.ClientSize = new System.Drawing.Size(389, 573);
+            this.Controls.Add(this.createGameButton);
+            this.Controls.Add(this.connectButton);
+            this.Controls.Add(this.timeBox);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.serverBox);
+            this.Controls.Add(this.nameBox);
             this.Controls.Add(this.WordButton);
             this.Controls.Add(this.TimeLabel);
             this.Controls.Add(this.TimeLabelText);
@@ -381,8 +406,6 @@
             this.Controls.Add(this.score1Label);
             this.Controls.Add(this.player2Label);
             this.Controls.Add(this.player1Label);
-            this.Controls.Add(this.serverLabel);
-            this.Controls.Add(this.nameLabel);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.menuStrip1);
@@ -399,12 +422,8 @@
         #endregion
 
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem ConnectButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label nameLabel;
-        private System.Windows.Forms.Label serverLabel;
         private System.Windows.Forms.Label player1Label;
         private System.Windows.Forms.Label score1Label;
         private System.Windows.Forms.ListBox WordsListBox;
@@ -432,6 +451,12 @@
         private System.Windows.Forms.Label TimeLabel;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.Button WordButton;
+        private System.Windows.Forms.TextBox nameBox;
+        private System.Windows.Forms.TextBox serverBox;
+        private System.Windows.Forms.TextBox timeBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Button connectButton;
+        private System.Windows.Forms.Button createGameButton;
     }
 }
 

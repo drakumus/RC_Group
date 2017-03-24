@@ -11,6 +11,7 @@ namespace BoggleClient
         event Action CloseEvent;
         event Action<string> WordAddedEvent; //event for when client attempts to add a word
         event Action ConnectEvent;
+        event Action CreateGameEvent;
 
         string[] Letters { set; } //used for showing sides of a cube
         string Player1Name { set; } //set Player1 in Window

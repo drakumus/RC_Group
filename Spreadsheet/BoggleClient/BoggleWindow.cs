@@ -84,15 +84,26 @@ namespace BoggleClient
         public event Action CloseEvent;
         public event Action ConnectEvent;
         public event Action<string> WordAddedEvent;
+        public event Action CreateGameEvent;
 
         public void DoClose()
         {
-            throw new NotImplementedException();
+            this.Close();
         }
 
-        private void connectToolStripMenuItem_Click(object sender, EventArgs e)
+        private void connectButton_Click(object sender, EventArgs e)
         {
             ConnectEvent();
+        }
+
+        private void createGameButton_Click(object sender, EventArgs e)
+        {
+            CreateGameEvent();
+        }
+
+        private void WordButton_Click(object sender, EventArgs e)
+        {
+            WordAddedEvent(wordBox.Text);
         }
     }
 }
