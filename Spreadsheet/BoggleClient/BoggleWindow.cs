@@ -100,6 +100,14 @@ namespace BoggleClient
             }
         }
 
+        public string MessageBoxText
+        {
+            set
+            {
+                MessageBox.Show(value);
+            }
+        }
+
         public event Action CloseEvent;
         /// <summary>
         /// Passes name and server as parameters.
