@@ -25,5 +25,6 @@ namespace BoggleClient
         int Player2Score { set; } //set Player2 score in Window
 
         bool Connected { set; }
+        bool PlayingGame { set; }
     }
 }

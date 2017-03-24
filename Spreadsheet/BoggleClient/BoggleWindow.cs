@@ -12,7 +12,7 @@ namespace BoggleClient
 {
     public partial class BoggleWindow : Form, IBoggleView
     {
-        private bool isConnected;
+        private bool isConnected, isPlaying;
 
         public BoggleWindow()
         {
@@ -92,6 +92,14 @@ namespace BoggleClient
             }
         }
 
+        public bool PlayingGame
+        {
+            set
+            {
+                value = isPlaying;
+            }
+        }
+
         public event Action CloseEvent;
         /// <summary>
         /// Passes name and server as parameters.
@@ -129,7 +137,7 @@ namespace BoggleClient
 
         private void WordButton_Click(object sender, EventArgs e)
         {
-            if(isConnected)
+            if(isConnected && isPlaying)
                 WordAddedEvent(wordBox.Text);
             else
             {
