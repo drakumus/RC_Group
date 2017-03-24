@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace BoggleClient
 {
@@ -17,21 +18,10 @@ namespace BoggleClient
         /// </summary>
         private IBoggleView window;
 
-        /// <summary>
-        /// The token of the most recently registered user, or "0" if no user
-        /// has ever registered
-        /// </summary>
-        private string userToken;
+        private BoggleGame game;
 
-        private string gameID;
-
-        /// <summary>
-        /// The ip the user is connected to, or "" if not connected
-        /// </summary>
-        private static string ip;
-
-        private bool connecting;
-        private string gameState;
+        System.Timers.Timer refreshTimer;
+        System.Timers.Timer countdownTimer;
 
         /// <summary>
         /// For canceling the current operation
@@ -41,11 +31,14 @@ namespace BoggleClient
         public Controller(IBoggleView window)
         {
             this.window = window;
-            userToken = "0";
-            ip = "";
-            gameID = "";
-            connecting = false;
-            gameState = "not connected";
+            game = new BoggleGame();
+
+            refreshTimer = new System.Timers.Timer();
+            refreshTimer.Elapsed += RefreshTimerEvent;
+            refreshTimer.Interval = 1000;
+            countdownTimer = new System.Timers.Timer();
+            countdownTimer.Elapsed += CountdownTimerEvent;
+            countdownTimer.Interval = 1000;
 
             // Add Events
             window.ConnectEvent += HandleConnect;
@@ -73,15 +66,18 @@ namespace BoggleClient
                 window.MessageBoxText = "Please enter a server IP";
                 return;
             }
-            if (connecting)
+            if (game.connecting)
             {
                 Cancel();
                 return;
             }
             try
             {
-                connecting = true;
-                ip = server;
+                window.CreateGameButtonText = "Join Game";
+                game.gameState = "not connected";
+                window.GameState = game.gameState;
+                game.connecting = true;
+                BoggleGame.ip = server;
                 window.ConnectButtonText = "Cancel";
 
                 using (HttpClient client = CreateClient())
@@ -100,7 +96,7 @@ namespace BoggleClient
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
-                        userToken = data.UserToken;
+                        game.userToken = data.UserToken;
                         window.Connected = true;
                     }
                     else
@@ -113,39 +109,39 @@ namespace BoggleClient
             }
             catch (TaskCanceledException)
             {
-                connecting = false;
+                game.connecting = false;
                 window.ConnectButtonText = "Connect";
             }
             finally
             {
                 window.ConnectButtonText = "Connect";
-                connecting = false;
+                game.connecting = false;
             }
         }
 
         private async void HandleCreateGame(string timeLimit)
         {
-            if (gameState == "pending")
+            if (game.gameState == "pending")
             {
                 CancelJoinRequest();
                 return;
             }
             try
             {
-                gameState = "pending";
-                window.GameState = gameState;
+                game.gameState = "pending";
+                window.GameState = game.gameState;
                 window.CreateGameButtonText = "Cancel";
 
                 using (HttpClient client = CreateClient())
                 {
                     // Create the parameter
-                    dynamic game = new ExpandoObject();
-                    game.UserToken = userToken;
-                    game.TimeLimit = timeLimit;
+                    dynamic join = new ExpandoObject();
+                    join.UserToken = game.userToken;
+                    join.TimeLimit = timeLimit;
 
                     // Compose and send the request
                     tokenSource = new CancellationTokenSource();
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(game), Encoding.UTF8, "application/json");
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(join), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync("games", content, tokenSource.Token);
 
                     // Deal with the response
@@ -153,8 +149,9 @@ namespace BoggleClient
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
-                        gameID = data.GameID;
+                        game.gameID = data.GameID;
                         Refresh();
+                        refreshTimer.Enabled = true;
                     }
                     else
                     {
@@ -163,16 +160,16 @@ namespace BoggleClient
                         Console.WriteLine(response.ReasonPhrase);
 
                         window.CreateGameButtonText = "Join Game";
-                        gameState = "not connected";
-                        window.GameState = gameState;
+                        game.gameState = "not connected";
+                        window.GameState = game.gameState;
                     }
                 }
             }
             catch (TaskCanceledException)
             {
                 window.CreateGameButtonText = "Join Game";
-                gameState = "not connected";
-                window.GameState = gameState;
+                game.gameState = "not connected";
+                window.GameState = game.gameState;
             }
             finally
             {
@@ -189,19 +186,19 @@ namespace BoggleClient
             using (HttpClient client = CreateClient())
             {
                 // Create the parameter
-                dynamic game = new ExpandoObject();
-                game.UserToken = userToken;
+                dynamic cancel = new ExpandoObject();
+                cancel.UserToken = game.userToken;
 
                 // Compose and send the request
-                StringContent content = new StringContent(JsonConvert.SerializeObject(game), Encoding.UTF8, "application/json");
+                StringContent content = new StringContent(JsonConvert.SerializeObject(cancel), Encoding.UTF8, "application/json");
                 HttpResponseMessage response = client.PutAsync("games", content).Result;
 
                 // Deal with the response
                 if (response.IsSuccessStatusCode)
                 {
                     window.CreateGameButtonText = "Join Game";
-                    gameState = "not connected";
-                    window.GameState = gameState;
+                    game.gameState = "not connected";
+                    window.GameState = game.gameState;
                 }
                 else
                 {
@@ -218,7 +215,7 @@ namespace BoggleClient
             using (HttpClient client = CreateClient())
             {
                 // Compose and send the request
-                string url = string.Format("games?GameID={0}", gameID);
+                string url = string.Format("games/{0}", game.gameID);
                 HttpResponseMessage response = client.GetAsync(url).Result;
 
                 // Deal with the response
@@ -226,15 +223,57 @@ namespace BoggleClient
                 {
                     String result = response.Content.ReadAsStringAsync().Result;
                     dynamic data = JsonConvert.DeserializeObject(result);
-                    gameState = data.GameState;
-                    window.GameState = gameState;
-                    if(gameState != "pending")
+                    game.gameState = data.GameState;
+                    window.GameState = game.gameState;
+                    if(game.gameState != "pending")
                     {
+                        game.timeRemaining = data.TimeLeft;
+                        countdownTimer.Enabled = true;
 
+                        dynamic player1 = data.Player1;
+                        game.player1.UpdatePlayer(player1);
+                        window.Player1Name = game.player1.name;
+                        window.Player1Score = game.player1.score;
+
+                        dynamic player2 = data.Player2;
+                        game.player2.UpdatePlayer(player2);
+                        window.Player2Name = game.player2.name;
+                        window.Player2Score = game.player2.score;
+                        if(game.gameState == "completed")
+                        {
+                            refreshTimer.Enabled = false;
+                        }
                     }
                 }
             }
         }
+
+        /// <summary>
+        /// Event for refreshTimer Elapsed, gets the game status
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void RefreshTimerEvent(object source, ElapsedEventArgs e)
+        {
+            Refresh();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void CountdownTimerEvent(object source, ElapsedEventArgs e)
+        {
+            game.timeRemaining--;
+            window.Time = game.timeRemaining;
+            if(game.timeRemaining == 0)
+            {
+                countdownTimer.Enabled = false;
+            }
+        }
+
+        // TODO: Need to add Play Word
 
         /// <summary>
         /// Creates an HttpClient for communicating with the server.
@@ -243,7 +282,7 @@ namespace BoggleClient
         {
             // Create a client whose base address is the GitHub server
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(ip);
+            client.BaseAddress = new Uri(BoggleGame.ip);
 
             // Tell the server that the client will accept this particular type of response data
             client.DefaultRequestHeaders.Accept.Clear();

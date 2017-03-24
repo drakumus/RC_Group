@@ -64,7 +64,7 @@ namespace BoggleClient
         {
             set
             {
-                timeLabel.Text = value.ToString();
+                SetText(timeLabel, value.ToString());
             }
         }
 
@@ -112,11 +112,10 @@ namespace BoggleClient
         {
             set
             {
-                gameStateLabel.Text = value;
+                SetText(gameStateLabel, value);
             }
         }
 
-        public event Action CloseEvent;
         /// <summary>
         /// Passes name and server as parameters.
         /// </summary>
@@ -167,6 +166,33 @@ namespace BoggleClient
         {
             HelpForm help = new HelpForm();
             help.Show();
+        }
+
+        /// <summary>
+        /// Callback for SetText
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="text"></param>
+        delegate void SetTextCallback(Label label, string text);
+        /// <summary>
+        /// Sets the text of specifiedLabel while checking for thread safety
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="text"></param>
+        private void SetText(Label label, string text)
+        {
+            // InvokeRequired required compares the thread ID of the
+            // calling thread to the thread ID of the creating thread.
+            // If these threads are different, it returns true.
+            if (label.InvokeRequired)
+            {
+                SetTextCallback d = new SetTextCallback(SetText);
+                this.Invoke(d, new object[] { label, text });
+            }
+            else
+            {
+                label.Text = text;
+            }
         }
     }
 }
