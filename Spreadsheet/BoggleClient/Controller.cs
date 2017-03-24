@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -16,8 +17,11 @@ namespace BoggleClient
         /// <summary>
         /// The view controlled by this Controller
         /// </summary>
-        private IBoggleView window;
+        private BoggleWindow window;
 
+        /// <summary>
+        /// The game the controller is controlling
+        /// </summary>
         private BoggleGame game;
 
         System.Timers.Timer refreshTimer;
@@ -32,7 +36,7 @@ namespace BoggleClient
         /// Creates a controller instance with the specified window it should control
         /// </summary>
         /// <param name="window"></param>
-        public Controller(IBoggleView window)
+        public Controller(BoggleWindow window)
         {
             this.window = window;
             game = new BoggleGame();
@@ -252,14 +256,9 @@ namespace BoggleClient
                         if (game.gameState == "completed")
                         {
                             refreshTimer.Enabled = false;
+
                             GameOverWindow gameOver = new GameOverWindow();
-                            gameOver.Player1Name = game.player1.name;
-                            gameOver.Player1Score = game.player1.score;
-                            gameOver.Player1Words = game.player1.wordsPlayed;
-                            gameOver.Player2Name = game.player2.name;
-                            gameOver.Player2Score = game.player2.score;
-                            gameOver.Player2Words = game.player2.wordsPlayed;
-                            gameOver.Show();
+                            ShowGameOver(gameOver);
                         }
                     }
                 }
@@ -327,6 +326,22 @@ namespace BoggleClient
                     Console.WriteLine(response.ReasonPhrase);
                 }
             }
+        }
+
+        public void ShowGameOver(GameOverWindow gameOver)
+        {
+            if (window.InvokeRequired)
+            {
+                window.Invoke((MethodInvoker)delegate { ShowGameOver(gameOver); });
+                return;
+            }
+            gameOver.Player1Name = game.player1.name;
+            gameOver.Player1Score = game.player1.score;
+            gameOver.Player1Words = game.player1.wordsPlayed;
+            gameOver.Player2Name = game.player2.name;
+            gameOver.Player2Score = game.player2.score;
+            gameOver.Player2Words = game.player2.wordsPlayed;
+            gameOver.Show();
         }
 
         /// <summary>
