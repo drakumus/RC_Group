@@ -96,22 +96,24 @@ namespace BoggleClient
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
                         userToken = data.UserToken;
-                        //window.Connected = true;
+                        window.Connected = true;
+                        window.ConnectButtonText = "Connected";
                     }
                     else
                     {
                         Console.WriteLine("Error registering: " + response.StatusCode);
                         Console.WriteLine(response.ReasonPhrase);
+                        window.ConnectButtonText = "Connect";
                     }
                 }
             }
             catch (TaskCanceledException)
             {
-                
+                window.ConnectButtonText = "Connect";
             }
             finally
             {
-                window.ConnectButtonText = "Connect";
+                connecting = false;
             }
         }
 
@@ -145,11 +147,10 @@ namespace BoggleClient
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic data = JsonConvert.DeserializeObject(result);
                         gameID = data.GameID;
-                        //window.Connected = true;
                     }
                     else
                     {
-                        Console.WriteLine("Error registering: " + response.StatusCode);
+                        Console.WriteLine("Error Joining: " + response.StatusCode);
                         Console.WriteLine(response.ReasonPhrase);
                     }
                 }
@@ -161,6 +162,7 @@ namespace BoggleClient
             finally
             {
                 window.CreateGameButtonText = "Join Game";
+                joiningGame = false;
             }
         }
 
