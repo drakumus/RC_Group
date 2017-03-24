@@ -268,7 +268,7 @@
             // WordLabel
             // 
             this.WordLabel.AutoSize = true;
-            this.WordLabel.Location = new System.Drawing.Point(66, 429);
+            this.WordLabel.Location = new System.Drawing.Point(16, 429);
             this.WordLabel.Name = "WordLabel";
             this.WordLabel.Size = new System.Drawing.Size(50, 17);
             this.WordLabel.TabIndex = 26;
@@ -276,9 +276,9 @@
             // 
             // wordBox
             // 
-            this.wordBox.Location = new System.Drawing.Point(122, 429);
+            this.wordBox.Location = new System.Drawing.Point(72, 429);
             this.wordBox.Name = "wordBox";
-            this.wordBox.Size = new System.Drawing.Size(143, 22);
+            this.wordBox.Size = new System.Drawing.Size(251, 22);
             this.wordBox.TabIndex = 27;
             // 
             // player2ScoreLabel
@@ -286,7 +286,7 @@
             this.player2ScoreLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.player2ScoreLabel.AutoSize = true;
             this.player2ScoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2ScoreLabel.Location = new System.Drawing.Point(367, 277);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(358, 277);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
             this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.player2ScoreLabel.Size = new System.Drawing.Size(18, 20);
@@ -299,7 +299,7 @@
             this.player2Label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.player2Label.AutoSize = true;
             this.player2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2Label.Location = new System.Drawing.Point(304, 243);
+            this.player2Label.Location = new System.Drawing.Point(296, 243);
             this.player2Label.Name = "player2Label";
             this.player2Label.Size = new System.Drawing.Size(85, 25);
             this.player2Label.TabIndex = 6;
@@ -319,7 +319,7 @@
             // 
             this.timeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.timeLabel.AutoSize = true;
-            this.timeLabel.Location = new System.Drawing.Point(369, 203);
+            this.timeLabel.Location = new System.Drawing.Point(365, 203);
             this.timeLabel.Name = "timeLabel";
             this.timeLabel.Size = new System.Drawing.Size(16, 17);
             this.timeLabel.TabIndex = 29;
@@ -328,9 +328,9 @@
             // 
             // WordButton
             // 
-            this.WordButton.Location = new System.Drawing.Point(273, 429);
+            this.WordButton.Location = new System.Drawing.Point(329, 429);
             this.WordButton.Name = "WordButton";
-            this.WordButton.Size = new System.Drawing.Size(50, 23);
+            this.WordButton.Size = new System.Drawing.Size(56, 23);
             this.WordButton.TabIndex = 30;
             this.WordButton.Text = "Enter";
             this.WordButton.UseVisualStyleBackColor = true;
@@ -399,7 +399,7 @@
             // 
             this.gameStateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.gameStateLabel.AutoSize = true;
-            this.gameStateLabel.Location = new System.Drawing.Point(287, 159);
+            this.gameStateLabel.Location = new System.Drawing.Point(283, 159);
             this.gameStateLabel.Name = "gameStateLabel";
             this.gameStateLabel.Size = new System.Drawing.Size(98, 17);
             this.gameStateLabel.TabIndex = 38;

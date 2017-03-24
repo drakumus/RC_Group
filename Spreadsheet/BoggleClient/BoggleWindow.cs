@@ -147,17 +147,19 @@ namespace BoggleClient
                 CreateGameEvent(timeBox.Text);
             else
             {
-                MessageBox.Show("Please connect to a server before attempting to interact with the game");
+                MessageBox.Show("Please connect to a server before attempting to join a game.");
             }
         }
 
         private void WordButton_Click(object sender, EventArgs e)
         {
-            if(isConnected && isPlaying)
+            if (isConnected && !isPlaying)
+                MessageBox.Show("Please join a game before attempting to interact with the game.");
+            else if(isConnected && isPlaying)
                 WordAddedEvent(wordBox.Text);
             else
             {
-                MessageBox.Show("Please connect to a server before attempting to interact with the game");
+                MessageBox.Show("Please connect to a server before attempting to interact with the game.");
             }
         }
 
