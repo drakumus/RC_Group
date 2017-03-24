@@ -12,9 +12,6 @@ namespace BoggleClient
 {
     public partial class GameOverWindow : Form, IGameOver
     {
-        Dictionary<string, int> p1Words;
-        Dictionary<string, int> p2Words;
-
         public GameOverWindow()
         {
             InitializeComponent();
