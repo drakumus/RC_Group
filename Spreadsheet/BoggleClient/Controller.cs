@@ -23,13 +23,15 @@ namespace BoggleClient
         /// </summary>
         private string userToken;
 
+        private string gameID;
+
         /// <summary>
         /// The ip the user is connected to, or "" if not connected
         /// </summary>
-        private static string IP;
+        private static string ip;
 
-        private bool Connecting;
-        private bool CreatingGame;
+        private bool connecting;
+        private bool joiningGame;
 
         /// <summary>
         /// For canceling the current operation
@@ -40,36 +42,48 @@ namespace BoggleClient
         {
             this.window = window;
             userToken = "0";
-            IP = "";
-            Connecting = false;
-            CreatingGame = false;
+            ip = "";
+            gameID = "";
+            connecting = false;
+            joiningGame = false;
 
             // Add Events
-            window.CloseEvent += HandleClose;
             window.ConnectEvent += HandleConnect;
-
+            window.CreateGameEvent += HandleCreateGame;
 
         }
 
-        private void HandleClose()
+        /// <summary>
+        /// Cancels the current operation (currently unimplemented)
+        /// </summary>
+        private void Cancel()
         {
-            // Closw window
-            window.DoClose();
+            tokenSource.Cancel();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="server"></param>
         private async void HandleConnect(string name, string server)
         {
+            if (connecting)
+            {
+                Cancel();
+                return;
+            }
             try
             {
-                Connecting = true;
-                IP = server;
+                connecting = true;
+                ip = server;
                 window.ConnectButtonText = "Cancel";
 
                 using (HttpClient client = CreateClient())
                 {
                     // Create the parameter
                     dynamic user = new ExpandoObject();
-                    user.name = name;
+                    user.Nickname = name;
 
                     // Compose and send the request
                     tokenSource = new CancellationTokenSource();
@@ -80,7 +94,8 @@ namespace BoggleClient
                     if (response.IsSuccessStatusCode)
                     {
                         string result = response.Content.ReadAsStringAsync().Result;
-                        userToken = (string)JsonConvert.DeserializeObject(result);
+                        dynamic data = JsonConvert.DeserializeObject(result);
+                        userToken = data.UserToken;
                         //window.Connected = true;
                     }
                     else
@@ -100,6 +115,54 @@ namespace BoggleClient
             }
         }
 
+        private async void HandleCreateGame(string timeLimit)
+        {
+            if (joiningGame)
+            {
+                Cancel();
+                return;
+            }
+            try
+            {
+                joiningGame = true;
+                window.CreateGameButtonText = "Cancel";
+
+                using (HttpClient client = CreateClient())
+                {
+                    // Create the parameter
+                    dynamic game = new ExpandoObject();
+                    game.UserToken = userToken;
+                    game.TimeLimit = timeLimit;
+
+                    // Compose and send the request
+                    tokenSource = new CancellationTokenSource();
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(game), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("games", content, tokenSource.Token);
+
+                    // Deal with the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic data = JsonConvert.DeserializeObject(result);
+                        gameID = data.GameID;
+                        //window.Connected = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error registering: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+            }
+            catch (TaskCanceledException)
+            {
+
+            }
+            finally
+            {
+                window.CreateGameButtonText = "Join Game";
+            }
+        }
 
         /// <summary>
         /// Creates an HttpClient for communicating with the server.
@@ -108,7 +171,7 @@ namespace BoggleClient
         {
             // Create a client whose base address is the GitHub server
             HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(IP);
+            client.BaseAddress = new Uri(ip);
 
             // Tell the server that the client will accept this particular type of response data
             client.DefaultRequestHeaders.Accept.Clear();
