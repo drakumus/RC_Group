@@ -13,7 +13,9 @@ namespace BoggleClient
         int Player1Score { set; }
         int Player2Score { set; }
 
-        Dictionary<string, int> Words1 { set; }
-        Dictionary<string, int> Words2 { set; }
+        //Dictionary<string, int> Words1 { set; }
+        //Dictionary<string, int> Words2 { set; }
+        List<Word> Player1Words { set; }
+        List<Word> Player2Words { set; }
     }
 }

@@ -12,6 +12,8 @@ namespace BoggleClient
 {
     public partial class GameOverWindow : Form, IGameOver
     {
+        Dictionary<string, int> p1Words;
+        Dictionary<string, int> p2Words;
 
         public GameOverWindow()
         {
@@ -34,6 +36,17 @@ namespace BoggleClient
             }
         }
 
+        public List<Word> Player1Words
+        {
+            set
+            {
+                foreach (Word w in value)
+                {
+                    player1Box.Items.Add(w.word + "\t" + w.score);
+                }
+            }
+        }
+
         public string Player2Name
         {
             set
@@ -50,6 +63,17 @@ namespace BoggleClient
             }
         }
 
+        public List<Word> Player2Words
+        {
+            set
+            {
+                foreach (Word w in value)
+                {
+                    player2Box.Items.Add(w.word + "\t" + w.score);
+                }
+            }
+        }
+        /*
         public Dictionary<string, int> Words1 
         {
             set
@@ -74,6 +98,6 @@ namespace BoggleClient
                     player2Box.Controls.Add(wordBox);
                 }
             }
-        }
+        }*/
     }
 }

@@ -346,6 +346,7 @@
             this.serverBox.Name = "serverBox";
             this.serverBox.Size = new System.Drawing.Size(201, 22);
             this.serverBox.TabIndex = 32;
+            this.serverBox.Text = "http://cs3500-boggle-s17.azurewebsites.net/BoggleService.svc/";
             // 
             // timeBox
             // 

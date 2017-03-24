@@ -182,6 +182,12 @@ namespace BoggleClient
             else if (isConnected && isPlaying)
             {
                 WordAddedEvent(wordBox.Text);
+                string w = wordBox.Text;
+                w = w.ToLower();
+                w = w.Trim();
+                /*List word = new ListBox();
+                word.Text = w;*/
+                WordsListBox.Items.Add(w);
             }
             else
             {
