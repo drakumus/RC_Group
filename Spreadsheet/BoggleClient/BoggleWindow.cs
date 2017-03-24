@@ -64,7 +64,7 @@ namespace BoggleClient
         {
             set
             {
-                SetText(player1ScoreLabel, value.ToString());
+                SetText(player2ScoreLabel, value.ToString());
             }
         }
 
