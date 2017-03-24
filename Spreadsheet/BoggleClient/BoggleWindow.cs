@@ -17,11 +17,12 @@ namespace BoggleClient
             InitializeComponent();
         }
 
+
         public string[] Letters
         {
             set
             {
-                throw new NotImplementedException();
+                button1.Text = value[0];
             }
         }
 
@@ -29,15 +30,15 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player1Label.Text = value;
             }
         }
 
-        public string Player1Score
+        public int Player1Score
         {
             set
             {
-                throw new NotImplementedException();
+                player1ScoreLabel.Text = value.ToString();
             }
         }
 
@@ -45,23 +46,15 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player2Label.Text = value;
             }
         }
 
-        public string Player2Score
+        public int Player2Score
         {
             set
             {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int Server
-        {
-            set
-            {
-                throw new NotImplementedException();
+                player2ScoreLabel.Text = value.ToString();
             }
         }
 
@@ -69,20 +62,31 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                timeLabel.Text = value.ToString();
             }
         }
 
-        int IBoggleView.Name
+        public string ConnectButtonText
         {
             set
             {
-                throw new NotImplementedException();
+                connectButton.Text = value;
+            }
+        }
+
+        public string CreateGameButtonText
+        {
+            set
+            {
+                createGameButton.Text = value;
             }
         }
 
         public event Action CloseEvent;
-        public event Action ConnectEvent;
+        /// <summary>
+        /// Passes name and server as parameters.
+        /// </summary>
+        public event Action<string, string> ConnectEvent;
         public event Action<string> WordAddedEvent;
         public event Action CreateGameEvent;
 
@@ -93,7 +97,7 @@ namespace BoggleClient
 
         private void connectButton_Click(object sender, EventArgs e)
         {
-            ConnectEvent();
+            ConnectEvent(nameBox.Text, serverBox.Text);
         }
 
         private void createGameButton_Click(object sender, EventArgs e)

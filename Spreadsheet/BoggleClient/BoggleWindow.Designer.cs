@@ -33,7 +33,7 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.player1Label = new System.Windows.Forms.Label();
-            this.score1Label = new System.Windows.Forms.Label();
+            this.player1ScoreLabel = new System.Windows.Forms.Label();
             this.WordsListBox = new System.Windows.Forms.ListBox();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -53,10 +53,10 @@
             this.button9 = new System.Windows.Forms.Button();
             this.WordLabel = new System.Windows.Forms.Label();
             this.wordBox = new System.Windows.Forms.TextBox();
-            this.score2Label = new System.Windows.Forms.Label();
+            this.player2ScoreLabel = new System.Windows.Forms.Label();
             this.player2Label = new System.Windows.Forms.Label();
             this.TimeLabelText = new System.Windows.Forms.Label();
-            this.TimeLabel = new System.Windows.Forms.Label();
+            this.timeLabel = new System.Windows.Forms.Label();
             this.WordButton = new System.Windows.Forms.Button();
             this.nameBox = new System.Windows.Forms.TextBox();
             this.serverBox = new System.Windows.Forms.TextBox();
@@ -111,14 +111,14 @@
             this.player1Label.TabIndex = 5;
             this.player1Label.Text = "Player1";
             // 
-            // score1Label
+            // player1ScoreLabel
             // 
-            this.score1Label.AutoSize = true;
-            this.score1Label.Location = new System.Drawing.Point(13, 176);
-            this.score1Label.Name = "score1Label";
-            this.score1Label.Size = new System.Drawing.Size(16, 17);
-            this.score1Label.TabIndex = 7;
-            this.score1Label.Text = "0";
+            this.player1ScoreLabel.AutoSize = true;
+            this.player1ScoreLabel.Location = new System.Drawing.Point(13, 176);
+            this.player1ScoreLabel.Name = "player1ScoreLabel";
+            this.player1ScoreLabel.Size = new System.Drawing.Size(16, 17);
+            this.player1ScoreLabel.TabIndex = 7;
+            this.player1ScoreLabel.Text = "0";
             // 
             // WordsListBox
             // 
@@ -273,14 +273,14 @@
             this.wordBox.Size = new System.Drawing.Size(143, 22);
             this.wordBox.TabIndex = 27;
             // 
-            // score2Label
+            // player2ScoreLabel
             // 
-            this.score2Label.AutoSize = true;
-            this.score2Label.Location = new System.Drawing.Point(329, 176);
-            this.score2Label.Name = "score2Label";
-            this.score2Label.Size = new System.Drawing.Size(16, 17);
-            this.score2Label.TabIndex = 8;
-            this.score2Label.Text = "0";
+            this.player2ScoreLabel.AutoSize = true;
+            this.player2ScoreLabel.Location = new System.Drawing.Point(329, 176);
+            this.player2ScoreLabel.Name = "player2ScoreLabel";
+            this.player2ScoreLabel.Size = new System.Drawing.Size(16, 17);
+            this.player2ScoreLabel.TabIndex = 8;
+            this.player2ScoreLabel.Text = "0";
             // 
             // player2Label
             // 
@@ -300,14 +300,14 @@
             this.TimeLabelText.TabIndex = 28;
             this.TimeLabelText.Text = "Time Remaining:";
             // 
-            // TimeLabel
+            // timeLabel
             // 
-            this.TimeLabel.AutoSize = true;
-            this.TimeLabel.Location = new System.Drawing.Point(332, 139);
-            this.TimeLabel.Name = "TimeLabel";
-            this.TimeLabel.Size = new System.Drawing.Size(16, 17);
-            this.TimeLabel.TabIndex = 29;
-            this.TimeLabel.Text = "0";
+            this.timeLabel.AutoSize = true;
+            this.timeLabel.Location = new System.Drawing.Point(332, 139);
+            this.timeLabel.Name = "timeLabel";
+            this.timeLabel.Size = new System.Drawing.Size(16, 17);
+            this.timeLabel.TabIndex = 29;
+            this.timeLabel.Text = "0";
             // 
             // WordButton
             // 
@@ -381,7 +381,7 @@
             this.Controls.Add(this.serverBox);
             this.Controls.Add(this.nameBox);
             this.Controls.Add(this.WordButton);
-            this.Controls.Add(this.TimeLabel);
+            this.Controls.Add(this.timeLabel);
             this.Controls.Add(this.TimeLabelText);
             this.Controls.Add(this.wordBox);
             this.Controls.Add(this.WordLabel);
@@ -402,8 +402,8 @@
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.WordsListBox);
-            this.Controls.Add(this.score2Label);
-            this.Controls.Add(this.score1Label);
+            this.Controls.Add(this.player2ScoreLabel);
+            this.Controls.Add(this.player1ScoreLabel);
             this.Controls.Add(this.player2Label);
             this.Controls.Add(this.player1Label);
             this.Controls.Add(this.label2);
@@ -425,7 +425,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label player1Label;
-        private System.Windows.Forms.Label score1Label;
+        private System.Windows.Forms.Label player1ScoreLabel;
         private System.Windows.Forms.ListBox WordsListBox;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
@@ -445,10 +445,10 @@
         private System.Windows.Forms.Button button9;
         private System.Windows.Forms.Label WordLabel;
         private System.Windows.Forms.TextBox wordBox;
-        private System.Windows.Forms.Label score2Label;
+        private System.Windows.Forms.Label player2ScoreLabel;
         private System.Windows.Forms.Label player2Label;
         private System.Windows.Forms.Label TimeLabelText;
-        private System.Windows.Forms.Label TimeLabel;
+        private System.Windows.Forms.Label timeLabel;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.Button WordButton;
         private System.Windows.Forms.TextBox nameBox;
