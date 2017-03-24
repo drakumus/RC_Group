@@ -13,10 +13,15 @@ namespace BoggleClient
     public partial class BoggleWindow : Form, IBoggleView
     {
         private bool isConnected, isPlaying;
+        private Button[] buttons;
+        private List<string> wordList;
 
         public BoggleWindow()
         {
             InitializeComponent();
+            buttons = new Button[] { button1, button2, button3, button4, button5, button6, button7, button8, button9, button10,
+            button12, button13, button14, button15, button16};
+            wordList = new List<string>();
         }
 
 
@@ -24,7 +29,8 @@ namespace BoggleClient
         {
             set
             {
-                button1.Text = value[0].ToString();
+                for(int i=0; i < buttons.Length; i++)
+                    buttons[i].Text = value[i].ToString();
             }
         }
 
@@ -116,6 +122,23 @@ namespace BoggleClient
             }
         }
 
+        public Dictionary<string, int> EnteredWords
+        {
+            set
+            {
+                foreach(string word in value.Keys)
+                {
+                    if (!wordList.Contains(word))
+                    {
+                        ListBox w = new ListBox();
+                        w.Text = word + "\t" + value[word];
+                        wordBox.Controls.Add(w);
+                        wordList.Add(word);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Passes name and server as parameters.
         /// </summary>
@@ -154,8 +177,10 @@ namespace BoggleClient
         {
             if (isConnected && !isPlaying)
                 MessageBox.Show("Please join a game before attempting to interact with the game.");
-            else if(isConnected && isPlaying)
+            else if (isConnected && isPlaying)
+            {
                 WordAddedEvent(wordBox.Text);
+            }
             else
             {
                 MessageBox.Show("Please connect to a server before attempting to interact with the game.");

@@ -59,16 +59,15 @@
             // 
             // player2ScoreLabel
             // 
-            this.player2ScoreLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.player2ScoreLabel.AutoSize = true;
+            this.player2ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2ScoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2ScoreLabel.Location = new System.Drawing.Point(317, 48);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(252, 48);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
             this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.player2ScoreLabel.Size = new System.Drawing.Size(18, 20);
+            this.player2ScoreLabel.Size = new System.Drawing.Size(20, 20);
             this.player2ScoreLabel.TabIndex = 16;
             this.player2ScoreLabel.Text = "0";
-            this.player2ScoreLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.player2ScoreLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // player1ScoreLabel
             // 
@@ -82,15 +81,14 @@
             // 
             // player2Label
             // 
-            this.player2Label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.player2Label.AutoSize = true;
+            this.player2Label.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2Label.Location = new System.Drawing.Point(252, 9);
+            this.player2Label.Location = new System.Drawing.Point(186, 9);
             this.player2Label.Name = "player2Label";
-            this.player2Label.Size = new System.Drawing.Size(85, 25);
+            this.player2Label.Size = new System.Drawing.Size(151, 25);
             this.player2Label.TabIndex = 14;
             this.player2Label.Text = "Player2";
-            this.player2Label.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.player2Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // player1Label
             // 

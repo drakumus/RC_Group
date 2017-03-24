@@ -283,28 +283,26 @@
             // 
             // player2ScoreLabel
             // 
-            this.player2ScoreLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.player2ScoreLabel.AutoSize = true;
+            this.player2ScoreLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2ScoreLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2ScoreLabel.Location = new System.Drawing.Point(358, 277);
+            this.player2ScoreLabel.Location = new System.Drawing.Point(249, 280);
             this.player2ScoreLabel.Name = "player2ScoreLabel";
-            this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.player2ScoreLabel.Size = new System.Drawing.Size(18, 20);
+            this.player2ScoreLabel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.player2ScoreLabel.Size = new System.Drawing.Size(136, 17);
             this.player2ScoreLabel.TabIndex = 8;
             this.player2ScoreLabel.Text = "0";
-            this.player2ScoreLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.player2ScoreLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // player2Label
             // 
-            this.player2Label.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.player2Label.AutoSize = true;
+            this.player2Label.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.player2Label.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.player2Label.Location = new System.Drawing.Point(296, 243);
+            this.player2Label.Location = new System.Drawing.Point(211, 243);
             this.player2Label.Name = "player2Label";
-            this.player2Label.Size = new System.Drawing.Size(85, 25);
+            this.player2Label.Size = new System.Drawing.Size(178, 25);
             this.player2Label.TabIndex = 6;
             this.player2Label.Text = "Player2";
-            this.player2Label.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.player2Label.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // timeLabelText
             // 
@@ -317,14 +315,13 @@
             // 
             // timeLabel
             // 
-            this.timeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.timeLabel.AutoSize = true;
-            this.timeLabel.Location = new System.Drawing.Point(365, 203);
+            this.timeLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.timeLabel.Location = new System.Drawing.Point(290, 203);
             this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(16, 17);
+            this.timeLabel.Size = new System.Drawing.Size(95, 17);
             this.timeLabel.TabIndex = 29;
             this.timeLabel.Text = "0";
-            this.timeLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.timeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // WordButton
             // 
@@ -397,14 +394,13 @@
             // 
             // gameStateLabel
             // 
-            this.gameStateLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.gameStateLabel.AutoSize = true;
+            this.gameStateLabel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.gameStateLabel.Location = new System.Drawing.Point(283, 159);
             this.gameStateLabel.Name = "gameStateLabel";
-            this.gameStateLabel.Size = new System.Drawing.Size(98, 17);
+            this.gameStateLabel.Size = new System.Drawing.Size(102, 17);
             this.gameStateLabel.TabIndex = 38;
             this.gameStateLabel.Text = "not connected";
-            this.gameStateLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.gameStateLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // label4
             // 
@@ -480,7 +476,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "BoggleWindow";
-            this.Text = "Form1";
+            this.Text = "Boggle";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
