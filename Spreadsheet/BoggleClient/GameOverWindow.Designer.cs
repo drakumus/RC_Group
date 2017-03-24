@@ -1,6 +1,6 @@
 ﻿namespace BoggleClient
 {
-    partial class GameOverForm
+    partial class GameOverWindow
     {
         /// <summary>
         /// Required designer variable.

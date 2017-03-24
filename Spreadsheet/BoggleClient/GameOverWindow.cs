@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class NameForm : Form
+    public partial class GameOverWindow : Form
     {
-        public NameForm()
+        public GameOverWindow()
         {
             InitializeComponent();
         }

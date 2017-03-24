@@ -1,6 +1,6 @@
 ﻿namespace BoggleClient
 {
-    partial class NameForm
+    partial class ConnectWindow
     {
         /// <summary>
         /// Required designer variable.
