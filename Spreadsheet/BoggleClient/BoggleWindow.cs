@@ -30,7 +30,9 @@ namespace BoggleClient
             set
             {
                 for(int i=0; i < buttons.Length; i++)
-                    buttons[i].Text = value[i].ToString();
+                {
+                    SetText(buttons[i], value[i].ToString());
+                }
             }
         }
 
@@ -38,7 +40,7 @@ namespace BoggleClient
         {
             set
             {
-                player1Label.Text = value;
+                SetText(player1Label, value);
             }
         }
 
@@ -46,7 +48,7 @@ namespace BoggleClient
         {
             set
             {
-                player1ScoreLabel.Text = value.ToString();
+                SetText(player1ScoreLabel, value.ToString());
             }
         }
 
@@ -54,7 +56,7 @@ namespace BoggleClient
         {
             set
             {
-                player2Label.Text = value;
+                SetText(player2Label, value);
             }
         }
 
@@ -62,7 +64,7 @@ namespace BoggleClient
         {
             set
             {
-                player2ScoreLabel.Text = value.ToString();
+                SetText(player1ScoreLabel, value.ToString());
             }
         }
 
@@ -198,13 +200,13 @@ namespace BoggleClient
         /// </summary>
         /// <param name="label"></param>
         /// <param name="text"></param>
-        delegate void SetTextCallback(Label label, string text);
+        delegate void SetTextCallback(Control label, string text);
         /// <summary>
         /// Sets the text of specifiedLabel while checking for thread safety
         /// </summary>
         /// <param name="label"></param>
         /// <param name="text"></param>
-        private void SetText(Label label, string text)
+        private void SetText(Control label, string text)
         {
             // InvokeRequired required compares the thread ID of the
             // calling thread to the thread ID of the creating thread.

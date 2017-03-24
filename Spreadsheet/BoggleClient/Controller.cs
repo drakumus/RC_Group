@@ -227,6 +227,7 @@ namespace BoggleClient
                     window.GameState = game.gameState;
                     if(game.gameState != "pending")
                     {
+                        window.PlayingGame = true;
                         game.UpdateGame(data);
                         countdownTimer.Enabled = true;
 
@@ -240,6 +241,12 @@ namespace BoggleClient
                         if (game.gameState == "completed")
                         {
                             refreshTimer.Enabled = false;
+                            GameOverWindow gameOver = new GameOverWindow();
+                            gameOver.Player1Name = game.player1.name;
+                            gameOver.Player1Score = game.player1.score;
+                            gameOver.Player2Name = game.player2.name;
+                            gameOver.Player2Score = game.player2.score;
+                            //gameOver.Show();
                         }
                     }
                 }
@@ -265,7 +272,7 @@ namespace BoggleClient
         {
             game.timeRemaining--;
             window.Time = game.timeRemaining;
-            if(game.timeRemaining == 0)
+            if(game.timeRemaining <= 0)
             {
                 countdownTimer.Enabled = false;
             }
