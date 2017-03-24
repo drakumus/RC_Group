@@ -13,7 +13,7 @@ namespace BoggleClient
         event Action<string> CreateGameEvent;
 
         
-        string[] Letters { set; } //used for showing sides of a cube
+        char[] Letters { set; } //used for showing sides of a cube
 
         string Player1Name { set; } //set Player1 in Window
         string Player2Name { set; } //set Player2 in Window

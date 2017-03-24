@@ -34,10 +34,15 @@ namespace BoggleClient
         /// </summary>
         public string gameState;
 
+        /// <summary>
+        /// The amount of time left in the game
+        /// </summary>
         public int timeRemaining;
 
         public Player player1;
         public Player player2;
+
+        public char[] boardState;
 
         public BoggleGame()
         {
@@ -48,6 +53,26 @@ namespace BoggleClient
             ip = "";
             player1 = new Player();
             player2 = new Player();
+        }
+
+        public void UpdateGame(dynamic data)
+        {
+            try
+            {
+                string letters = data.Board;
+                boardState = letters.ToCharArray();
+                timeRemaining = data.TimeLeft;
+
+                dynamic player1 = data.Player1;
+                this.player1.UpdatePlayer(player1);
+
+                dynamic player2 = data.Player2;
+                this.player2.UpdatePlayer(player2);
+            }
+            catch (ArgumentNullException)
+            {
+
+            }
         }
     }
 }

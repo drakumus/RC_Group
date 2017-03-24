@@ -20,11 +20,11 @@ namespace BoggleClient
         }
 
 
-        public string[] Letters
+        public char[] Letters
         {
             set
             {
-                button1.Text = value[0];
+                button1.Text = value[0].ToString();
             }
         }
 

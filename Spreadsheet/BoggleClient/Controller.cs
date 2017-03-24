@@ -43,7 +43,7 @@ namespace BoggleClient
             // Add Events
             window.ConnectEvent += HandleConnect;
             window.CreateGameEvent += HandleCreateGame;
-
+            window.WordAddedEvent += HandleWordAdded;
         }
 
         /// <summary>
@@ -227,19 +227,17 @@ namespace BoggleClient
                     window.GameState = game.gameState;
                     if(game.gameState != "pending")
                     {
-                        game.timeRemaining = data.TimeLeft;
+                        game.UpdateGame(data);
                         countdownTimer.Enabled = true;
 
-                        dynamic player1 = data.Player1;
-                        game.player1.UpdatePlayer(player1);
                         window.Player1Name = game.player1.name;
                         window.Player1Score = game.player1.score;
-
-                        dynamic player2 = data.Player2;
-                        game.player2.UpdatePlayer(player2);
                         window.Player2Name = game.player2.name;
                         window.Player2Score = game.player2.score;
-                        if(game.gameState == "completed")
+
+                        window.Letters = game.boardState;
+
+                        if (game.gameState == "completed")
                         {
                             refreshTimer.Enabled = false;
                         }
@@ -273,7 +271,10 @@ namespace BoggleClient
             }
         }
 
-        // TODO: Need to add Play Word
+        private void HandleWordAdded(string word)
+        {
+
+        }
 
         /// <summary>
         /// Creates an HttpClient for communicating with the server.
