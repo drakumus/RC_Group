@@ -10,6 +10,7 @@ namespace BoggleClient
     {
         event Action CloseEvent;
         event Action<string> WordAdded; //event for when client attempts to add a word
+        event Action ConnectEvent;
 
         string Word { set; } //used when adding word to live game list
 
