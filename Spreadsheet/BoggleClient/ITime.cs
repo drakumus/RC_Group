@@ -14,5 +14,7 @@ namespace BoggleClient
 
         string status { set; } //used for various status messages in the program
 
+        void DoClose();
+        void DoShow();
     }
 }

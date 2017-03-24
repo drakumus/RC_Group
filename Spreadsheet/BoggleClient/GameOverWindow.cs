@@ -17,6 +17,38 @@ namespace BoggleClient
             InitializeComponent();
         }
 
+        public string Player1Name
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int Player1Score
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string Player2Name
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public int Player2Score
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public Dictionary<string, int> Words1 
         {
             set
@@ -44,5 +76,15 @@ namespace BoggleClient
         }
 
         public event Action CloseEvent;
+
+        public void DoClose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DoShow()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

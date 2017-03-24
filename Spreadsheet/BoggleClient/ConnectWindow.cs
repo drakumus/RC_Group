@@ -28,5 +28,15 @@ namespace BoggleClient
         public event Action CancelEvent;
         public event Action CloseEvent;
         public event Action<string, string> ConnectEvent;
+
+        public void DoClose()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DoShow()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

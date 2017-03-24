@@ -9,7 +9,16 @@ namespace BoggleClient
     public interface IGameOver
     {
         event Action CloseEvent;
+
+        string Player1Name { set; }
+        string Player2Name { set; }
+        int Player1Score { set; }
+        int Player2Score { set; }
+
         Dictionary<string, int> Words1 { set; }
         Dictionary<string, int> Words2 { set; }
+
+        void DoClose();
+        void DoShow();
     }
 }
