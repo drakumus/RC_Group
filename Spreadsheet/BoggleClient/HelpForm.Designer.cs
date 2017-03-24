@@ -35,6 +35,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -48,7 +50,7 @@
             // 
             // label2
             // 
-            this.label2.Location = new System.Drawing.Point(12, 26);
+            this.label2.Location = new System.Drawing.Point(12, 50);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(568, 38);
             this.label2.TabIndex = 1;
@@ -57,7 +59,7 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(12, 64);
+            this.label3.Location = new System.Drawing.Point(12, 107);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(568, 38);
             this.label3.TabIndex = 2;
@@ -65,7 +67,7 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(12, 124);
+            this.label4.Location = new System.Drawing.Point(12, 211);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(568, 38);
             this.label4.TabIndex = 3;
@@ -74,7 +76,7 @@
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(15, 84);
+            this.label5.Location = new System.Drawing.Point(12, 154);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(565, 40);
             this.label5.TabIndex = 4;
@@ -83,7 +85,7 @@
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(12, 162);
+            this.label6.Location = new System.Drawing.Point(12, 286);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(568, 52);
             this.label6.TabIndex = 5;
@@ -93,18 +95,38 @@
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(12, 214);
+            this.label7.Location = new System.Drawing.Point(12, 370);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(568, 52);
             this.label7.TabIndex = 6;
             this.label7.Text = "5) Once the timer runs out a score will be displayed and the user can attempt to " +
     "join a new server or game.";
             // 
+            // label8
+            // 
+            this.label8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label8.Location = new System.Drawing.Point(-1, 198);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(588, 2);
+            this.label8.TabIndex = 40;
+            this.label8.Text = " ";
+            // 
+            // label9
+            // 
+            this.label9.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.label9.Location = new System.Drawing.Point(-1, 145);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(588, 2);
+            this.label9.TabIndex = 41;
+            this.label9.Text = " ";
+            // 
             // HelpForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(586, 264);
+            this.ClientSize = new System.Drawing.Size(586, 430);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
@@ -128,5 +150,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
     }
 }
