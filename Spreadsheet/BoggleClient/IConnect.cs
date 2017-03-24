@@ -9,8 +9,8 @@ namespace BoggleClient
     interface IConnect
     {
         event Action CloseEvent;
-        event Action<string, string> ConfirmServer; //event for when server+name are selected
-        event Action CancelServer; //event for if the user selects cancel
+        event Action<string, string> ConnectEvent; //event for when server+name are selected
+        event Action CancelEvent; //event for if the user selects cancel
 
         string status { set; } //used for various status messages in the program
 

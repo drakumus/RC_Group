@@ -25,8 +25,8 @@ namespace BoggleClient
             }
         }
 
-        public event Action CancelServer;
+        public event Action CancelEvent;
         public event Action CloseEvent;
-        public event Action<string, string> ConfirmServer;
+        public event Action<string, string> ConnectEvent;
     }
 }
