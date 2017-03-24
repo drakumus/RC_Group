@@ -12,6 +12,8 @@ namespace BoggleClient
 {
     public partial class BoggleWindow : Form, IBoggleView
     {
+        private bool isConnected;
+
         public BoggleWindow()
         {
             InitializeComponent();
@@ -82,13 +84,21 @@ namespace BoggleClient
             }
         }
 
+        public bool Connected
+        {
+            set
+            {
+                isConnected = value;
+            }
+        }
+
         public event Action CloseEvent;
         /// <summary>
         /// Passes name and server as parameters.
         /// </summary>
         public event Action<string, string> ConnectEvent;
         public event Action<string> WordAddedEvent;
-        public event Action CreateGameEvent;
+        public event Action<string> CreateGameEvent;
 
         public void DoClose()
         {
@@ -109,12 +119,27 @@ namespace BoggleClient
 
         private void createGameButton_Click(object sender, EventArgs e)
         {
-            CreateGameEvent();
+            if(isConnected)
+                CreateGameEvent(timeBox.Text);
+            else
+            {
+                MessageBox.Show("Please connect to a server before attempting to interact with the game");
+            }
         }
 
         private void WordButton_Click(object sender, EventArgs e)
         {
-            WordAddedEvent(wordBox.Text);
+            if(isConnected)
+                WordAddedEvent(wordBox.Text);
+            else
+            {
+                MessageBox.Show("Please connect to a server before attempting to interact with the game");
+            }
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

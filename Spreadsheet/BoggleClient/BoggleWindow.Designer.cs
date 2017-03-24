@@ -83,6 +83,7 @@
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.helpToolStripMenuItem.Text = "Help";
+            this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // label1
             // 
@@ -365,7 +366,7 @@
             this.createGameButton.Name = "createGameButton";
             this.createGameButton.Size = new System.Drawing.Size(109, 23);
             this.createGameButton.TabIndex = 36;
-            this.createGameButton.Text = "Create Game";
+            this.createGameButton.Text = "Join Game";
             this.createGameButton.UseVisualStyleBackColor = true;
             this.createGameButton.Click += new System.EventHandler(this.createGameButton_Click);
             // 

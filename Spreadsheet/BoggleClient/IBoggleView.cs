@@ -8,10 +8,9 @@ namespace BoggleClient
 {
     interface IBoggleView
     {
-        event Action CloseEvent;
         event Action<string> WordAddedEvent; //event for when client attempts to add a word
         event Action<string, string> ConnectEvent;
-        event Action CreateGameEvent;
+        event Action<string> CreateGameEvent;
 
         
         string[] Letters { set; } //used for showing sides of a cube
@@ -25,6 +24,6 @@ namespace BoggleClient
         int Player1Score { set; } //set Player1 score in Window
         int Player2Score { set; } //set Player2 score in Window
 
-        void DoClose();
+        bool Connected { set; }
     }
 }
