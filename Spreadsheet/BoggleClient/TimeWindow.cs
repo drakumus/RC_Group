@@ -25,8 +25,8 @@ namespace BoggleClient
             }
         }
 
-        public event Action CancelTime;
+        public event Action CancelEvent;
         public event Action CloseEvent;
-        public event Action<int> ConfirmTime;
+        public event Action<int> ConfirmEvent;
     }
 }
