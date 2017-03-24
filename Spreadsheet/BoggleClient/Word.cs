@@ -12,10 +12,10 @@ namespace BoggleClient
 
         public int score { get; }
 
-        public Word(string word, string score)
+        public Word(string word, int score)
         {
             this.word = word;
-            this.score = int.Parse(score);
+            this.score = score;
         }
 
         public Word(dynamic data)

@@ -246,7 +246,7 @@ namespace BoggleClient
                             gameOver.Player1Score = game.player1.score;
                             gameOver.Player2Name = game.player2.name;
                             gameOver.Player2Score = game.player2.score;
-                            //gameOver.Show();
+                            gameOver.Show();
                         }
                     }
                 }
@@ -275,6 +275,8 @@ namespace BoggleClient
             if(game.timeRemaining <= 0)
             {
                 countdownTimer.Enabled = false;
+                game.timeRemaining = -1;
+                window.Time = 0;
             }
         }
 
@@ -297,7 +299,8 @@ namespace BoggleClient
                 {
                     string result = response.Content.ReadAsStringAsync().Result;
                     dynamic data = JsonConvert.DeserializeObject(result);
-                    Word playedWord = new Word(word, data.Score);
+                    int score = data.Score;
+                    Word playedWord = new Word(word, score);
                     game.wordsPlayed.Add(playedWord);
                 }
                 else

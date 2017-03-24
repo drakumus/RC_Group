@@ -104,7 +104,7 @@ namespace BoggleClient
         {
             set
             {
-                value = isPlaying;
+                isPlaying = value;
             }
         }
 
