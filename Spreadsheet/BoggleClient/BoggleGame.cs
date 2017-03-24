@@ -22,7 +22,7 @@ namespace BoggleClient
         /// <summary>
         /// The ID of the active game, or "-1" if no active game
         /// </summary>
-        public string gameID;
+        public string ID;
 
         /// <summary>
         /// Tells whether a player is trying to connect to a game
@@ -44,15 +44,18 @@ namespace BoggleClient
 
         public char[] boardState;
 
+        public List<Word> wordsPlayed;
         public BoggleGame()
         {
             userToken = "0";
-            gameID = "";
+            ID = "";
             connecting = false;
             gameState = "not connected";
             ip = "";
             player1 = new Player();
             player2 = new Player();
+
+            wordsPlayed = new List<Word>();
         }
 
         public void UpdateGame(dynamic data)
