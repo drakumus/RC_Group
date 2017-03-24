@@ -21,7 +21,7 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player1Label.Text = value;
             }
         }
 
@@ -29,7 +29,7 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player1ScoreLabel.Text = value.ToString();
             }
         }
 
@@ -37,7 +37,7 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player2Label.Text = value;
             }
         }
 
@@ -45,7 +45,7 @@ namespace BoggleClient
         {
             set
             {
-                throw new NotImplementedException();
+                player2ScoreLabel.Text = value.ToString();
             }
         }
 
@@ -57,7 +57,7 @@ namespace BoggleClient
                 {
                     ListBox wordBox = new ListBox();
                     wordBox.Text = word + "\t" + value[word].ToString();
-                    //Player1Box.Controls.Add()
+                    player1Box.Controls.Add(wordBox);
                 }
             }
         }
@@ -70,21 +70,9 @@ namespace BoggleClient
                 {
                     ListBox wordBox = new ListBox();
                     wordBox.Text = word + "\t" + value[word].ToString();
-                    //Player1Box.Controls.Add()
+                    player2Box.Controls.Add(wordBox);
                 }
             }
-        }
-
-        public event Action CloseEvent;
-
-        public void DoClose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DoShow()
-        {
-            throw new NotImplementedException();
         }
     }
 }
