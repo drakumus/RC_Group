@@ -12,6 +12,7 @@ namespace BoggleClient
 {
     public partial class GameOverWindow : Form, IGameOver
     {
+
         public GameOverWindow()
         {
             InitializeComponent();
