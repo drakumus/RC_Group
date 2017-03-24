@@ -10,11 +10,30 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class BoggleWindow : Form
+    public partial class BoggleWindow : Form, IBoggleView
     {
         public BoggleWindow()
         {
             InitializeComponent();
         }
+
+        public string[] Letters
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string Word
+        {
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public event Action CloseEvent;
+        public event Action<string> WordAdded;
     }
 }
