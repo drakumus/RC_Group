@@ -32,6 +32,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -62,24 +65,55 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(12, 90);
+            this.label4.Location = new System.Drawing.Point(12, 124);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(568, 38);
             this.label4.TabIndex = 3;
             this.label4.Text = "3) Once Connected to a game your name and a player\'s name will be presented below" +
     " the text box for join game.";
             // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(15, 84);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(565, 40);
+            this.label5.TabIndex = 4;
+            this.label5.Text = "Note: At any point during the previous two steps (while available) you can click " +
+    "cancel to cancel the server request.";
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(12, 162);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(568, 52);
+            this.label6.TabIndex = 5;
+            this.label6.Text = "4) The timer will start counting down immediately. The player must add words to t" +
+    "he text box by typing them in and pressing the \"Enter\" button being displayed ne" +
+    "xt to the text box.";
+            // 
+            // label7
+            // 
+            this.label7.Location = new System.Drawing.Point(12, 214);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(568, 52);
+            this.label7.TabIndex = 6;
+            this.label7.Text = "5) Once the timer runs out a score will be displayed and the user can attempt to " +
+    "join a new server or game.";
+            // 
             // HelpForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(586, 357);
+            this.ClientSize = new System.Drawing.Size(586, 264);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "HelpForm";
-            this.Text = "HelpForm";
+            this.Text = "Help";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -91,5 +125,8 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
     }
 }

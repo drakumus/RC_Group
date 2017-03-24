@@ -108,6 +108,14 @@ namespace BoggleClient
             }
         }
 
+        public string GameState
+        {
+            set
+            {
+                gameStateLabel.Text = value;
+            }
+        }
+
         public event Action CloseEvent;
         /// <summary>
         /// Passes name and server as parameters.
@@ -155,7 +163,8 @@ namespace BoggleClient
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            HelpForm help = new HelpForm();
+            help.Show();
         }
     }
 }

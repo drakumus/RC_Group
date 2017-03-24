@@ -20,6 +20,7 @@ namespace BoggleClient
         
         string ConnectButtonText { set; }
         string CreateGameButtonText { set; }
+        string GameState { set; }
 
         string MessageBoxText { set; }
 
