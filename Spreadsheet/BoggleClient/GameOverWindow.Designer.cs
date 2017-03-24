@@ -28,31 +28,31 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.Player1 = new System.Windows.Forms.ListBox();
-            this.Player2 = new System.Windows.Forms.ListBox();
+            this.Player1Box = new System.Windows.Forms.ListBox();
+            this.Player2Box = new System.Windows.Forms.ListBox();
             this.score2Label = new System.Windows.Forms.Label();
             this.score1Label = new System.Windows.Forms.Label();
             this.player2Label = new System.Windows.Forms.Label();
             this.player1Label = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // Player1
+            // Player1Box
             // 
-            this.Player1.FormattingEnabled = true;
-            this.Player1.ItemHeight = 16;
-            this.Player1.Location = new System.Drawing.Point(14, 46);
-            this.Player1.Name = "Player1";
-            this.Player1.Size = new System.Drawing.Size(120, 84);
-            this.Player1.TabIndex = 0;
+            this.Player1Box.FormattingEnabled = true;
+            this.Player1Box.ItemHeight = 16;
+            this.Player1Box.Location = new System.Drawing.Point(14, 46);
+            this.Player1Box.Name = "Player1Box";
+            this.Player1Box.Size = new System.Drawing.Size(120, 84);
+            this.Player1Box.TabIndex = 0;
             // 
-            // Player2
+            // Player2Box
             // 
-            this.Player2.FormattingEnabled = true;
-            this.Player2.ItemHeight = 16;
-            this.Player2.Location = new System.Drawing.Point(155, 46);
-            this.Player2.Name = "Player2";
-            this.Player2.Size = new System.Drawing.Size(120, 84);
-            this.Player2.TabIndex = 1;
+            this.Player2Box.FormattingEnabled = true;
+            this.Player2Box.ItemHeight = 16;
+            this.Player2Box.Location = new System.Drawing.Point(155, 46);
+            this.Player2Box.Name = "Player2Box";
+            this.Player2Box.Size = new System.Drawing.Size(120, 84);
+            this.Player2Box.TabIndex = 1;
             // 
             // score2Label
             // 
@@ -90,7 +90,7 @@
             this.player1Label.TabIndex = 9;
             this.player1Label.Text = "Player1";
             // 
-            // GameOverForm
+            // GameOverWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -99,9 +99,9 @@
             this.Controls.Add(this.score1Label);
             this.Controls.Add(this.player2Label);
             this.Controls.Add(this.player1Label);
-            this.Controls.Add(this.Player2);
-            this.Controls.Add(this.Player1);
-            this.Name = "GameOverForm";
+            this.Controls.Add(this.Player2Box);
+            this.Controls.Add(this.Player1Box);
+            this.Name = "GameOverWindow";
             this.Text = "GameOverForm";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -110,8 +110,8 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox Player1;
-        private System.Windows.Forms.ListBox Player2;
+        private System.Windows.Forms.ListBox Player1Box;
+        private System.Windows.Forms.ListBox Player2Box;
         private System.Windows.Forms.Label score2Label;
         private System.Windows.Forms.Label score1Label;
         private System.Windows.Forms.Label player2Label;

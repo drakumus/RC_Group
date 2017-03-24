@@ -17,19 +17,29 @@ namespace BoggleClient
             InitializeComponent();
         }
 
-        public string[] Words1
+        public Dictionary<string, int> Words1
         {
             set
             {
-                throw new NotImplementedException();
+                foreach(string word in value.Keys)
+                {
+                    ListBox wordBox = new ListBox();
+                    wordBox.Text = word + "\t" + value[word].ToString();
+                    //Player1Box.Controls.Add()
+                }
             }
         }
 
-        public string[] Words2
+        public Dictionary<string, int> Words2
         {
             set
             {
-                throw new NotImplementedException();
+                foreach (string word in value.Keys)
+                {
+                    ListBox wordBox = new ListBox();
+                    wordBox.Text = word + "\t" + value[word].ToString();
+                    //Player1Box.Controls.Add()
+                }
             }
         }
 
