@@ -17,7 +17,7 @@ namespace BoggleClient
             InitializeComponent();
         }
 
-        public Dictionary<string, int> Words1
+        public Dictionary<string, int> Words1 
         {
             set
             {
