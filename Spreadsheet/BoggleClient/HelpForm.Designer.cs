@@ -67,7 +67,7 @@
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(12, 211);
+            this.label4.Location = new System.Drawing.Point(12, 225);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(568, 38);
             this.label4.TabIndex = 3;
@@ -78,10 +78,11 @@
             // 
             this.label5.Location = new System.Drawing.Point(12, 154);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(565, 40);
+            this.label5.Size = new System.Drawing.Size(565, 57);
             this.label5.TabIndex = 4;
             this.label5.Text = "Note: At any point during the previous two steps (while available) you can click " +
-    "cancel to cancel the server request.";
+    "cancel to cancel the server request. If connect is clicked and it goes back to c" +
+    "onnect you are connected.";
             // 
             // label6
             // 
@@ -105,7 +106,7 @@
             // label8
             // 
             this.label8.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label8.Location = new System.Drawing.Point(-1, 198);
+            this.label8.Location = new System.Drawing.Point(-1, 211);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(588, 2);
             this.label8.TabIndex = 40;
