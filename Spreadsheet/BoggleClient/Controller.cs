@@ -342,6 +342,8 @@ namespace BoggleClient
             refreshTimer.Enabled = false;
             countdownTimer.Enabled = false;
             window.PlayingGame = false;
+            game.gameState = "not connected";
+            window.GameState = game.gameState;
         }
 
         /// <summary>
