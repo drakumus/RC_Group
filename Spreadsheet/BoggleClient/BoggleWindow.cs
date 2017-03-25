@@ -180,6 +180,11 @@ namespace BoggleClient
             player2Label.Text = "Player2";
             player1ScoreLabel.Text = "0";
             player2ScoreLabel.Text = "0";
+
+            foreach(Button b in buttons)
+            {
+                b.Text = "";
+            }
         }
 
         /*
