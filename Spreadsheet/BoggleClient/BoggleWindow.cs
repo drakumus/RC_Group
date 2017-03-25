@@ -104,9 +104,11 @@ namespace BoggleClient
         {
             set
             {
-                isPlaying = value;
                 if (value == false)
-                    reset();
+                {
+                    this.Invoke((MethodInvoker)delegate { WordsListBox.Items.Clear(); });
+                }
+                isPlaying = value;
             }
         }
 
