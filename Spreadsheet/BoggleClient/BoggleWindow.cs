@@ -16,6 +16,9 @@ namespace BoggleClient
         private Button[] buttons;
         private List<string> wordList;
 
+        /// <summary>
+        /// initialize boggle window
+        /// </summary>
         public BoggleWindow()
         {
             InitializeComponent();
@@ -24,7 +27,9 @@ namespace BoggleClient
             wordList = new List<string>();
         }
 
-
+        /// <summary>
+        /// fill board
+        /// </summary>
         public char[] Letters
         {
             set
@@ -36,6 +41,10 @@ namespace BoggleClient
             }
         }
 
+
+        /// <summary>
+        /// set label for player1 Name
+        /// </summary>
         public string Player1Name
         {
             set
@@ -44,6 +53,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// set label for Player1 Score
+        /// </summary>
         public int Player1Score
         {
             set
@@ -52,6 +64,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// player2 label set
+        /// </summary>
         public string Player2Name
         {
             set
@@ -60,6 +75,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Set label for player 2 socre
+        /// </summary>
         public int Player2Score
         {
             set
@@ -68,6 +86,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Time label set
+        /// </summary>
         public int Time
         {
             set
@@ -76,6 +97,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// set text for the connect button. 
+        /// </summary>
         public string ConnectButtonText
         {
             set
@@ -84,6 +108,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Set text for create Game Button
+        /// </summary>
         public string CreateGameButtonText
         {
             set
@@ -92,6 +119,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Bool for if the user is connected. Used to prevent input that could cause errors.
+        /// </summary>
         public bool Connected
         {
             set
@@ -100,18 +130,24 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// bool used for reseting game UI and other input safety checks.
+        /// </summary>
         public bool PlayingGame
         {
             set
             {
                 if (value == false)
                 {
-                    this.Invoke((MethodInvoker)delegate { WordsListBox.Items.Clear(); });
+                    this.Invoke((MethodInvoker)delegate {reset(); });
                 }
                 isPlaying = value;
             }
         }
 
+        /// <summary>
+        /// Text Setter to show a message box from controller.
+        /// </summary>
         public string MessageBoxText
         {
             set
@@ -120,6 +156,9 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// game state being presented as status.
+        /// </summary>
         public string GameState
         {
             set
@@ -128,13 +167,22 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// reset method used as a helper for reseting UI.
+        /// </summary>
         private void reset()
         {
             WordsListBox.Items.Clear();
             wordBox.Clear();
+            timeLabel.Text = "0";
             createGameButton.Text="Join Game";
+            player1Label.Text = "Player1";
+            player2Label.Text = "Player2";
+            player1ScoreLabel.Text = "0";
+            player2ScoreLabel.Text = "0";
         }
 
+        /*
         public Dictionary<string, int> EnteredWords
         {
             set
@@ -151,7 +199,7 @@ namespace BoggleClient
                 }
             }
         }
-
+        */
         /// <summary>
         /// Passes name and server as parameters.
         /// </summary>
@@ -159,16 +207,29 @@ namespace BoggleClient
         public event Action<string> WordAddedEvent;
         public event Action<string> CreateGameEvent;
 
+        /// <summary>
+        /// used to close safely
+        /// </summary>
         public void DoClose()
         {
             this.Close();
         }
 
+        /// <summary>
+        /// Connect button click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void connectButton_Click(object sender, EventArgs e)
         {
             ConnectEvent(nameBox.Text, serverBox.Text);
         }
 
+        /// <summary>
+        /// Create Game Button Click
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void createGameButton_Click(object sender, EventArgs e)
         {
             if(isConnected)
@@ -179,6 +240,11 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Button click to score a word.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void WordButton_Click(object sender, EventArgs e)
         {
             if (isConnected && !isPlaying)
@@ -199,6 +265,11 @@ namespace BoggleClient
             }
         }
 
+        /// <summary>
+        /// Button to open the help window.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         {
             HelpForm help = new HelpForm();
