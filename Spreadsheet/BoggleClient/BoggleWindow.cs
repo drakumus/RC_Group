@@ -288,16 +288,23 @@ namespace BoggleClient
         /// <param name="text"></param>
         private void SetText(Control label, string text)
         {
-            // InvokeRequired required compares the thread ID of the
-            // calling thread to the thread ID of the creating thread.
-            // If these threads are different, it returns true.
-            if (label.InvokeRequired)
+            try
             {
-                this.Invoke((MethodInvoker)delegate { SetText(label, text); });
+                // InvokeRequired required compares the thread ID of the
+                // calling thread to the thread ID of the creating thread.
+                // If these threads are different, it returns true.
+                if (label.InvokeRequired)
+                {
+                    this.Invoke((MethodInvoker)delegate { SetText(label, text); });
+                }
+                else
+                {
+                    label.Text = text;
+                }
             }
-            else
+            catch
             {
-                label.Text = text;
+
             }
         }
     }
