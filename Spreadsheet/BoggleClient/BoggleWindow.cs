@@ -104,7 +104,10 @@ namespace BoggleClient
         {
             set
             {
+                if (value == false)
+                    WordsListBox.Items.Clear();
                 isPlaying = value;
+
             }
         }
 
@@ -122,6 +125,13 @@ namespace BoggleClient
             {
                 SetText(gameStateLabel, value);
             }
+        }
+
+        private void reset()
+        {
+            WordsListBox.Items.Clear();
+            wordBox.Clear();
+            createGameButton.Text="Join Game";
         }
 
         public Dictionary<string, int> EnteredWords
@@ -155,14 +165,7 @@ namespace BoggleClient
 
         private void connectButton_Click(object sender, EventArgs e)
         {
-            if(nameBox.Text != null && serverBox.Text != null)
-            {
-                ConnectEvent(nameBox.Text, serverBox.Text);
-            }
-            else
-            {
-                // TODO: Needs values alert
-            }
+            ConnectEvent(nameBox.Text, serverBox.Text);
         }
 
         private void createGameButton_Click(object sender, EventArgs e)

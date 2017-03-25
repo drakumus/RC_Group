@@ -256,9 +256,10 @@ namespace BoggleClient
                         if (game.gameState == "completed")
                         {
                             refreshTimer.Enabled = false;
-                            window.PlayingGame = false;
+                            
 
                             ShowGameOver();
+                            window.PlayingGame = false;
                         }
                     }
                 }
