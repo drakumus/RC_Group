@@ -133,6 +133,11 @@ namespace BoggleClient
         /// <param name="timeLimit"></param>
         private async void HandleCreateGame(string timeLimit)
         {
+            if(game.gameState == "active")
+            {
+                Reset();
+                return;
+            }
             if (game.gameState == "pending")
             {
                 CancelJoinRequest();
@@ -164,6 +169,10 @@ namespace BoggleClient
                         game.ID = data.GameID;
                         Refresh();
                         refreshTimer.Enabled = true;
+                        if(response.StatusCode == System.Net.HttpStatusCode.Created)
+                        {
+                            window.CreateGameButtonText = "Disconnect";
+                        }
                     }
                     else
                     {
@@ -182,9 +191,6 @@ namespace BoggleClient
                 window.CreateGameButtonText = "Join Game";
                 game.gameState = "not connected";
                 window.GameState = game.gameState;
-            }
-            finally
-            {
             }
         }
 
@@ -242,6 +248,7 @@ namespace BoggleClient
                     window.GameState = game.gameState;
                     if(game.gameState != "pending")
                     {
+                        window.CreateGameButtonText = "Disconnect";
                         window.PlayingGame = true;
                         game.UpdateGame(data);
                         countdownTimer.Enabled = true;
@@ -327,6 +334,14 @@ namespace BoggleClient
                     Console.WriteLine(response.ReasonPhrase);
                 }
             }
+        }
+
+        //Resets controller data
+        public void Reset()
+        {
+            refreshTimer.Enabled = false;
+            countdownTimer.Enabled = false;
+            window.PlayingGame = false;
         }
 
         /// <summary>

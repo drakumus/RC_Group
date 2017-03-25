@@ -88,7 +88,7 @@ namespace BoggleClient
         {
             set
             {
-                createGameButton.Text = value;
+                SetText(createGameButton, value);
             }
         }
 
@@ -204,13 +204,7 @@ namespace BoggleClient
             HelpForm help = new HelpForm();
             help.Show();
         }
-
-        /// <summary>
-        /// Callback for SetText
-        /// </summary>
-        /// <param name="label"></param>
-        /// <param name="text"></param>
-        delegate void SetTextCallback(Control label, string text);
+        
         /// <summary>
         /// Sets the text of specifiedLabel while checking for thread safety
         /// </summary>
@@ -223,8 +217,7 @@ namespace BoggleClient
             // If these threads are different, it returns true.
             if (label.InvokeRequired)
             {
-                SetTextCallback d = new SetTextCallback(SetText);
-                this.Invoke(d, new object[] { label, text });
+                this.Invoke((MethodInvoker)delegate { SetText(label, text); });
             }
             else
             {
