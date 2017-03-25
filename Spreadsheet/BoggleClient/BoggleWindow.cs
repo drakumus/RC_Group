@@ -284,7 +284,7 @@ namespace BoggleClient
         /// <summary>
         /// Sets the text of specifiedLabel while checking for thread safety
         /// </summary>
-        /// <param name="label"></param>
+        /// <param name="label"> </param>
         /// <param name="text"></param>
         private void SetText(Control label, string text)
         {
