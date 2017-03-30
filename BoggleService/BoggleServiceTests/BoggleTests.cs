@@ -11,7 +11,7 @@ namespace Boggle
     /// cases.  If something prevents the test cases from stopping the web server,
     /// subsequent tests may not work properly until the stray process is killed
     /// manually.
-    /// </summary>
+    /// </summary> 
     public static class IISAgent
     {
         // Reference to the running process
