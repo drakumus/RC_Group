@@ -31,23 +31,43 @@ namespace Boggle
         string JoinGame(string userToken, int timeLimit);
 
         /// <summary>
-        /// Plays a word in an active game
+        /// Attemts to cancel a pending request to join a game.
+        /// If userToken isn't known or is not a player in a pending game, responds with Forbidden.
+        /// Otherwise, removes the UserToken from the pending game and responds with OK.
+        /// </summary>
+        /// <param name="userToken"></param>
+        [WebInvoke(Method = "PUT", UriTemplate = "/games")]
+        void CancelJoin(string userToken);
+
+        /// <summary>
+        /// Plays a word in a game.
+        /// If word is null or empty when trimmed, or if gameID or userToken is missing or invalid,
+        /// of if userToken is not a player in the game identified by gameID, responds with Forbidden.
+        /// Otherwise, if the game state is anything other than active, responds with Conflict.
+        /// Otherwise, records the trimmed word as being played by userToken in the game identified by gameID.
+        /// Returns the score for word in the context of the game and responds with the status OK.
         /// </summary>
         /// <param name="gameID">gameID</param>
         /// <param name="userToken">user playing word's token</param>
         /// <param name="word">word being played</param>
         /// <returns></returns>
-        [WebInvoke(Method = "PUT", UriTemplate = "games/{GameID}")]
+        [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
         string PlayWord(int gameID, string userToken, string word);
 
         /// <summary>
-        /// Returns the status of the game
-        /// TODO: Handle brief
+        /// Gets the status of a game.
+        /// If gameID is invalid, responds with Forbidden.
+        /// Otherwise, returns information about the game named by gameID.
+        /// Note that the information returned depends on whether "Breif=yes" was included as a parameter
+        /// as well as on the state of the game. Responds with status code OK.
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        [WebInvoke(Method = "GET", UriTemplate = "games/{GameID}")]
-        Game GameStatus(int gameID);
+        [WebInvoke(Method = "GET", UriTemplate = "/games/{GameID}")]
+        Game GameStatus(int gameID, string breif);
+
+
+
         /// <summary>
         /// Sends back index.html as the response body.
         /// </summary>

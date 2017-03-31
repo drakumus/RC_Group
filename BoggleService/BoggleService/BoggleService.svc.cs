@@ -150,7 +150,18 @@ namespace Boggle
             }
         }
 
-        //play word
+        /// <summary>
+        /// Plays a word in a game.
+        /// If word is null or empty when trimmed, or if gameID or userToken is missing or invalid,
+        /// of if userToken is not a player in the game identified by gameID, responds with Forbidden.
+        /// Otherwise, if the game state is anything other than active, responds with Conflict.
+        /// Otherwise, records the trimmed word as being played by userToken in the game identified by gameID.
+        /// Returns the score for word in the context of the game and responds with the status OK.
+        /// </summary>
+        /// <param name="gameID"></param>
+        /// <param name="userToken"></param>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public string PlayWord(int gameID, string userToken, string word)
         {
             lock (sync)
@@ -162,7 +173,7 @@ namespace Boggle
                     return null;
                 }
                 //word null check
-                if (word == null)
+                if (word == null || word.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -212,6 +223,7 @@ namespace Boggle
                 activePlayer.WordsPlayed.Add(wordItem);
                 activeGame.WordsPlayed.Add(word);
 
+                SetStatus(OK);
                 return wordItem.Score.ToString();
             }
         }
@@ -219,7 +231,9 @@ namespace Boggle
         /// <summary>
         /// Gets the status of a game.
         /// If gameID is invalid, responds with Forbidden.
-        /// Otherwise, returns information about the game named by gameID
+        /// Otherwise, returns information about the game named by gameID.
+        /// Note that the information returned depends on whether "Breif=yes" was included as a parameter
+        /// as well as on the state of the game. Responds with status code OK.
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
@@ -235,6 +249,7 @@ namespace Boggle
                 }
 
                 //returns referenced game
+                SetStatus(OK);
                 return games[gameID];
             }
         }
