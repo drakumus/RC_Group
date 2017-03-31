@@ -44,6 +44,7 @@ namespace Boggle
 
     public class WordThing
     {
-
+        public string UserToken { get; set; }
+        public string Word { get; set; }
     }
 }
