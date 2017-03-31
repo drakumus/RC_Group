@@ -41,4 +41,9 @@ namespace Boggle
         public string Word { get; set; }
         public int Score { get; set; }
     }
+
+    public class WordThing
+    {
+
+    }
 }

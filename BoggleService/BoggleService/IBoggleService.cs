@@ -65,6 +65,9 @@ namespace Boggle
         /// <returns></returns>
         [WebInvoke(Method = "GET", UriTemplate = "/games/{GameID}")]
         Game GameStatus(int gameID, string breif);
+
+
+
         /// <summary>
         /// Sends back index.html as the response body.
         /// </summary>
