@@ -9,7 +9,7 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-        private readonly static Dictionary<string, string> users = new Dictionary<string, string>();
+        private readonly static Dictionary<string, string> users = new Dictionary<string, string>(); //UserToken, Nickname
         private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
         private static int pending;
         private static readonly object sync = new object();
@@ -185,6 +185,127 @@ namespace Boggle
             {
                 SetStatus(Forbidden);
                 return null;
+            }
+        }
+
+        //play word
+        public string PlayWord(int gameID, string userToken, string word)
+        {
+            //playerID null check
+            if(userToken == null)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            //word null check
+            if(word == null)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            //check for valid game ID
+            if (!games.ContainsKey(gameID))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            //initialize activePlayer, activeGame
+            PlayerInfo activePlayer = null;
+            Game activeGame = games[gameID];
+
+            //check for valid game status
+            if(activeGame.GameState != "active")
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            //assign active Player
+            if (userToken == activeGame.Player1Info.UserToken)
+            {
+                activePlayer = activeGame.Player1Info;
+            }
+            if (userToken == activeGame.Player2Info.UserToken)
+            {
+                activePlayer = activeGame.Player2Info;
+            }
+            //valid check for userToken
+            if (activePlayer == null)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            //check for valid word and score.
+            WordItem wordItem = new WordItem()
+            {
+                Word = word,
+                Score = ScoreWord(activeGame, word).ToString(),
+            };
+
+            //update?
+            activePlayer.WordsPlayed.Add(wordItem);
+            activeGame.WordsPlayed.Add(word);
+
+            return wordItem.Score;
+        }
+
+        //game status
+        public Game GameStatus(int gameID)
+        {
+            //checks for valid gameID
+            if (!games.ContainsKey(gameID))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            //returns referenced game
+            return games[gameID];
+        }
+
+        private int ScoreWord(Game game, string word)
+        {
+            List<string> activeWords = game.WordsPlayed;
+            int length = word.Length;
+
+            //duplicate check
+            if (activeWords.Contains(word))
+            {
+                return 0;
+            }
+
+
+            //normal scoring
+            if (!game.Board.CanBeFormed(word))
+            {
+                return -1;
+            }
+
+            if (length < 3 && length > 0)
+            {
+                return 0;
+            }
+            else if (length < 5)
+            {
+                return 1;
+            }
+            else if (length == 5)
+            {
+                return 2;
+            }
+            else if (length == 6)
+            {
+                return 3;
+            }
+            else if (length == 7)
+            {
+                return 4;
+            }
+            else
+            {
+                return 11;
             }
         }
     }
