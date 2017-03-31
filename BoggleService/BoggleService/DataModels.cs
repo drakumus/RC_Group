@@ -22,8 +22,8 @@ namespace Boggle
 
         public Timer CountdownTimer { get; set; }
 
-        public PlayerInfo Player1Info { get; set; }
-        public PlayerInfo Player2Info { get; set; }
+        public PlayerInfo Player1 { get; set; }
+        public PlayerInfo Player2 { get; set; }
 
         public void CountdownTimerEvent(object source, ElapsedEventArgs e)
         {

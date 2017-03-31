@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Web;
@@ -86,7 +87,7 @@ namespace Boggle
                         GameState = "pending",
                         TimeLimit = data.TimeLimit,
                         TimeLeft = data.TimeLimit,
-                        Player1Info = new PlayerInfo()
+                        Player1 = new PlayerInfo()
                         {
                             UserToken = data.UserToken,
                             Nickname = users[data.UserToken]
@@ -104,7 +105,7 @@ namespace Boggle
                     Game game = games[gameID];
                     game.GameState = "active";
                     game.CountdownTimer.Enabled = true;
-                    game.Player2Info = new PlayerInfo()
+                    game.Player2 = new PlayerInfo()
                     {
                         UserToken = data.UserToken,
                         Nickname = users[data.UserToken]
@@ -138,7 +139,7 @@ namespace Boggle
                     return;
                 }
                 Game game = games[pending];
-                if (game.Player1Info.UserToken == userToken)
+                if (game.Player1.UserToken == userToken)
                 {
                     SetStatus(OK);
                     pending = null;
@@ -197,13 +198,13 @@ namespace Boggle
                 }
 
                 //assign active Player
-                if (data.UserToken == activeGame.Player1Info.UserToken)
+                if (data.UserToken == activeGame.Player1.UserToken)
                 {
-                    activePlayer = activeGame.Player1Info;
+                    activePlayer = activeGame.Player1;
                 }
-                if (data.UserToken == activeGame.Player2Info.UserToken)
+                if (data.UserToken == activeGame.Player2.UserToken)
                 {
-                    activePlayer = activeGame.Player2Info;
+                    activePlayer = activeGame.Player2;
                 }
                 //valid check for userToken
                 if (activePlayer == null)
@@ -237,7 +238,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        public Game GameStatus(string breif, string gameID)
+        public dynamic GameStatus(string breif, string gameID)
         {
             lock (sync)
             {
@@ -250,7 +251,27 @@ namespace Boggle
 
                 //returns referenced game
                 SetStatus(OK);
-                return games[gameID];
+
+                Game game = games[gameID];
+                dynamic status = new ExpandoObject();
+                status.GameState = game.GameState;
+                status.TimeLeft = game.TimeLeft;
+                status.Player1.Score = game.Player1.Score;
+                status.Player2.Score = game.Player2.Score;
+                if (breif == "yes")
+                {
+                    return status;
+                }
+                status.Board = game.Board.ToString();
+                status.TimeLimit = game.TimeLimit;
+                status.Player1.Nickname = game.Player1.Nickname;
+                status.Player2.Nickname = game.Player2.Nickname;
+                if(game.GameState == "completed")
+                {
+                    status.Player1.WordsPlayed = game.Player1.WordsPlayed;
+                    status.Player2.WordsPlayed = game.Player2.WordsPlayed;
+                }
+                return status;
             }
         }
 
