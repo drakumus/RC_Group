@@ -50,6 +50,15 @@ namespace Boggle
             }
         }
 
+        /// <summary>
+        /// Attempts to join a game.
+        /// If userToken isn't known, timeLimit less than 5 or timeLimit greater than 120, responds with status code Forbidden.
+        /// Otherwise, if there is no pending game, ceates one and responds with Accepted.
+        /// If there is a pending game, starts the game and responds with Created.
+        /// </summary>
+        /// <param name="userToken"></param>
+        /// <param name="timeLimit"></param>
+        /// <returns></returns>
         public string JoinGame(string userToken, int timeLimit)
         {
             lock (sync)
