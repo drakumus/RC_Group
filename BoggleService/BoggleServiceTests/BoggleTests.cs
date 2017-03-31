@@ -76,7 +76,7 @@ namespace Boggle
         {
             dynamic user = new ExpandoObject();
             user.Nickname = "Joe";
-            Response r = client.DoPostAsync(user, "users").Result;
+            Response r = client.DoPostAsync("users", user).Result;
             Assert.AreEqual(Created, r.Status);
         }
     }
