@@ -29,6 +29,7 @@ namespace Boggle
             TimeLeft--;
             if (TimeLeft <= 0)
             {
+                TimeLeft = 0;
                 CountdownTimer.Enabled = false;
             }
         }
