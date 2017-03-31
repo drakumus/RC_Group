@@ -113,25 +113,23 @@ namespace Boggle
         /// <summary>
         /// Generates a game ID and has two users join a game.
         /// </summary>
-        /// <param name="user1Token">User 1's token</param>
-        /// <param name="user1Time">User 1's time</param>
-        /// <param name="user2Token">User 2's token</param>
-        /// <param name="user2Time">User 2's time</param>
-        /// <returns>Response returned. If successfull the return.Data will be set</returns>
-        private Response MakeGame(string player1Token, int player1Time)
+        /// <param name="user1Token"></param>
+        /// <param name="user1Time"></param>
+        /// <returns></returns>
+        private Response MakeGame(string user1Token, int user1Time)
         {
             Response r = MakePlayer("Tod");
             Assert.AreEqual(Created, r.Status);
             
-            string player2Token = r.Data.UserToken;
+            string user2Token = r.Data.UserToken;
 
             
             dynamic player1 = new ExpandoObject();
-            player1.UserToken = player1Token;
-            player1.TimeLimit = player1Time;
+            player1.UserToken = user1Token;
+            player1.TimeLimit = user1Time;
 
             dynamic player2 = new ExpandoObject();
-            player2.UserToken = player2Token;
+            player2.UserToken = user2Token;
             player2.TimeLimit = 20;
 
             Response r1 = client.DoPostAsync("games", player1).Result;
@@ -175,8 +173,12 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             Assert.AreEqual(Created, r1.Status);
-            Response r2 = MakePlayer("Tod");
-            Assert.AreEqual(Created, r1.Status);
+            string player1Token = r1.Data.UserToken;
+
+            int gameID = MakeGame(player1Token, 10).Data.GameID;
+
         }
+
+
     }
 }
