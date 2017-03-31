@@ -10,8 +10,8 @@ namespace Boggle
     public class BoggleService : IBoggleService
     {
         private readonly static Dictionary<string, string> users = new Dictionary<string, string>(); //UserToken, Nickname
-        private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
-        private static int pending;
+        private readonly static Dictionary<string, Game> games = new Dictionary<string, Game>();
+        private static string pending;
         private static readonly object sync = new object();
 
         /// <summary>
@@ -59,37 +59,37 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public string JoinGame(string userToken, int timeLimit)
+        public string JoinGame(TimeThing data)
         {
             lock (sync)
             {
-                if(userToken == null)
+                if(data.UserToken == null)
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
-                if (!users.ContainsKey(userToken))
+                if (!users.ContainsKey(data.UserToken))
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
-                if (timeLimit < 5 || timeLimit > 120)
+                if (data.TimeLimit < 5 || data.TimeLimit > 120)
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
-                if (pending == -1)
+                if (pending == null)
                 {
-                    int gameID = games.Count + 1;
+                    string gameID = (games.Count + 1).ToString();
                     Game game = new Game()
                     {
                         GameState = "pending",
-                        TimeLimit = timeLimit,
-                        TimeLeft = timeLimit,
+                        TimeLimit = data.TimeLimit,
+                        TimeLeft = data.TimeLimit,
                         Player1Info = new PlayerInfo()
                         {
-                            UserToken = userToken,
-                            Nickname = users[userToken]
+                            UserToken = data.UserToken,
+                            Nickname = users[data.UserToken]
                         }
                     };
                     games.Add(gameID, game);
@@ -100,17 +100,17 @@ namespace Boggle
                 }
                 else
                 {
-                    int gameID = pending;
+                    string gameID = pending;
                     Game game = games[gameID];
                     game.GameState = "active";
                     game.CountdownTimer.Enabled = true;
                     game.Player2Info = new PlayerInfo()
                     {
-                        UserToken = userToken,
-                        Nickname = users[userToken]
+                        UserToken = data.UserToken,
+                        Nickname = users[data.UserToken]
                     };
 
-                    pending = -1;
+                    pending = null;
                     SetStatus(Created);
                     return gameID.ToString();
                 }
@@ -141,7 +141,7 @@ namespace Boggle
                 if (game.Player1Info.UserToken == userToken)
                 {
                     SetStatus(OK);
-                    pending = -1;
+                    pending = null;
                 }
                 else
                 {
@@ -162,18 +162,18 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="word"></param>
         /// <returns></returns>
-        public string PlayWord(int gameID, string userToken, string word)
+        public string PlayWord(WordThing data, string gameID)
         {
             lock (sync)
             {
                 //playerID null check
-                if (userToken == null)
+                if (data.UserToken == null)
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
                 //word null check
-                if (word == null || word.Trim().Length == 0)
+                if (data.Word == null || data.Word.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -197,11 +197,11 @@ namespace Boggle
                 }
 
                 //assign active Player
-                if (userToken == activeGame.Player1Info.UserToken)
+                if (data.UserToken == activeGame.Player1Info.UserToken)
                 {
                     activePlayer = activeGame.Player1Info;
                 }
-                if (userToken == activeGame.Player2Info.UserToken)
+                if (data.UserToken == activeGame.Player2Info.UserToken)
                 {
                     activePlayer = activeGame.Player2Info;
                 }
@@ -215,13 +215,13 @@ namespace Boggle
                 //check for valid word and score.
                 WordItem wordItem = new WordItem()
                 {
-                    Word = word,
-                    Score = ScoreWord(word, activeGame),
+                    Word = data.Word,
+                    Score = ScoreWord(data.Word, activeGame),
                 };
 
                 //update?
                 activePlayer.WordsPlayed.Add(wordItem);
-                activeGame.WordsPlayed.Add(word);
+                activeGame.WordsPlayed.Add(data.Word);
 
                 SetStatus(OK);
                 return wordItem.Score.ToString();
@@ -237,7 +237,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        public Game GameStatus(int gameID, string breif)
+        public Game GameStatus(string breif, string gameID)
         {
             lock (sync)
             {

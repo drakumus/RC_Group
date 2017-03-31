@@ -31,6 +31,7 @@ namespace Boggle
             if (TimeLeft <= 0)
             {
                 TimeLeft = 0;
+                GameState = "completed";
                 CountdownTimer.Enabled = false;
             }
         }
@@ -46,5 +47,11 @@ namespace Boggle
     {
         public string UserToken { get; set; }
         public string Word { get; set; }
+    }
+
+    public class TimeThing
+    {
+        public string UserToken { get; set; }
+        public int TimeLimit { get; set; }
     }
 }
