@@ -18,8 +18,9 @@ namespace Boggle
         public int TimeLeft { get; set; }
         public string GameState { get; set; }
 
-        public Timer CountdownTimer { get; set; }
+        public readonly List<string> WordsPlayed = new List<string>();
 
+        public Timer CountdownTimer { get; set; }
 
         public PlayerInfo Player1Info { get; set; }
         public PlayerInfo Player2Info { get; set; }
