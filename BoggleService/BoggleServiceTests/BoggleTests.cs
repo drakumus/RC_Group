@@ -73,14 +73,15 @@ namespace Boggle
         [TestMethod]
         public void TestMethod1()
         {
-            Response r = client.DoGetAsync("word?index={0}", "-5").Result;
-            Assert.AreEqual(Forbidden, r.Status);
+            Response r = client.DoPostAsync("users", @"{""Nickname"": ""value""}").Result;
+            //Response r = client.DoGetAsync("word?index={0}", "-5").Result;
+            Assert.AreEqual(Created, r.Status);
 
-            r = client.DoGetAsync("word?index={0}", "5").Result;
-            Assert.AreEqual(OK, r.Status);
+            //r = client.DoGetAsync("word?index={0}", "5").Result;
+            //Assert.AreEqual(OK, r.Status);
 
-            string word = (string) r.Data;
-            Assert.AreEqual("AAL", word);
+            //string word = (string) r.Data;
+            //Assert.AreEqual("AAL", word);
         }
     }
 }
