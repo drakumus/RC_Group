@@ -223,7 +223,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        public Game GameStatus(int gameID, string breif)
+        public Game GameStatus(int gameID)
         {
             lock (sync)
             {
