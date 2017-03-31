@@ -238,7 +238,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        public dynamic GameStatus(string breif, string gameID)
+        public dynamic GameStatus(string gameID, string brief)
         {
             lock (sync)
             {
@@ -258,7 +258,7 @@ namespace Boggle
                 status.TimeLeft = game.TimeLeft;
                 status.Player1.Score = game.Player1.Score;
                 status.Player2.Score = game.Player2.Score;
-                if (breif == "yes")
+                if (brief == "yes")
                 {
                     return status;
                 }
