@@ -32,11 +32,11 @@ namespace Boggle
         /// </summary>
         /// <param name="nickname"></param>
         /// <returns></returns>
-        public string Register(string nickname)
+        public string Register(PlayerInfo player)
         {
             lock (sync)
             {
-                if(nickname == null || nickname.Trim().Length == 0)
+                if(player.Nickname == null || player.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -44,7 +44,7 @@ namespace Boggle
                 else
                 {
                     string userToken = Guid.NewGuid().ToString();
-                    users.Add(userToken, nickname);
+                    users.Add(userToken, player.Nickname);
                     SetStatus(Created);
                     return userToken;
                 }
@@ -333,39 +333,6 @@ namespace Boggle
             SetStatus(OK);
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
-        }
-
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        public string WordAtIndex(int n)
-        {
-            if (n < 0)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            string line;
-            using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
-            {
-                while ((line = file.ReadLine()) != null)
-                {
-                    if (n == 0) break;
-                    n--;
-                }
-            }
-
-            if (n == 0)
-            {
-                SetStatus(OK);
-                return line;
-            }
-            else
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
         }
     }
 }

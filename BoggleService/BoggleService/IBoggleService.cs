@@ -16,7 +16,7 @@ namespace Boggle
         /// <param name="nickname"></param>
         /// <returns></returns>
         [WebInvoke(Method = "POST", UriTemplate = "/users")]
-        string Register(string nickname);
+        string Register(PlayerInfo nickname);
 
         /// <summary>
         /// Attempts to join a game.
@@ -63,7 +63,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        [WebGet(UriTemplate = "/games/gameID={GameID}&brief={brief}")]
+        [WebGet(UriTemplate = "/games/gameID={GameID}?brief={brief}")]
         dynamic GameStatus(string gameID, string brief);
 
 
@@ -73,15 +73,5 @@ namespace Boggle
         /// </summary>
         [WebGet(UriTemplate = "/api")]
         Stream API();
-
-        /// <summary>
-        /// Returns the nth word from dictionary.txt.  If there is
-        /// no nth word, responds with code 403. This is a demo;
-        /// you can delete it.
-        /// </summary>
-        [WebGet(UriTemplate = "/word?index={n}")]
-        string WordAtIndex(int n);
-
-
     }
 }
