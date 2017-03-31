@@ -118,31 +118,175 @@ namespace Boggle
         }
 
         /// <summary>
-        /// 
+        /// Attemts to cancel a pending request to join a game.
+        /// If userToken isn't known or is not a player in a pending game, responds with Forbidden.
+        /// Otherwise, removes the UserToken from the pending game and responds with OK.
         /// </summary>
         /// <param name="userToken"></param>
         public void CancelJoin(string userToken)
         {
-            if (userToken == null)
+            lock (sync)
             {
-                SetStatus(Forbidden);
-                return;
+                if (userToken == null)
+                {
+                    SetStatus(Forbidden);
+                    return;
+                }
+                if (!users.ContainsKey(userToken))
+                {
+                    SetStatus(Forbidden);
+                    return;
+                }
+                Game game = games[pending];
+                if (game.Player1Info.UserToken == userToken)
+                {
+                    SetStatus(OK);
+                    pending = -1;
+                }
+                else
+                {
+                    SetStatus(Forbidden);
+                }
             }
-            if (!users.ContainsKey(userToken))
+        }
+
+        //play word
+        public string PlayWord(int gameID, string userToken, string word)
+        {
+            lock (sync)
             {
-                SetStatus(Forbidden);
-                return;
+                //playerID null check
+                if (userToken == null)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                //word null check
+                if (word == null)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                //check for valid game ID
+                if (!games.ContainsKey(gameID))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                //initialize activePlayer, activeGame
+                PlayerInfo activePlayer = null;
+                Game activeGame = games[gameID];
+
+                //check for valid game status
+                if (activeGame.GameState != "active")
+                {
+                    SetStatus(Conflict);
+                    return null;
+                }
+
+                //assign active Player
+                if (userToken == activeGame.Player1Info.UserToken)
+                {
+                    activePlayer = activeGame.Player1Info;
+                }
+                if (userToken == activeGame.Player2Info.UserToken)
+                {
+                    activePlayer = activeGame.Player2Info;
+                }
+                //valid check for userToken
+                if (activePlayer == null)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                //check for valid word and score.
+                WordItem wordItem = new WordItem()
+                {
+                    Word = word,
+                    Score = ScoreWord(word, activeGame),
+                };
+
+                //update?
+                activePlayer.WordsPlayed.Add(wordItem);
+                activeGame.WordsPlayed.Add(word);
+
+                return wordItem.Score.ToString();
             }
-            Game game = games[pending];
-            if(game.Player1Info.UserToken == userToken)
+        }
+
+        /// <summary>
+        /// Gets the status of a game.
+        /// If gameID is invalid, responds with Forbidden.
+        /// Otherwise, returns information about the game named by gameID
+        /// </summary>
+        /// <param name="gameID"></param>
+        /// <returns></returns>
+        public Game GameStatus(int gameID, string breif)
+        {
+            lock (sync)
             {
-                SetStatus(OK);
+                //checks for valid gameID
+                if (!games.ContainsKey(gameID))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                //returns referenced game
+                return games[gameID];
+            }
+        }
+
+        /// <summary>
+        /// Helper method for getting the score of a word in a game
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        private int ScoreWord(string word, Game game)
+        {
+            //duplicate check
+            if (game.WordsPlayed.Contains(word))
+            {
+                return 0;
+            }
+
+            //normal scoring
+            int length = word.Length;
+            if (!game.Board.CanBeFormed(word))
+            {
+                return -1;
+            }
+
+            if (length < 3 && length > 0)
+            {
+                return 0;
+            }
+            else if (length < 5)
+            {
+                return 1;
+            }
+            else if (length == 5)
+            {
+                return 2;
+            }
+            else if (length == 6)
+            {
+                return 3;
+            }
+            else if (length == 7)
+            {
+                return 4;
             }
             else
             {
-                SetStatus(Forbidden);
+                return 11;
             }
         }
+
+
 
         /// <summary>
         /// Returns a Stream version of index.html.
@@ -185,127 +329,6 @@ namespace Boggle
             {
                 SetStatus(Forbidden);
                 return null;
-            }
-        }
-
-        //play word
-        public string PlayWord(int gameID, string userToken, string word)
-        {
-            //playerID null check
-            if(userToken == null)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-            //word null check
-            if(word == null)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            //check for valid game ID
-            if (!games.ContainsKey(gameID))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-            //initialize activePlayer, activeGame
-            PlayerInfo activePlayer = null;
-            Game activeGame = games[gameID];
-
-            //check for valid game status
-            if(activeGame.GameState != "active")
-            {
-                SetStatus(Conflict);
-                return null;
-            }
-
-            //assign active Player
-            if (userToken == activeGame.Player1Info.UserToken)
-            {
-                activePlayer = activeGame.Player1Info;
-            }
-            if (userToken == activeGame.Player2Info.UserToken)
-            {
-                activePlayer = activeGame.Player2Info;
-            }
-            //valid check for userToken
-            if (activePlayer == null)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            //check for valid word and score.
-            WordItem wordItem = new WordItem()
-            {
-                Word = word,
-                Score = ScoreWord(activeGame, word).ToString(),
-            };
-
-            //update?
-            activePlayer.WordsPlayed.Add(wordItem);
-            activeGame.WordsPlayed.Add(word);
-
-            return wordItem.Score;
-        }
-
-        //game status
-        public Game GameStatus(int gameID)
-        {
-            //checks for valid gameID
-            if (!games.ContainsKey(gameID))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            //returns referenced game
-            return games[gameID];
-        }
-
-        private int ScoreWord(Game game, string word)
-        {
-            List<string> activeWords = game.WordsPlayed;
-            int length = word.Length;
-
-            //duplicate check
-            if (activeWords.Contains(word))
-            {
-                return 0;
-            }
-
-
-            //normal scoring
-            if (!game.Board.CanBeFormed(word))
-            {
-                return -1;
-            }
-
-            if (length < 3 && length > 0)
-            {
-                return 0;
-            }
-            else if (length < 5)
-            {
-                return 1;
-            }
-            else if (length == 5)
-            {
-                return 2;
-            }
-            else if (length == 6)
-            {
-                return 3;
-            }
-            else if (length == 7)
-            {
-                return 4;
-            }
-            else
-            {
-                return 11;
             }
         }
     }
