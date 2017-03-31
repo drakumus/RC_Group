@@ -30,8 +30,24 @@ namespace Boggle
         [WebInvoke(Method = "POST", UriTemplate = "/games")]
         string JoinGame(string userToken, int timeLimit);
 
+        /// <summary>
+        /// Plays a word in an active game
+        /// </summary>
+        /// <param name="gameID">gameID</param>
+        /// <param name="userToken">user playing word's token</param>
+        /// <param name="word">word being played</param>
+        /// <returns></returns>
+        [WebInvoke(Method = "PUT", UriTemplate = "games/{GameID}")]
+        string PlayWord(int gameID, string userToken, string word);
 
-
+        /// <summary>
+        /// Returns the status of the game
+        /// TODO: Handle brief
+        /// </summary>
+        /// <param name="gameID"></param>
+        /// <returns></returns>
+        [WebInvoke(Method = "GET", UriTemplate = "games/{GameID}")]
+        Game GameStatus(int gameID);
         /// <summary>
         /// Sends back index.html as the response body.
         /// </summary>
@@ -45,5 +61,7 @@ namespace Boggle
         /// </summary>
         [WebGet(UriTemplate = "/word?index={n}")]
         string WordAtIndex(int n);
+
+
     }
 }
