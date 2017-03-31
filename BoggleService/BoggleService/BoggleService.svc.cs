@@ -118,6 +118,33 @@ namespace Boggle
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userToken"></param>
+        public void CancelJoin(string userToken)
+        {
+            if (userToken == null)
+            {
+                SetStatus(Forbidden);
+                return;
+            }
+            if (!users.ContainsKey(userToken))
+            {
+                SetStatus(Forbidden);
+                return;
+            }
+            Game game = games[pending];
+            if(game.Player1Info.UserToken == userToken)
+            {
+                SetStatus(OK);
+            }
+            else
+            {
+                SetStatus(Forbidden);
+            }
+        }
+
+        /// <summary>
         /// Returns a Stream version of index.html.
         /// </summary>
         /// <returns></returns>

@@ -38,6 +38,6 @@ namespace Boggle
     public class WordItem
     {
         public string Word { get; set; }
-        public string Score { get; set; }
+        public int Score { get; set; }
     }
 }
