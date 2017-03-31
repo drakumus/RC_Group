@@ -7,14 +7,13 @@ namespace Boggle
         public string Nickname { get; set; }
         public string UserToken { get; set; }
         public int Score;
-        List<WordItem> WordsPlayed;
+        public readonly List<WordItem> WordsPlayed = new List<WordItem>();
     }
 
     public class Game
     {
-        public string Board { get; set; }
-
-        public string TimeLimit { get; set; }
+        public readonly BoggleBoard Board = new BoggleBoard();
+        public int TimeLimit { get; set; }
         public int TimeLeft { get; set; }
         public string GameState { get; set; }
 

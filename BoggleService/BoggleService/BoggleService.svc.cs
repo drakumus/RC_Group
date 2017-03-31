@@ -9,6 +9,11 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
+        private readonly static Dictionary<string, string> users = new Dictionary<string, string>();
+        private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
+        private static int pending;
+        private static readonly object sync = new object();
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.
@@ -17,6 +22,89 @@ namespace Boggle
         private static void SetStatus(HttpStatusCode status)
         {
             WebOperationContext.Current.OutgoingResponse.StatusCode = status;
+        }
+
+        /// <summary>
+        /// Registers a new user.
+        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
+        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <returns></returns>
+        public string Register(string nickname)
+        {
+            lock (sync)
+            {
+                if(nickname == null || nickname.Trim().Length == 0)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                else
+                {
+                    string userToken = Guid.NewGuid().ToString();
+                    users.Add(userToken, nickname);
+                    SetStatus(Created);
+                    return userToken;
+                }
+            }
+        }
+
+        public string JoinGame(string userToken, int timeLimit)
+        {
+            lock (sync)
+            {
+                if(userToken == null)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                if (!users.ContainsKey(userToken))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                if (timeLimit < 5 || timeLimit > 120)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                if (pending == -1)
+                {
+                    int gameID = games.Count + 1;
+                    Game game = new Game()
+                    {
+                        GameState = "pending",
+                        TimeLimit = timeLimit,
+                        Player1Info = new PlayerInfo()
+                        {
+                            UserToken = userToken,
+                            Nickname = users[userToken]
+                        }
+                    };
+                    games.Add(gameID, game);
+
+                    pending = gameID;
+                    SetStatus(Accepted);
+                    return gameID.ToString();
+                }
+                else
+                {
+                    int gameID = pending;
+                    Game game = games[gameID];
+                    game.GameState = "active";
+                    // TODO: start timer
+                    game.Player2Info = new PlayerInfo()
+                    {
+                        UserToken = userToken,
+                        Nickname = users[userToken]
+                    };
+
+                    pending = -1;
+                    SetStatus(Created);
+                    return gameID.ToString();
+                }
+            }
         }
 
         /// <summary>
