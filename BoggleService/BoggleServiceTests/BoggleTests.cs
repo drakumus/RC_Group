@@ -118,19 +118,26 @@ namespace Boggle
         /// <param name="user2Token">User 2's token</param>
         /// <param name="user2Time">User 2's time</param>
         /// <returns>Response returned. If successfull the return.Data will be set</returns>
-        private Response MakeGame(string user1Token, int user1Time, string user2Token, int user2Time)
+        private Response MakeGame(string player1Token, int player1Time)
         {
+            Response r = MakePlayer("Tod");
+            Assert.AreEqual(Created, r.Status);
+            
+            string player2Token = r.Data.UserToken;
+
+            
             dynamic player1 = new ExpandoObject();
+            player1.UserToken = player1Token;
+            player1.TimeLimit = player1Time;
+
             dynamic player2 = new ExpandoObject();
-
-            player1.UserToken = user1Token;
-            player1.TimeLimit = user1Time;
-
-            player2.UserToken = user1Token;
-            player2.TimeLimit = user1Time;
+            player2.UserToken = player2Token;
+            player2.TimeLimit = 20;
 
             Response r1 = client.DoPostAsync("games", player1).Result;
+            Assert.AreEqual(Accepted, r1.Status);
             Response r2 = client.DoPostAsync("games", player2).Result;
+            Assert.AreEqual(Created, r2.Status);
             return r1;
         }
 
@@ -159,10 +166,17 @@ namespace Boggle
         [TestMethod]
         public void TestMethod1()
         {
-            dynamic user = new ExpandoObject();
-            user.Nickname = "Joe";
-            Response r = client.DoPostAsync("users", user).Result;
+            Response r = MakePlayer("Joe");
             Assert.AreEqual(Created, r.Status);
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            Response r1 = MakePlayer("Joe");
+            Assert.AreEqual(Created, r1.Status);
+            Response r2 = MakePlayer("Tod");
+            Assert.AreEqual(Created, r1.Status);
         }
     }
 }

@@ -86,7 +86,6 @@ namespace Boggle
                     {
                         GameState = "pending",
                         TimeLimit = data.TimeLimit,
-                        TimeLeft = data.TimeLimit,
                         Player1 = new PlayerInfo()
                         {
                             UserToken = data.UserToken,
@@ -104,6 +103,8 @@ namespace Boggle
                     string gameID = pending;
                     Game game = games[gameID];
                     game.GameState = "active";
+                    game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
+                    game.TimeLeft = game.TimeLimit;
                     game.CountdownTimer.Enabled = true;
                     game.Player2 = new PlayerInfo()
                     {
