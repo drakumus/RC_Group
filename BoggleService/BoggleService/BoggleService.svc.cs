@@ -277,26 +277,26 @@ namespace Boggle
                 }
 
                 //returns referenced game
-                SetStatus(OK);
 
                 Game game = games[id];
                 Status status = new Status();
+                SetStatus(OK);
                 status.GameState = game.GameState;
                 if(status.GameState == "pending")
                 {
                     return status;
                 }
+                status.TimeLeft = game.TimeLeft;
+                status.Player1 = new PlayerInfo()
+                {
+                    Score = game.Player1.Score
+                };
+                status.Player2 = new PlayerInfo()
+                {
+                    Score = game.Player2.Score
+                };
                 if (brief == "yes")
                 {
-                    status.TimeLeft = game.TimeLeft;
-                    status.Player1 = new PlayerInfo()
-                    {
-                        Score = game.Player1.Score
-                    };
-                    status.Player2 = new PlayerInfo()
-                    {
-                        Score = game.Player2.Score
-                    };
                     return status;
                 }
                 status.Board = game.Board.ToString();

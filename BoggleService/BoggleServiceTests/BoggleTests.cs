@@ -378,7 +378,7 @@ namespace Boggle
 
             Response r2 = client.DoPostAsync("games", player).Result;
 
-            Response r = PlayWord(player1Token, "boggle", r2.Data);
+            Response r = PlayWord(player1Token, "boggle", r2.Data.GameID);
             Assert.AreEqual(Conflict, r);
         }
 
