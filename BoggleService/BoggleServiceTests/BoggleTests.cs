@@ -172,7 +172,7 @@ namespace Boggle
         }
 
         /// <summary>
-        /// Test Retrieving Game Status before second player joins
+        /// Test Retrieving Game Status before second player joins. Note: this method passes 
         /// </summary>
         [TestMethod]
         public void TestMethod3()
@@ -398,7 +398,7 @@ namespace Boggle
             string player1Token = r1.Data.UserToken;
             int gameID = MakeGame(player1Token, 20, false).Data.GameID;
 
-            Response r = client.DoGetAsync("games", "quack").Result;
+            Response r = client.DoGetAsync("games/quack").Result;
 
             Assert.AreEqual(Forbidden, r.Status);
         }
