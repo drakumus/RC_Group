@@ -177,7 +177,8 @@ namespace Boggle
         public void TestMethod3()
         {
             string player1Token = MakePlayer("Joe").Data.UserToken;
-            int gameID = JoinGame(player1Token, 24).Data.GameID;
+            Response t = JoinGame(player1Token, 25);
+            int gameID = t.Data.GameID;
             Response r = GameStatus(gameID, false);
             Assert.AreEqual(OK, r.Status);
             Assert.AreEqual("pending", r.Data.GameState);
