@@ -181,6 +181,7 @@ namespace Boggle
             Response r = GameStatus(gameID, false);
             Assert.AreEqual(OK, r.Status);
             Assert.AreEqual("pending", r.Data.GameState);
+            StopIIS();
         }
 
         /// <summary>
@@ -236,6 +237,9 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        /// <summary>
+        /// Tests invalid token passed
+        /// </summary>
         [TestMethod]
         public void TestMethod9()
         {
@@ -243,6 +247,9 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        /// <summary>
+        /// Tests invalid time passed lower bound
+        /// </summary>
         [TestMethod]
         public void TestMethod10()
         {
@@ -251,6 +258,9 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        /// <summary>
+        /// Tests invalid time passed upper bound
+        /// </summary>
         [TestMethod]
         public void TestMethod11()
         {
@@ -259,6 +269,128 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        /// <summary>
+        /// Test for first user joining game
+        /// </summary>
+        [TestMethod]
+        public void TestMethod12()
+        {
+            string user1Token = MakePlayer("Joe").Data.UserToken;
+            Response r = JoinGame(user1Token, 50);
+            Assert.AreEqual(Accepted, r.Status);
+        }
 
+        /// <summary>
+        /// Test status for second user
+        /// </summary>
+        [TestMethod]
+        public void TestMethod13()
+        {
+            string user1Token = MakePlayer("Joe").Data.UserToken;
+            Response r = JoinGame(user1Token, 50);
+            Assert.AreEqual(Created, r.Status);
+        }
+
+        /// <summary>
+        /// PLAY WORD TESTS
+        /// ------------------------------------------------------------------------------------------------------------------------
+        /// Tests Null Word played
+        /// </summary>
+        [TestMethod]
+        public void TestMethod14()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            Response r = PlayWord(player1Token, null, gameID);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Tests null user token
+        /// </summary>
+        [TestMethod]
+        public void TestMethod15()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            Response r = PlayWord(player1Token, "", gameID);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Tests null playerToken
+        /// </summary>
+        [TestMethod]
+        public void TestMethod16()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            Response r = PlayWord(null, "tower", gameID);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Tests invalid object time for gameID
+        /// </summary>
+        [TestMethod]
+        public void TestMethod17()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            
+            dynamic playerData = new ExpandoObject();
+            playerData.UserToken = player1Token;
+            playerData.Word = "towel";
+
+            Response r = client.DoPutAsync(playerData, "games/" + "quack").Result;
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Tests for invalid game ID
+        /// </summary>
+        [TestMethod]
+        public void TestMethod18()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            Response r = PlayWord(player1Token, "tower", 1999);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Tests play word on pending game
+        /// </summary>
+        [TestMethod]
+        public void TestMethod19()
+        {
+            Response r1 = MakePlayer("Joe");
+            
+            string player1Token = r1.Data.UserToken;
+            dynamic player = new ExpandoObject();
+            player.UserToken = player1Token;
+            player.TimeLimit = 55;
+
+            Response r2 = client.DoPostAsync("games", player).Result;
+
+            Response r = PlayWord(player1Token, "boggle", r2.Data);
+            Assert.AreEqual(Conflict, r);
+        }
+
+        /// <summary>
+        /// GAME STATUS TESTS
+        /// -------------------------------------------------------------------------------------
+        /// 
+        /// </summary>
+        [TestMethod]
+        public void TestMethod20()
+        {
+
+        }
     }
 }
