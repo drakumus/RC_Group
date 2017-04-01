@@ -144,7 +144,12 @@ namespace Boggle
 
         private Response GameStatus(int gameID, bool brief)
         {
-            Response r = client.DoGetAsync("games/" + gameID.ToString()).Result;
+            string url = "games/" + gameID.ToString();
+            if (brief)
+            {
+                url += "?brief=yes";
+            }
+            Response r = client.DoGetAsync(url).Result;
 
             return r;
         }
