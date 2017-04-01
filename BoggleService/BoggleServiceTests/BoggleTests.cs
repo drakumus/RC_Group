@@ -76,7 +76,7 @@ namespace Boggle
             dynamic player = new ExpandoObject();
             player.Nickname = name;
             Response r = client.DoPostAsync("users", player).Result;
-            Assert.AreEqual(Created, r.Status);
+            //Assert.AreEqual(Created, r.Status);
             return r;
         }
 
@@ -155,6 +155,7 @@ namespace Boggle
         public void TestMethod1()
         {
             Response r = MakePlayer("Joe");
+            Assert.AreEqual(Created, r.Status);
         }
 
         /// <summary>
@@ -194,7 +195,7 @@ namespace Boggle
         }
 
         /// <summary>
-        /// Test Play Word invalid word
+        /// Test Play Word invalid word and proper scoring return
         /// </summary>
         [TestMethod]
         public void TestMethod5()
@@ -205,10 +206,54 @@ namespace Boggle
             Assert.AreEqual(-1, score);
         }
 
+        /// <summary>
+        /// Test null input for Regester/Make Player
+        /// </summary>
         [TestMethod]
         public void TestMethod6()
         {
-
+            Response r = MakePlayer(null);
+            Assert.AreEqual(Forbidden, r.Status);
         }
+
+        /// <summary>
+        /// Test empty input for Register/Make Player
+        /// </summary>
+        public void TestMethod7()
+        {
+            Response r = MakePlayer("");
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        /// <summary>
+        /// Test null Token for JoinGame
+        /// </summary>
+        public void TestMethod8()
+        {
+            Response r = JoinGame(null, 5);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        public void TestMethod9()
+        {
+            Response r = JoinGame("invalidToken", 5);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        public void TestMethod10()
+        {
+            string user1Token = MakePlayer("Joe").Data;
+            Response r = JoinGame(user1Token, 0);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        public void TestMethod11()
+        {
+            string user1Token = MakePlayer("Joe").Data;
+            Response r = JoinGame(user1Token, 10000);
+            Assert.AreEqual(Forbidden, r.Status);
+        }
+
+
     }
 }

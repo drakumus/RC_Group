@@ -41,15 +41,12 @@ namespace Boggle
                     SetStatus(Forbidden);
                     return null;
                 }
-                else
-                {
-                    string userToken = Guid.NewGuid().ToString();
-                    users.Add(userToken, player.Nickname);
-                    SetStatus(Created);
-                    Nickname data = new Nickname();
-                    data.UserToken = userToken;
-                    return data;
-                }
+                string userToken = Guid.NewGuid().ToString();
+                users.Add(userToken, player.Nickname);
+                SetStatus(Created);
+                Nickname data = new Nickname();
+                data.UserToken = userToken;
+                return data;
             }
         }
 
@@ -66,6 +63,10 @@ namespace Boggle
         {
             lock (sync)
             {
+                int gameID;
+                Game game;
+                GameIDThing id;
+
                 if(data.UserToken == null)
                 {
                     SetStatus(Forbidden);
@@ -83,8 +84,8 @@ namespace Boggle
                 }
                 if (pending == -1)
                 {
-                    int gameID = games.Count + 1;
-                    Game game = new Game()
+                    gameID = games.Count + 1;
+                    game = new Game()
                     {
                         GameState = "pending",
                         TimeLimit = data.TimeLimit,
@@ -98,37 +99,34 @@ namespace Boggle
 
                     pending = gameID;
                     SetStatus(Accepted);
-                    GameIDThing id = new GameIDThing()
+                    id = new GameIDThing()
                     {
                         GameID = gameID
                     };
                     return id;
                 }
-                else
+                gameID = pending;
+                game = games[gameID];
+                game.GameState = "active";
+                game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
+                game.TimeLeft = game.TimeLimit;
+                game.CountdownTimer = new System.Timers.Timer();
+                game.CountdownTimer.Interval = 1000;
+                game.CountdownTimer.Elapsed += game.CountdownTimerEvent;
+                game.CountdownTimer.Enabled = true;
+                game.Player2 = new PlayerInfo()
                 {
-                    int gameID = pending;
-                    Game game = games[gameID];
-                    game.GameState = "active";
-                    game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
-                    game.TimeLeft = game.TimeLimit;
-                    game.CountdownTimer = new System.Timers.Timer();
-                    game.CountdownTimer.Interval = 1000;
-                    game.CountdownTimer.Elapsed += game.CountdownTimerEvent;
-                    game.CountdownTimer.Enabled = true;
-                    game.Player2 = new PlayerInfo()
-                    {
-                        UserToken = data.UserToken,
-                        Nickname = users[data.UserToken]
-                    };
+                    UserToken = data.UserToken,
+                    Nickname = users[data.UserToken]
+                };
 
-                    pending = -1;
-                    SetStatus(Created);
-                    GameIDThing id = new GameIDThing()
-                    {
-                        GameID = gameID
-                    };
-                    return id;
-                }
+                pending = -1;
+                SetStatus(Created);
+                id = new GameIDThing()
+                {
+                    GameID = gameID
+                };
+                return id;
             }
         }
 
