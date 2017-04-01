@@ -116,7 +116,7 @@ namespace Boggle
         /// <param name="user1Token"></param>
         /// <param name="user1Time"></param>
         /// <returns></returns>
-        private Response MakeGame(string user1Token, int user1Time)
+        private Response MakeGame(string user1Token, int user1Time, bool useAsserts)
         {
             Response r = MakePlayer("Tod");
             Assert.AreEqual(Created, r.Status);
@@ -124,9 +124,11 @@ namespace Boggle
             string user2Token = r.Data.UserToken;
 
             Response r1 = JoinGame(user1Token, user1Time);
-            Assert.AreEqual(Accepted, r1.Status);
+            if(useAsserts)
+                Assert.AreEqual(Accepted, r1.Status);
             Response r2 = JoinGame(user2Token, 20);
-            Assert.AreEqual(Created, r2.Status);
+            if(useAsserts)
+                Assert.AreEqual(Created, r2.Status);
             return r1;
         }
 
@@ -166,7 +168,7 @@ namespace Boggle
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
 
-            int gameID = MakeGame(player1Token, 10).Data.GameID;
+            int gameID = MakeGame(player1Token, 10, true).Data.GameID;
         }
 
         /// <summary>
@@ -202,7 +204,7 @@ namespace Boggle
         public void TestMethod5()
         {
             string player1Token = MakePlayer("Joe").Data.UserToken;
-            int gameID = MakeGame(player1Token, 25).Data.GameID;
+            int gameID = MakeGame(player1Token, 25, true).Data.GameID;
             int score = PlayWord(player1Token, "tartwordofthedays", gameID).Data.Score;
             Assert.AreEqual(-1, score);
         }
@@ -301,7 +303,7 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
-            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            int gameID = MakeGame(player1Token, 100, true).Data.GameID;
             Response r = PlayWord(player1Token, null, gameID);
             Assert.AreEqual(Forbidden, r.Status);
         }
@@ -314,7 +316,7 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
-            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            int gameID = MakeGame(player1Token, 100, true).Data.GameID;
             Response r = PlayWord(player1Token, "", gameID);
             Assert.AreEqual(Forbidden, r.Status);
         }
@@ -327,7 +329,7 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
-            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            int gameID = MakeGame(player1Token, 100, true).Data.GameID;
             Response r = PlayWord(null, "tower", gameID);
             Assert.AreEqual(Forbidden, r.Status);
         }
@@ -340,7 +342,7 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
-            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            int gameID = MakeGame(player1Token, 100, true).Data.GameID;
             
             dynamic playerData = new ExpandoObject();
             playerData.UserToken = player1Token;
@@ -358,7 +360,7 @@ namespace Boggle
         {
             Response r1 = MakePlayer("Joe");
             string player1Token = r1.Data.UserToken;
-            int gameID = MakeGame(player1Token, 100).Data.GameID;
+            int gameID = MakeGame(player1Token, 100, true).Data.GameID;
             Response r = PlayWord(player1Token, "tower", 1999);
             Assert.AreEqual(Forbidden, r.Status);
         }
@@ -380,6 +382,8 @@ namespace Boggle
 
             Response r = PlayWord(player1Token, "boggle", r2.Data);
             Assert.AreEqual(Conflict, r);
+
+            StopIIS();
         }
 
         /// <summary>
@@ -390,7 +394,13 @@ namespace Boggle
         [TestMethod]
         public void TestMethod20()
         {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 20, false).Data.GameID;
 
+            Response r = client.DoGetAsync("games", "quack").Result;
+
+            Assert.AreEqual(Forbidden, r.Status);
         }
     }
 }
