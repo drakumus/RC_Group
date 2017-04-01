@@ -11,6 +11,11 @@ namespace Boggle
         public readonly List<WordItem> WordsPlayed = new List<WordItem>();
     }
 
+    public class Nickname
+    {
+        public string UserToken { get; set; }
+    }
+
     public class Game
     {
         public readonly BoggleBoard Board = new BoggleBoard();

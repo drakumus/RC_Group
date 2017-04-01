@@ -16,7 +16,7 @@ namespace Boggle
         /// <param name="nickname"></param>
         /// <returns></returns>
         [WebInvoke(Method = "POST", UriTemplate = "/users")]
-        string Register(PlayerInfo nickname);
+        Nickname Register(PlayerInfo nickname);
 
         /// <summary>
         /// Attempts to join a game.

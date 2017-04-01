@@ -74,8 +74,9 @@ namespace Boggle
         private Response MakePlayer(string name)
         {
             dynamic player = new ExpandoObject();
-            player.Nickname = "Player1";
+            player.Nickname = name0;
             Response r = client.DoPostAsync("users", player).Result;
+            Assert.AreEqual(Created, r.Status);
             return r;
         }
 
@@ -165,14 +166,12 @@ namespace Boggle
         public void TestMethod1()
         {
             Response r = MakePlayer("Joe");
-            Assert.AreEqual(Created, r.Status);
         }
 
         [TestMethod]
         public void TestMethod2()
         {
             Response r1 = MakePlayer("Joe");
-            Assert.AreEqual(Created, r1.Status);
             string player1Token = r1.Data.UserToken;
 
             int gameID = MakeGame(player1Token, 10).Data.GameID;

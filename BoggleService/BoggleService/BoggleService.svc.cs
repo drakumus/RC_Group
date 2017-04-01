@@ -32,7 +32,7 @@ namespace Boggle
         /// </summary>
         /// <param name="nickname"></param>
         /// <returns></returns>
-        public string Register(PlayerInfo player)
+        public Nickname Register(PlayerInfo player)
         {
             lock (sync)
             {
@@ -46,7 +46,9 @@ namespace Boggle
                     string userToken = Guid.NewGuid().ToString();
                     users.Add(userToken, player.Nickname);
                     SetStatus(Created);
-                    return userToken;
+                    Nickname data = new Nickname();
+                    data.UserToken = userToken;
+                    return data;
                 }
             }
         }
