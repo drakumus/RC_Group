@@ -136,7 +136,7 @@ namespace Boggle
         /// Otherwise, removes the UserToken from the pending game and responds with OK.
         /// </summary>
         /// <param name="userToken"></param>
-        public void CancelJoin(PlayerInfo data)
+        public void CancelJoin(WordThing data)
         {
             lock (sync)
             {
