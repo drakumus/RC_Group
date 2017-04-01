@@ -241,14 +241,14 @@ namespace Boggle
 
         public void TestMethod10()
         {
-            string user1Token = MakePlayer("Joe").Data;
+            string user1Token = MakePlayer("Joe").Data.UserToken;
             Response r = JoinGame(user1Token, 0);
             Assert.AreEqual(Forbidden, r.Status);
         }
 
         public void TestMethod11()
         {
-            string user1Token = MakePlayer("Joe").Data;
+            string user1Token = MakePlayer("Joe").Data.UserToken;
             Response r = JoinGame(user1Token, 10000);
             Assert.AreEqual(Forbidden, r.Status);
         }
