@@ -37,7 +37,7 @@ namespace Boggle
         /// </summary>
         /// <param name="userToken"></param>
         [WebInvoke(Method = "PUT", UriTemplate = "/games")]
-        void CancelJoin(string userToken);
+        void CancelJoin(PlayerInfo userToken);
 
         /// <summary>
         /// Plays a word in a game.

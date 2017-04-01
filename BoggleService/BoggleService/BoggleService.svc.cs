@@ -130,22 +130,22 @@ namespace Boggle
         /// Otherwise, removes the UserToken from the pending game and responds with OK.
         /// </summary>
         /// <param name="userToken"></param>
-        public void CancelJoin(string userToken)
+        public void CancelJoin(PlayerInfo data)
         {
             lock (sync)
             {
-                if (userToken == null)
+                if (data.UserToken == null)
                 {
                     SetStatus(Forbidden);
                     return;
                 }
-                if (!users.ContainsKey(userToken))
+                if (!users.ContainsKey(data.UserToken))
                 {
                     SetStatus(Forbidden);
                     return;
                 }
                 Game game = games[pending];
-                if (game.Player1.UserToken == userToken)
+                if (game.Player1.UserToken == data.UserToken)
                 {
                     SetStatus(OK);
                     pending = null;
