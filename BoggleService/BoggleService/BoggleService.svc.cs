@@ -12,7 +12,7 @@ namespace Boggle
     {
         private readonly static Dictionary<string, string> users = new Dictionary<string, string>(); //UserToken, Nickname
         private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
-        private static int pending;
+        private static int pending = -1;
         private static readonly object sync = new object();
 
         /// <summary>

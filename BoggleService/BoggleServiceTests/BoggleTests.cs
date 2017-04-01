@@ -137,13 +137,13 @@ namespace Boggle
             playerData.UserToken = userToken;
             playerData.Word = word;
 
-            Response r = client.DoPutAsync(playerData, "games/" + gameID.ToString());
+            Response r = client.DoPutAsync(playerData, "games/" + gameID.ToString()).Result;
             return r;
         }
 
-        private Response GameStatus(int gameID)
+        private Response GameStatus(int gameID, bool brief)
         {
-            Response r = client.DoGetAsync("games", gameID.ToString()).Result;
+            Response r = client.DoGetAsync("games/" + gameID.ToString()).Result;
 
             return r;
         }
@@ -177,10 +177,10 @@ namespace Boggle
         public void TestMethod3()
         {
             string player1Token = MakePlayer("Joe").Data.UserToken;
-            int gameID = JoinGame(player1Token, 24).Data;
-            Response r = GameStatus(gameID);
+            int gameID = JoinGame(player1Token, 24).Data.GameID;
+            Response r = GameStatus(gameID, false);
             Assert.AreEqual(OK, r.Status);
-            Assert.AreEqual("pending", r.Data);
+            Assert.AreEqual("pending", r.Data.GameState);
         }
 
         /// <summary>
