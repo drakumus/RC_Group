@@ -1,14 +1,23 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Timers;
 
 namespace Boggle
 {
+    [DataContract]
     public class PlayerInfo
     {
+        [DataMember(EmitDefaultValue = false)]
         public string Nickname { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public string UserToken { get; set; }
+
+        [DataMember]
         public int Score;
-        public readonly List<WordItem> WordsPlayed = new List<WordItem>();
+
+        [DataMember(EmitDefaultValue = false)]
+        public List<WordItem> WordsPlayed = new List<WordItem>();
     }
 
     public class Nickname
@@ -16,30 +25,36 @@ namespace Boggle
         public string UserToken { get; set; }
     }
 
-
-    public abstract class GameBoard
+    [DataContract]
+    public class Status
     {
+        [DataMember]
         public string GameState { get; set; }
-        public string Board { get; set; }
-        public int TimeLimit { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public int TimeLeft { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public PlayerInfo Player1 { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public PlayerInfo Player2 { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public string Board { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public int TimeLimit { get; set; }
     }
 
-    public class GameBrief: GameBoard
+    public class Game
     {
-
-    }
-
-    public class Game: GameBoard
-    {
-        public readonly BoggleBoard Board = new BoggleBoard();
+        public BoggleBoard Board = new BoggleBoard();
         public int TimeLimit { get; set; }
         public int TimeLeft { get; set; }
         public string GameState { get; set; }
 
-        public readonly List<string> WordsPlayed = new List<string>();
+        public List<string> WordsPlayed = new List<string>();
 
         public Timer CountdownTimer { get; set; }
 
@@ -58,9 +73,13 @@ namespace Boggle
         }
     }
 
+    [DataContract]
     public class WordItem
     {
+        [DataMember(EmitDefaultValue = false)]
         public string Word { get; set; }
+
+        [DataMember]
         public int Score { get; set; }
     }
 
@@ -74,5 +93,10 @@ namespace Boggle
     {
         public string UserToken { get; set; }
         public int TimeLimit { get; set; }
+    }
+
+    public class GameIDThing
+    {
+        public int GameID { get; set; }
     }
 }

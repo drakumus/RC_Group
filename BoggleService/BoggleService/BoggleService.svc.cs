@@ -11,8 +11,8 @@ namespace Boggle
     public class BoggleService : IBoggleService
     {
         private readonly static Dictionary<string, string> users = new Dictionary<string, string>(); //UserToken, Nickname
-        private readonly static Dictionary<string, Game> games = new Dictionary<string, Game>();
-        private static string pending;
+        private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
+        private static int pending;
         private static readonly object sync = new object();
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public string JoinGame(TimeThing data)
+        public GameIDThing JoinGame(TimeThing data)
         {
             lock (sync)
             {
@@ -81,9 +81,9 @@ namespace Boggle
                     SetStatus(Forbidden);
                     return null;
                 }
-                if (pending == null)
+                if (pending == -1)
                 {
-                    string gameID = (games.Count + 1).ToString();
+                    int gameID = games.Count + 1;
                     Game game = new Game()
                     {
                         GameState = "pending",
@@ -98,11 +98,15 @@ namespace Boggle
 
                     pending = gameID;
                     SetStatus(Accepted);
-                    return gameID.ToString();
+                    GameIDThing id = new GameIDThing()
+                    {
+                        GameID = gameID
+                    };
+                    return id;
                 }
                 else
                 {
-                    string gameID = pending;
+                    int gameID = pending;
                     Game game = games[gameID];
                     game.GameState = "active";
                     game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
@@ -117,9 +121,13 @@ namespace Boggle
                         Nickname = users[data.UserToken]
                     };
 
-                    pending = null;
+                    pending = -1;
                     SetStatus(Created);
-                    return gameID.ToString();
+                    GameIDThing id = new GameIDThing()
+                    {
+                        GameID = gameID
+                    };
+                    return id;
                 }
             }
         }
@@ -148,7 +156,7 @@ namespace Boggle
                 if (game.Player1.UserToken == data.UserToken)
                 {
                     SetStatus(OK);
-                    pending = null;
+                    pending = -1;
                 }
                 else
                 {
@@ -169,7 +177,7 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="word"></param>
         /// <returns></returns>
-        public dynamic PlayWord(WordThing data, string gameID)
+        public WordItem PlayWord(WordThing data, string gameID)
         {
             lock (sync)
             {
@@ -185,16 +193,22 @@ namespace Boggle
                     SetStatus(Forbidden);
                     return null;
                 }
+                int id;
+                if(!int.TryParse(gameID, out id))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
 
                 //check for valid game ID
-                if (!games.ContainsKey(gameID))
+                if (id > 0 && !games.ContainsKey(id))
                 {
                     SetStatus(Forbidden);
                     return null;
                 }
                 //initialize activePlayer, activeGame
                 PlayerInfo activePlayer = null;
-                Game activeGame = games[gameID];
+                Game activeGame = games[id];
 
                 //check for valid game status
                 if (activeGame.GameState != "active")
@@ -231,7 +245,7 @@ namespace Boggle
                 activeGame.WordsPlayed.Add(data.Word);
 
                 SetStatus(OK);
-                dynamic result = new ExpandoObject();
+                WordItem result = new WordItem();
                 result.Score = wordItem.Score;
                 return result;
             }
@@ -246,12 +260,19 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        public dynamic GameStatus(string gameID, string brief)
+        public Status GameStatus(string gameID, string brief)
         {
             lock (sync)
             {
-                //checks for valid gameID
-                if (!games.ContainsKey(gameID))
+                int id;
+                if (!int.TryParse(gameID, out id))
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+
+                //check for valid game ID
+                if (id > 0 && !games.ContainsKey(id))
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -260,20 +281,26 @@ namespace Boggle
                 //returns referenced game
                 SetStatus(OK);
 
-                Game game = games[gameID];
-                GameBoard status;
+                Game game = games[id];
+                Status status = new Status();
+                status.GameState = game.GameState;
+                if(status.GameState == "pending")
+                {
+                    return status;
+                }
                 if (brief == "yes")
                 {
-                    status = new GameBrief();
-                    status.Board = game.Board.ToString();
-                    status.GameState = game.GameState;
-                    status.Player1 = game.Player1;
-                    status.Player2 = game.Player2;
                     status.TimeLeft = game.TimeLeft;
-                    status.TimeLimit = game.TimeLimit;
+                    status.Player1 = new PlayerInfo()
+                    {
+                        Score = game.Player1.Score
+                    };
+                    status.Player2 = new PlayerInfo()
+                    {
+                        Score = game.Player2.Score
+                    };
+                    return status;
                 }
-                else
-                    status = game;
                 status.Board = game.Board.ToString();
                 status.TimeLimit = game.TimeLimit;
                 status.Player1.Nickname = game.Player1.Nickname;
