@@ -149,9 +149,7 @@ namespace Boggle
         }
 
         /// <summary>
-        /// Note that DoGetAsync (and the other similar methods) returns a Response object, which contains
-        /// the response Stats and the deserialized JSON response (if any).  See RestTestClient.cs
-        /// for details.
+        /// Test create player
         /// </summary>
         [TestMethod]
         public void TestMethod1()
@@ -159,6 +157,9 @@ namespace Boggle
             Response r = MakePlayer("Joe");
         }
 
+        /// <summary>
+        /// Test Join Game Process
+        /// </summary>
         [TestMethod]
         public void TestMethod2()
         {
@@ -166,9 +167,48 @@ namespace Boggle
             string player1Token = r1.Data.UserToken;
 
             int gameID = MakeGame(player1Token, 10).Data.GameID;
-
         }
 
+        /// <summary>
+        /// Test Retrieving Game Status before second player joins
+        /// </summary>
+        [TestMethod]
+        public void TestMethod3()
+        {
+            string player1Token = MakePlayer("Joe").Data.UserToken;
+            int gameID = JoinGame(player1Token, 24).Data;
+            Response r = GameStatus(gameID);
+            Assert.AreEqual(OK, r.Status);
+            Assert.AreEqual("pending", r.Data);
+        }
 
+        /// <summary>
+        /// Test Cancel Game Join
+        /// </summary>
+        [TestMethod]
+        public void TestMethod4()
+        {
+            string player1Token = MakePlayer("Joe").Data.UserToken;
+            JoinGame(player1Token, 25);
+            Assert.AreEqual(OK, CancelJoinGame(player1Token).Status);
+        }
+
+        /// <summary>
+        /// Test Play Word invalid word
+        /// </summary>
+        [TestMethod]
+        public void TestMethod5()
+        {
+            string player1Token = MakePlayer("Joe").Data.UserToken;
+            int gameID = MakeGame(player1Token, 25).Data;
+            int score = PlayWord(player1Token, "tartwordofthedays", gameID).Data;
+            Assert.AreEqual(-1, score);
+        }
+
+        [TestMethod]
+        public void TestMethod6()
+        {
+
+        }
     }
 }
