@@ -62,7 +62,7 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public dynamic JoinGame(TimeThing data)
+        public string JoinGame(TimeThing data)
         {
             lock (sync)
             {
@@ -98,9 +98,7 @@ namespace Boggle
 
                     pending = gameID;
                     SetStatus(Accepted);
-                    dynamic result = new ExpandoObject();
-                    result.GameID = gameID;
-                    return result;
+                    return gameID.ToString();
                 }
                 else
                 {
@@ -109,6 +107,9 @@ namespace Boggle
                     game.GameState = "active";
                     game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
                     game.TimeLeft = game.TimeLimit;
+                    game.CountdownTimer = new System.Timers.Timer();
+                    game.CountdownTimer.Interval = 1000;
+                    game.CountdownTimer.Elapsed += game.CountdownTimerEvent;
                     game.CountdownTimer.Enabled = true;
                     game.Player2 = new PlayerInfo()
                     {
