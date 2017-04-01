@@ -74,7 +74,7 @@ namespace Boggle
         private Response MakePlayer(string name)
         {
             dynamic player = new ExpandoObject();
-            player.Nickname = name0;
+            player.Nickname = name;
             Response r = client.DoPostAsync("users", player).Result;
             Assert.AreEqual(Created, r.Status);
             return r;
@@ -92,7 +92,7 @@ namespace Boggle
             player.UserToken = userToken;
             player.TimeLimit = userTime;
 
-            Response r = client.DoPostAsync("games", player);
+            Response r = client.DoPostAsync("games", player).Result;
             return r;
         }
 
@@ -124,18 +124,9 @@ namespace Boggle
             
             string user2Token = r.Data.UserToken;
 
-            
-            dynamic player1 = new ExpandoObject();
-            player1.UserToken = user1Token;
-            player1.TimeLimit = user1Time;
-
-            dynamic player2 = new ExpandoObject();
-            player2.UserToken = user2Token;
-            player2.TimeLimit = 20;
-
-            Response r1 = client.DoPostAsync("games", player1).Result;
+            Response r1 = JoinGame(user1Token, user1Time);
             Assert.AreEqual(Accepted, r1.Status);
-            Response r2 = client.DoPostAsync("games", player2).Result;
+            Response r2 = JoinGame(user2Token, 20);
             Assert.AreEqual(Created, r2.Status);
             return r1;
         }
