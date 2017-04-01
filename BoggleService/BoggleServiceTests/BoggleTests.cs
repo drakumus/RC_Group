@@ -103,7 +103,6 @@ namespace Boggle
         /// <returns></returns>
         private Response CancelJoinGame(string userToken)
         {
-
             dynamic player = new ExpandoObject();
             player.UserToken = userToken;
 
@@ -201,8 +200,8 @@ namespace Boggle
         public void TestMethod5()
         {
             string player1Token = MakePlayer("Joe").Data.UserToken;
-            int gameID = MakeGame(player1Token, 25).Data;
-            int score = PlayWord(player1Token, "tartwordofthedays", gameID).Data;
+            int gameID = MakeGame(player1Token, 25).Data.GameID;
+            int score = PlayWord(player1Token, "tartwordofthedays", gameID).Data.Score;
             Assert.AreEqual(-1, score);
         }
 
