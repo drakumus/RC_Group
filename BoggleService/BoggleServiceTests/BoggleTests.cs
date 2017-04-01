@@ -219,6 +219,7 @@ namespace Boggle
         /// <summary>
         /// Test empty input for Register/Make Player
         /// </summary>
+        [TestMethod]
         public void TestMethod7()
         {
             Response r = MakePlayer("");
@@ -228,18 +229,21 @@ namespace Boggle
         /// <summary>
         /// Test null Token for JoinGame
         /// </summary>
+        [TestMethod]
         public void TestMethod8()
         {
             Response r = JoinGame(null, 5);
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        [TestMethod]
         public void TestMethod9()
         {
             Response r = JoinGame("invalidToken", 5);
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        [TestMethod]
         public void TestMethod10()
         {
             string user1Token = MakePlayer("Joe").Data;
@@ -247,6 +251,7 @@ namespace Boggle
             Assert.AreEqual(Forbidden, r.Status);
         }
 
+        [TestMethod]
         public void TestMethod11()
         {
             string user1Token = MakePlayer("Joe").Data;
