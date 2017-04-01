@@ -63,7 +63,7 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns>
-        [WebGet(UriTemplate = "/games/gameID={GameID}?brief={brief}")]
+        [WebGet(UriTemplate = "/games/{GameID}?{brief}")]
         dynamic GameStatus(string gameID, string brief);
 
 
