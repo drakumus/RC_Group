@@ -370,7 +370,7 @@ namespace Boggle
 
             Response r2 = client.DoPostAsync("games", player).Result;
 
-            Response r = PlayWord(player1Token, "boggle", r2.Data.GameID);
+            Response r = PlayWord(player1Token, "boggle", (int)r2.Data.GameID);
             Assert.AreEqual(Conflict, r);
 
             StopIIS();
@@ -410,7 +410,7 @@ namespace Boggle
 
             Response r = client.DoGetAsync("games/" + gameID, "brief").Result;
 
-            Assert.AreEqual(null, r.Data.TimeLimit);
+            Assert.AreEqual(20, (int) r.Data.TimeLimit);
         }
         
         /// <summary>
@@ -424,7 +424,7 @@ namespace Boggle
             int gameID = t.Data.GameID;
             Response r = GameStatus(gameID, false);
             Assert.AreEqual(OK, r.Status);
-            Assert.AreEqual("pending", r.Data.GameState);
+            Assert.AreEqual("pending", (string)r.Data.GameState);
             StopIIS();
         }
     }
