@@ -260,15 +260,19 @@ namespace Boggle
                 SetStatus(OK);
 
                 Game game = games[gameID];
-                dynamic status = new ExpandoObject();
-                status.GameState = game.GameState;
-                status.TimeLeft = game.TimeLeft;
-                status.Player1.Score = game.Player1.Score;
-                status.Player2.Score = game.Player2.Score;
+                GameBoard status;
                 if (brief == "yes")
                 {
-                    return status;
+                    status = new GameBrief();
+                    status.Board = game.Board.ToString();
+                    status.GameState = game.GameState;
+                    status.Player1 = game.Player1;
+                    status.Player2 = game.Player2;
+                    status.TimeLeft = game.TimeLeft;
+                    status.TimeLimit = game.TimeLimit;
                 }
+                else
+                    status = game;
                 status.Board = game.Board.ToString();
                 status.TimeLimit = game.TimeLimit;
                 status.Player1.Nickname = game.Player1.Nickname;

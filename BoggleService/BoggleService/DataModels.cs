@@ -16,7 +16,23 @@ namespace Boggle
         public string UserToken { get; set; }
     }
 
-    public class Game
+
+    public abstract class GameBoard
+    {
+        public string GameState { get; set; }
+        public string Board { get; set; }
+        public int TimeLimit { get; set; }
+        public int TimeLeft { get; set; }
+        public PlayerInfo Player1 { get; set; }
+        public PlayerInfo Player2 { get; set; }
+    }
+
+    public class GameBrief: GameBoard
+    {
+
+    }
+
+    public class Game: GameBoard
     {
         public readonly BoggleBoard Board = new BoggleBoard();
         public int TimeLimit { get; set; }
