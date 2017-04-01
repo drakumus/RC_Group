@@ -25,6 +25,11 @@ namespace Boggle
         public string UserToken { get; set; }
     }
 
+    public class GameIDThing
+    {
+        public int GameID { get; set; }
+    }
+
     [DataContract]
     public class Status
     {
@@ -93,10 +98,5 @@ namespace Boggle
     {
         public string UserToken { get; set; }
         public int TimeLimit { get; set; }
-    }
-
-    public class GameIDThing
-    {
-        public int GameID { get; set; }
     }
 }
