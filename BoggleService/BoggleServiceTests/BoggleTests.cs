@@ -402,5 +402,13 @@ namespace Boggle
 
             Assert.AreEqual(Forbidden, r.Status);
         }
+
+        [TestMethod]
+        public void TestMethod21()
+        {
+            Response r = client.DoGetAsync("games/12121").Result;
+
+            Assert.AreEqual(Forbidden, r.Status);
+        }
     }
 }
