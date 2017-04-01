@@ -28,7 +28,7 @@ namespace Boggle
         /// <param name="timeLimit"></param>
         /// <returns></returns>
         [WebInvoke(Method = "POST", UriTemplate = "/games")]
-        string JoinGame(TimeThing data);
+        dynamic JoinGame(TimeThing data);
 
         /// <summary>
         /// Attemts to cancel a pending request to join a game.
@@ -52,7 +52,7 @@ namespace Boggle
         /// <param name="word">word being played</param>
         /// <returns></returns>
         [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
-        string PlayWord(WordThing data, string gameID);
+        dynamic PlayWord(WordThing data, string gameID);
 
         /// <summary>
         /// Gets the status of a game.

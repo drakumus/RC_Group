@@ -62,7 +62,7 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public string JoinGame(TimeThing data)
+        public dynamic JoinGame(TimeThing data)
         {
             lock (sync)
             {
@@ -98,7 +98,9 @@ namespace Boggle
 
                     pending = gameID;
                     SetStatus(Accepted);
-                    return gameID.ToString();
+                    dynamic result = new ExpandoObject();
+                    result.GameID = gameID;
+                    return result;
                 }
                 else
                 {
@@ -166,7 +168,7 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="word"></param>
         /// <returns></returns>
-        public string PlayWord(WordThing data, string gameID)
+        public dynamic PlayWord(WordThing data, string gameID)
         {
             lock (sync)
             {
@@ -228,7 +230,9 @@ namespace Boggle
                 activeGame.WordsPlayed.Add(data.Word);
 
                 SetStatus(OK);
-                return wordItem.Score.ToString();
+                dynamic result = new ExpandoObject();
+                result.Score = wordItem.Score;
+                return result;
             }
         }
 
