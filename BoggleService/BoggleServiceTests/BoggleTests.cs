@@ -172,21 +172,6 @@ namespace Boggle
         }
 
         /// <summary>
-        /// Test Retrieving Game Status before second player joins. Note: this method passes 
-        /// </summary>
-        [TestMethod]
-        public void TestMethod3()
-        {
-            string player1Token = MakePlayer("Joe").Data.UserToken;
-            Response t = JoinGame(player1Token, 25);
-            int gameID = t.Data.GameID;
-            Response r = GameStatus(gameID, false);
-            Assert.AreEqual(OK, r.Status);
-            Assert.AreEqual("pending", r.Data.GameState);
-            StopIIS();
-        }
-
-        /// <summary>
         /// Test Cancel Game Join
         /// </summary>
         [TestMethod]
@@ -409,6 +394,33 @@ namespace Boggle
             Response r = client.DoGetAsync("games/12121").Result;
 
             Assert.AreEqual(Forbidden, r.Status);
+        }
+
+        [TestMethod]
+        public void TestMethod22()
+        {
+            Response r1 = MakePlayer("Joe");
+            string player1Token = r1.Data.UserToken;
+            int gameID = MakeGame(player1Token, 20, false).Data.GameID;
+
+            Response r = client.DoGetAsync("games/" + gameID, "brief").Result;
+
+            Assert.AreEqual(null, r.Data.TimeLimit);
+        }
+        
+        /// <summary>
+        /// Test Retrieving Game Status before second player joins. Note: this method passes when GameState is casted to string
+        /// </summary>
+        [TestMethod]
+        public void TestMethod3()
+        {
+            string player1Token = MakePlayer("Joe").Data.UserToken;
+            Response t = JoinGame(player1Token, 25);
+            int gameID = t.Data.GameID;
+            Response r = GameStatus(gameID, false);
+            Assert.AreEqual(OK, r.Status);
+            Assert.AreEqual("pending", r.Data.GameState);
+            StopIIS();
         }
     }
 }
