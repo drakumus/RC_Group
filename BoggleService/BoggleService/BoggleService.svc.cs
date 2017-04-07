@@ -152,7 +152,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@TimeLimit", game.TimeLimit);
                             command.Parameters.AddWithValue("@StartTime", startTime);
                             command.Parameters.AddWithValue("@GameID", game.GameID);
-
+                            
                             // make sure 1 row was modified
                             if (command.ExecuteNonQuery() == 1)
                             {
@@ -169,24 +169,15 @@ namespace Boggle
 
                     // no pending game
                     using (SqlCommand command =
-                        new SqlCommand("INSERT INTO Games(Player1, TimeLimit) output inserted.GameID VALUES(@Player1, @TimeLimit)",
-                        conn,
-                        trans))
+                        new SqlCommand("INSERT INTO Games(Player1, TimeLimit) output inserted.GameID VALUES(@Player1, @TimeLimit)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@Player1", player.UserToken);
                         command.Parameters.AddWithValue("@TimeLimit", player.TimeLimit);
-
-                        // make sure 1 row was modified
-                        if (command.ExecuteNonQuery() == 1)
-                        {
-                            GameIDThing data = new GameIDThing();
-                            data.GameID = (int)command.ExecuteScalar();
-                            SetStatus(Accepted);
-                            trans.Commit();
-                            return data;
-                        }
-                        SetStatus(Forbidden);
-                        return null;
+                        GameIDThing data = new GameIDThing();
+                        data.GameID = (int)command.ExecuteScalar();
+                        SetStatus(Accepted);
+                        trans.Commit();
+                        return data;
                     }
                 }
             }
@@ -402,7 +393,8 @@ namespace Boggle
                                 trans.Commit();
                                 return status;
                             }
-                            //status.Player1.UserToken = reader["Player1"].ToString();
+                            string s = reader.GetName(1);
+                            status.Player1.UserToken = reader["Player1"].ToString();
                             status.Player2.UserToken = reader["Player2"].ToString();
                             status.Board = reader["Board"].ToString();
                             int timeLimit = (int)reader["TimeLimit"];
