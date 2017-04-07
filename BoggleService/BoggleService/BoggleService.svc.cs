@@ -291,8 +291,9 @@ namespace Boggle
                                 reader.Read();
                                 board = reader["Board"].ToString();
                                 int timeLimit = (int)reader["TimeLimit"];
-                                DateTime startTime = (DateTime)reader["StartTime"];
-                                if(startTime.AddSeconds(timeLimit) > DateTime.Now)
+                                int colIndex = reader.GetOrdinal("StartTime");
+                                DateTime startTime = reader.GetDateTime(colIndex);
+                                if (startTime.AddSeconds(timeLimit) > DateTime.Now)
                                 {
                                     SetStatus(Conflict);
                                     //trans.Commit();
