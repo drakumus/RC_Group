@@ -115,7 +115,7 @@ namespace Boggle
                             {
                                 // user not found
                                 SetStatus(Forbidden);
-                                trans.Commit();
+                                //trans.Commit();
                                 return null;
                             }
                         }
@@ -124,9 +124,7 @@ namespace Boggle
                     Game game = new Game();
                     // check for pending game
                     using (SqlCommand command =
-                        new SqlCommand("SELECT GameID, TimeLimit FROM Games WHERE Player2 IS NULL",
-                        conn,
-                        trans))
+                        new SqlCommand("SELECT GameID, TimeLimit FROM Games WHERE Player2 IS NULL", conn, trans))
                     {
                         using(SqlDataReader reader = command.ExecuteReader())
                         {
@@ -294,7 +292,7 @@ namespace Boggle
                             {
                                 // game not found
                                 SetStatus(Forbidden);
-                                trans.Commit();
+                                //trans.Commit();
                                 return null;
                             }
                             else
@@ -306,7 +304,7 @@ namespace Boggle
                                 if(startTime.AddSeconds(timeLimit) > DateTime.Now)
                                 {
                                     SetStatus(Conflict);
-                                    trans.Commit();
+                                    //trans.Commit();
                                     return null;
                                 }
                             }
@@ -383,7 +381,7 @@ namespace Boggle
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
                     Status status = new Status();
-                    using (SqlCommand command = new SqlCommand("select * from Games where GameID = @GameID", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Player1, Player2, TimeLimit, StartTime, Board from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", gameID);
 
@@ -404,8 +402,12 @@ namespace Boggle
                                 trans.Commit();
                                 return status;
                             }
+                            //status.Player1.UserToken = reader["Player1"].ToString();
+                            status.Player2.UserToken = reader["Player2"].ToString();
+                            status.Board = reader["Board"].ToString();
                             int timeLimit = (int)reader["TimeLimit"];
-                            DateTime startTime = (DateTime)reader["StartTime"];
+                            int colIndex = reader.GetOrdinal("StartTime");
+                            DateTime startTime = reader.GetDateTime(colIndex);
                             if (startTime.AddSeconds(timeLimit) > DateTime.Now)
                             {
                                 status.GameState = "completed";
@@ -415,9 +417,6 @@ namespace Boggle
                                 status.GameState = "active";
                             }
                             status.TimeLeft = (DateTime.Now - startTime).Seconds;
-                            status.Player1.UserToken = reader["Player1"].ToString();
-                            status.Player2.UserToken = reader["Player2"].ToString();
-                            status.Board = reader["Board"].ToString();
                             status.TimeLimit = timeLimit;
                         }
                     }
