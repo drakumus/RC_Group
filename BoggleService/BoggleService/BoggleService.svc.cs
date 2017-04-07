@@ -107,6 +107,13 @@ namespace Boggle
                 }
                 gameID = pending;
                 game = games[gameID];
+                
+                if(game.Player1.UserToken == data.UserToken)
+                {
+                    SetStatus(Conflict);
+                    return null;
+                }
+
                 game.GameState = "active";
                 game.TimeLimit = (game.TimeLimit + data.TimeLimit) / 2;
                 game.TimeLeft = game.TimeLimit;
