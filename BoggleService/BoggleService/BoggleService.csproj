@@ -126,6 +126,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\BoggleDB.mdf" />
+    <Content Include="App_Data\BoggleDB_log.ldf">
+      <DependentUpon>BoggleDB.mdf</DependentUpon>
+    </Content>
     <Content Include="index.html" />
     <Content Include="dictionary.txt" />
     <Content Include="BoggleService.svc" />
@@ -145,6 +149,9 @@
   <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
+    <Content Include="ApplicationInsights.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

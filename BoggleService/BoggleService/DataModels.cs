@@ -54,28 +54,8 @@ namespace Boggle
 
     public class Game
     {
-        public BoggleBoard Board = new BoggleBoard();
+        public int GameID { get; set; }
         public int TimeLimit { get; set; }
-        public int TimeLeft { get; set; }
-        public string GameState { get; set; }
-
-        public List<string> WordsPlayed = new List<string>();
-
-        public Timer CountdownTimer { get; set; }
-
-        public PlayerInfo Player1 { get; set; }
-        public PlayerInfo Player2 { get; set; }
-
-        public void CountdownTimerEvent(object source, ElapsedEventArgs e)
-        {
-            TimeLeft--;
-            if (TimeLeft <= 0)
-            {
-                TimeLeft = 0;
-                GameState = "completed";
-                CountdownTimer.Enabled = false;
-            }
-        }
     }
 
     [DataContract]
