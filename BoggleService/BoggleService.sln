@@ -7,7 +7,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleService", "BoggleServ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleServiceTests", "BoggleServiceTests\BoggleServiceTests.csproj", "{71936E2C-E15E-44DE-ABFF-B69805FAE163}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleDatabase", "BoggleDatabase\BoggleDatabase.csproj", "{BFBDD6EE-A77C-429D-8AEC-C5054BF6C6A4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boggle", "BoggleDatabase\Boggle.csproj", "{BFBDD6EE-A77C-429D-8AEC-C5054BF6C6A4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
