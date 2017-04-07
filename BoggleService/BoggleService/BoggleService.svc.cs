@@ -273,7 +273,7 @@ namespace Boggle
                         }
                     }
                     string board = "";
-                    using (SqlCommand command = new SqlCommand("select Board, TimeLimit, StartTime from Games where GameID = @GameID and Player1 = @Player or Player2 = @Player", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Board, TimeLimit, StartTime from Games where GameID = @GameID and Player2 is not NULL and Player1 = @Player or Player2 = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", gameID);
                         command.Parameters.AddWithValue("@Player", player.UserToken);
@@ -328,7 +328,7 @@ namespace Boggle
                             }
                         }
                     }
-                    using(SqlCommand command = new SqlCommand("insert into Words(GameID, Player, Word, Score) value (@GameID, @Player, @Word, @Score", conn, trans))
+                    using(SqlCommand command = new SqlCommand("insert into Words(GameID, Player, Word, Score) values(@GameID, @Player, @Word, @Score)", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", gameID);
                         command.Parameters.AddWithValue("@Player", player.UserToken);
@@ -394,7 +394,6 @@ namespace Boggle
                                 trans.Commit();
                                 return status;
                             }
-                            string s = reader.GetName(1);
                             status.Player1.UserToken = reader["Player1"].ToString();
                             status.Player2.UserToken = reader["Player2"].ToString();
                             status.Board = reader["Board"].ToString();
