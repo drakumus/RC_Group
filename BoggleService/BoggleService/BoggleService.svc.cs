@@ -120,23 +120,31 @@ namespace Boggle
                             }
                         }
                     }
-
+                    //store player1 from player2 query
+                    string player1 = "";
+                    // check for pending game and get player1 id
                     Game game = new Game();
                     // check for pending game
                     using (SqlCommand command =
-                        new SqlCommand("SELECT GameID, TimeLimit FROM Games WHERE Player2 IS NULL", conn, trans))
+                        new SqlCommand("SELECT Player1, GameID, TimeLimit FROM Games WHERE Player2 IS NULL", conn, trans))
                     {
                         using(SqlDataReader reader = command.ExecuteReader())
                         {
                             if (reader.HasRows)
                             {
                                 reader.Read();
+                                player1 = (string)reader["Player1"];
                                 game.GameID = (int)reader["GameID"];
                                 // get half of time limit
                                 int oldTimeLimit = (int)reader["TimeLimit"];
                                 game.TimeLimit = (oldTimeLimit + player.TimeLimit) / 2;
                             }
                         }
+                    }
+                    if(player1 == player.UserToken)
+                    {
+                        SetStatus(Conflict);
+                        return null;
                     }
                     if(game.GameID != 0)
                     {
