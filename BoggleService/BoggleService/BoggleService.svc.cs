@@ -1,19 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
+using System.Linq;
 using System.Net;
 using System.ServiceModel.Web;
 using static System.Net.HttpStatusCode;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.IO;
 
 namespace Boggle
 {
-    public class BoggleService : IBoggleService
+    public class Boggle : IBoggleService
     {
-        private readonly static Dictionary<string, string> users = new Dictionary<string, string>(); //UserToken, Nickname
-        private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();
-        private static int pending = -1;
-        private static readonly object sync = new object();
+        // The connection string to the DB
+        private static string BoggleDB;
+
+        static Boggle()
+        {
+            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+        }
 
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
@@ -34,19 +38,44 @@ namespace Boggle
         /// <returns></returns>
         public Nickname Register(PlayerInfo player)
         {
-            lock (sync)
+            if (player.Nickname == null || player.Nickname.Trim().Length == 0)
             {
-                if(player.Nickname == null || player.Nickname.Trim().Length == 0)
+                SetStatus(Forbidden);
+                return null;
+            }
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+
+                using (SqlTransaction trans = conn.BeginTransaction())
                 {
-                    SetStatus(Forbidden);
-                    return null;
+                    using (SqlCommand command =
+                        new SqlCommand("INSERT INTO Users (UserID, Nickname) values(@UserID, @Nickname)",
+                        conn,
+                        trans))
+                    {
+                        // generate userToken
+                        string userToken = Guid.NewGuid().ToString();
+
+                        // replace placeholders
+                        command.Parameters.AddWithValue("@UserID", userToken);
+                        command.Parameters.AddWithValue("@Nickname", player.Nickname.Trim());
+
+                        int numRows = command.ExecuteNonQuery();
+
+                        // make sure 1 row was modified
+                        if (numRows != 1)
+                        {
+                            SetStatus(Forbidden);
+                            return null;
+                        }
+                        SetStatus(Created);
+                        trans.Commit();
+                        Nickname data = new Nickname();
+                        data.UserToken = userToken;
+                        return data;
+                    }
                 }
-                string userToken = Guid.NewGuid().ToString();
-                users.Add(userToken, player.Nickname);
-                SetStatus(Created);
-                Nickname data = new Nickname();
-                data.UserToken = userToken;
-                return data;
             }
         }
 
@@ -60,14 +89,14 @@ namespace Boggle
         /// <param name="timeLimit"></param>
         /// <returns></returns>
         public GameIDThing JoinGame(TimeThing data)
-        {
+        {/*
             lock (sync)
             {
                 int gameID;
                 Game game;
                 GameIDThing id;
 
-                if(data.UserToken == null)
+                if (data.UserToken == null)
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -127,7 +156,8 @@ namespace Boggle
                     GameID = gameID
                 };
                 return id;
-            }
+            }*/
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -137,7 +167,7 @@ namespace Boggle
         /// </summary>
         /// <param name="userToken"></param>
         public void CancelJoin(WordThing data)
-        {
+        {/*
             lock (sync)
             {
                 if (data.UserToken == null)
@@ -160,7 +190,8 @@ namespace Boggle
                 {
                     SetStatus(Forbidden);
                 }
-            }
+            }*/
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -176,7 +207,7 @@ namespace Boggle
         /// <param name="word"></param>
         /// <returns></returns>
         public WordItem PlayWord(WordThing data, string gameID)
-        {
+        {/*
             lock (sync)
             {
                 //playerID null check
@@ -192,7 +223,7 @@ namespace Boggle
                     return null;
                 }
                 int id;
-                if(!int.TryParse(gameID, out id))
+                if (!int.TryParse(gameID, out id))
                 {
                     SetStatus(Forbidden);
                     return null;
@@ -246,7 +277,8 @@ namespace Boggle
                 WordItem result = new WordItem();
                 result.Score = wordItem.Score;
                 return result;
-            }
+            }*/
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -259,7 +291,7 @@ namespace Boggle
         /// <param name="gameID"></param>
         /// <returns></returns>
         public Status GameStatus(string gameID, string brief)
-        {
+        {/*
             lock (sync)
             {
                 int id;
@@ -282,7 +314,7 @@ namespace Boggle
                 Status status = new Status();
                 SetStatus(OK);
                 status.GameState = game.GameState;
-                if(status.GameState == "pending")
+                if (status.GameState == "pending")
                 {
                     return status;
                 }
@@ -303,13 +335,14 @@ namespace Boggle
                 status.TimeLimit = game.TimeLimit;
                 status.Player1.Nickname = game.Player1.Nickname;
                 status.Player2.Nickname = game.Player2.Nickname;
-                if(game.GameState == "completed")
+                if (game.GameState == "completed")
                 {
                     status.Player1.WordsPlayed = game.Player1.WordsPlayed;
                     status.Player2.WordsPlayed = game.Player2.WordsPlayed;
                 }
                 return status;
-            }
+            }*/
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -370,6 +403,24 @@ namespace Boggle
             SetStatus(OK);
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
+        }
+
+        public string GetData(int value)
+        {
+            return string.Format("You entered: {0}", value);
+        }
+
+        public CompositeType GetDataUsingDataContract(CompositeType composite)
+        {
+            if (composite == null)
+            {
+                throw new ArgumentNullException("composite");
+            }
+            if (composite.BoolValue)
+            {
+                composite.StringValue += "Suffix";
+            }
+            return composite;
         }
     }
 }
