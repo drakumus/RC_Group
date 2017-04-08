@@ -281,12 +281,13 @@ namespace Boggle
                         }
                     }
                     string board = "";
-                    using (SqlCommand command = new SqlCommand("select Board, TimeLimit, StartTime from Games where GameID = @GameID and Player2 is not NULL and Player1 = @Player or Player2 = @Player", conn, trans))
+                    using (SqlCommand command = new SqlCommand("select Player2, Board, TimeLimit, StartTime from Games where GameID = @GameID and Player1 = @Player or Player2 = @Player", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", gameID);
                         command.Parameters.AddWithValue("@Player", player.UserToken);
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
+                            reader.Read();
                             if (!reader.HasRows)
                             {
                                 // game not found
@@ -294,9 +295,14 @@ namespace Boggle
                                 //trans.Commit();
                                 return null;
                             }
+                            else if(reader["Player2"].ToString() == "")
+                            {
+                                SetStatus(Conflict);
+                                return null;
+                            }
                             else
                             {
-                                reader.Read();
+
                                 board = reader["Board"].ToString();
                                 int timeLimit = (int)reader["TimeLimit"];
                                 int colIndex = reader.GetOrdinal("StartTime");
@@ -396,7 +402,7 @@ namespace Boggle
                             {
                                 // game not found
                                 SetStatus(Forbidden);
-                                trans.Commit();
+                                //trans.Commit();
                                 return null;
                             }
                             reader.Read();
