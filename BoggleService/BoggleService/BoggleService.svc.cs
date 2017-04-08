@@ -399,10 +399,10 @@ namespace Boggle
                             }
                             reader.Read();
                             SetStatus(OK);
-                            if (reader["Player2"] == null)
+                            if (reader["Player2"].ToString() == "")
                             {
                                 status.GameState = "pending";
-                                trans.Commit();
+                                //trans.Commit();
                                 return status;
                             }
                             status.Player1.UserToken = reader["Player1"].ToString();
