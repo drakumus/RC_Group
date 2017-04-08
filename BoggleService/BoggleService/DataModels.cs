@@ -36,13 +36,13 @@ namespace Boggle
         [DataMember]
         public string GameState { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember]
         public int TimeLeft { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember]
         public PlayerInfo Player1 { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember]
         public PlayerInfo Player2 { get; set; }
 
         [DataMember(EmitDefaultValue = false)]

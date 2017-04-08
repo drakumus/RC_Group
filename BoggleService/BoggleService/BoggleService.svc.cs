@@ -425,7 +425,6 @@ namespace Boggle
                             if (endTime < DateTime.Now)
                             {
                                 status.GameState = "completed";
-                                status.TimeLeft = 0;
                             }
                             else
                             {
