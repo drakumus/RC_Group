@@ -552,15 +552,16 @@ namespace Boggle
         {
             int length = word.Length;
             BoggleBoard board = new BoggleBoard(letters);
-            if (!board.CanBeFormed(word))
-            {
-                return -1;
-            }
 
             if (length < 3 && length > 0)
             {
                 return 0;
             }
+            if (!board.CanBeFormed(word))
+            {
+                return -1;
+            }
+
             else if (length < 5)
             {
                 return 1;
