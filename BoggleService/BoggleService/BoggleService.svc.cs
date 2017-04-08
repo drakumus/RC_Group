@@ -401,14 +401,14 @@ namespace Boggle
                             }
                             reader.Read();
                             SetStatus(OK);
-                            if (reader["Player2"] == null)
+                            if (reader["Player2"].ToString() == "")
                             {
                                 status.GameState = "pending";
-                                trans.Commit();
+                                //trans.Commit();
                                 return status;
                             }
-                            player1Token = (string)reader["Player1"];
-                            player2Token = (string)reader["Player2"];
+                            player1Token = reader["Player1"].ToString();
+                            player2Token = reader["Player2"].ToString();
                             //string[] bkb = new string[12];
                             //status.Player1.UserToken = P1;
                             //status.Player2.UserToken = P2;
