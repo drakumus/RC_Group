@@ -375,10 +375,6 @@ namespace Boggle
         /// <returns></returns> 
         public Status GameStatus(string gameID, string brief)
         {
-            string player1Token;
-            string player2Token;
-            string player1Nickname;
-            string player2Nickname;
             int id;
 
             if (!int.TryParse(gameID, out id))
@@ -392,6 +388,8 @@ namespace Boggle
                 using (SqlTransaction trans = conn.BeginTransaction())
                 {
                     Status status = new Status();
+                    status.Player1 = new PlayerInfo();
+                    status.Player2 = new PlayerInfo();
                     using (SqlCommand command = new SqlCommand("select Player1, Player2, TimeLimit, StartTime, Board from Games where GameID = @GameID", conn, trans))
                     {
                         command.Parameters.AddWithValue("@GameID", gameID);
@@ -413,11 +411,8 @@ namespace Boggle
                                 //trans.Commit();
                                 return status;
                             }
-                            player1Token = reader["Player1"].ToString();
-                            player2Token = reader["Player2"].ToString();
-                            //string[] bkb = new string[12];
-                            //status.Player1.UserToken = P1;
-                            //status.Player2.UserToken = P2;
+                            status.Player1.UserToken = reader["Player1"].ToString();
+                            status.Player2.UserToken = reader["Player2"].ToString();
 
                             status.Board = reader["Board"].ToString();
                             int timeLimit = (int)reader["TimeLimit"];
@@ -439,7 +434,7 @@ namespace Boggle
                     // player1 words
                     using(SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", player1Token);
+                        command.Parameters.AddWithValue("@UserID", status.Player1.UserToken);
                         command.Parameters.AddWithValue("@GameID", gameID);
 
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -460,7 +455,7 @@ namespace Boggle
                     // player2 words
                     using (SqlCommand command = new SqlCommand("select Word, Score from Words where Player = @UserID and GameID = @GameID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", player2Token);
+                        command.Parameters.AddWithValue("@UserID", status.Player2.UserToken);
                         command.Parameters.AddWithValue("@GameID", gameID);
 
                         using (SqlDataReader reader = command.ExecuteReader())
@@ -481,8 +476,8 @@ namespace Boggle
                     {
                         status.Player1.WordsPlayed = null;
                         status.Player2.WordsPlayed = null;
-                        player1Token = null;
-                        player2Token = null;
+                        status.Player1.UserToken = null;
+                        status.Player2.UserToken = null;
                         status.TimeLimit = 0;
                         status.Board = null;
                         trans.Commit();
@@ -492,7 +487,7 @@ namespace Boggle
                     // player1 nickname
                     using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", player1Token);
+                        command.Parameters.AddWithValue("@UserID", status.Player1.UserToken);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -504,16 +499,16 @@ namespace Boggle
                                 return null;
                             }
                             reader.Read();
-                            player1Nickname = reader["Nickname"].ToString();
+                            status.Player1.Nickname = reader["Nickname"].ToString();
 
-                            player1Token = null;
+                            status.Player1.UserToken = null;
                         }
                     }
 
                     // player2 nickname
                     using (SqlCommand command = new SqlCommand("select Nickname from Users where UserID = @UserID", conn, trans))
                     {
-                        command.Parameters.AddWithValue("@UserID", player2Token);
+                        command.Parameters.AddWithValue("@UserID", status.Player2.UserToken);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
@@ -526,9 +521,9 @@ namespace Boggle
                             }
 
                             reader.Read();
-                            player2Nickname = reader["Nickname"].ToString();
+                            status.Player2.Nickname = reader["Nickname"].ToString();
 
-                            player2Token = null;
+                            status.Player2.UserToken = null;
                         }
                     }
                     if(status.GameState == "active")
