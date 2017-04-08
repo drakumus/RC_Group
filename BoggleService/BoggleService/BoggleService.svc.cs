@@ -149,7 +149,6 @@ namespace Boggle
                     }
                     if(game.GameID != 0)
                     {
-                        DateTime startTime = DateTime.Now;
 
                         using (SqlCommand command =
                             new SqlCommand("UPDATE Games SET Player2 = @Player2, Board = @Board, TimeLimit = @TimeLimit, StartTime = @StartTime WHERE GameID = @GameID",
@@ -159,7 +158,7 @@ namespace Boggle
                             command.Parameters.AddWithValue("@Player2", player.UserToken);
                             command.Parameters.AddWithValue("@Board", new BoggleBoard().ToString());
                             command.Parameters.AddWithValue("@TimeLimit", game.TimeLimit);
-                            command.Parameters.AddWithValue("@StartTime", startTime);
+                            command.Parameters.AddWithValue("@StartTime", DateTime.Now);
                             command.Parameters.AddWithValue("@GameID", game.GameID);
                             
                             // make sure 1 row was modified
@@ -551,39 +550,28 @@ namespace Boggle
         {
             int length = word.Length;
             BoggleBoard board = new BoggleBoard(letters);
-
-            if (length < 3 && length > 0)
-            {
-                return 0;
-            }
-            if (!board.CanBeFormed(word))
+            if (!board.CanBeFormed(word) && word.Length > 2)
             {
                 return -1;
             }
-
-            else if (length < 5)
+            switch (word.Length)
             {
-                return 1;
-            }
-            else if (length == 5)
-            {
-                return 2;
-            }
-            else if (length == 6)
-            {
-                return 3;
-            }
-            else if (length == 7)
-            {
-                return 4;
-            }
-            else
-            {
-                return 11;
+                case 1:
+                case 2:
+                    return 0;
+                case 3:
+                case 4:
+                    return 1;
+                case 5:
+                    return 2;
+                case 6:
+                    return 3;
+                case 7:
+                    return 5;
+                default:
+                    return 11;
             }
         }
-
-
 
         /// <summary>
         /// Returns a Stream version of index.html.

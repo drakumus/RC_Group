@@ -898,8 +898,7 @@ namespace ServerGrader
             JoinGame(player1, 6).Wait();
             string game2 = JoinGame(player2, 6).Result;
             Thread.Sleep(7000);
-            var r = GetStatus(game2, "no").Result;
-            int left = r.TimeLeft;
+            int left = GetStatus(game2, "no").Result.TimeLeft;
             Assert.AreEqual(0, left);
         }
 
