@@ -6,6 +6,7 @@ using static System.Net.HttpStatusCode;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
+using System.Threading;
 
 namespace Boggle
 {
@@ -410,18 +411,20 @@ namespace Boggle
 
                             status.Board = reader["Board"].ToString();
                             int timeLimit = (int)reader["TimeLimit"];
+                            status.TimeLimit = timeLimit;
                             int colIndex = reader.GetOrdinal("StartTime");
                             DateTime startTime = reader.GetDateTime(colIndex);
-                            if (startTime.AddSeconds(timeLimit) > DateTime.Now)
+                            DateTime endTime = startTime.AddSeconds(timeLimit);
+                            if (endTime < DateTime.Now)
                             {
                                 status.GameState = "completed";
+                                status.TimeLeft = 0;
                             }
                             else
                             {
+                                status.TimeLeft = (endTime - DateTime.Now).Seconds;
                                 status.GameState = "active";
                             }
-                            status.TimeLeft = (DateTime.Now - startTime).Seconds;
-                            status.TimeLimit = timeLimit;
                         }
                     }
 
