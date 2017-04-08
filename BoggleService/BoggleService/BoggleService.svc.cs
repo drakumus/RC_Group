@@ -307,7 +307,8 @@ namespace Boggle
                                 int timeLimit = (int)reader["TimeLimit"];
                                 int colIndex = reader.GetOrdinal("StartTime");
                                 DateTime startTime = reader.GetDateTime(colIndex);
-                                if (startTime.AddSeconds(timeLimit) > DateTime.Now)
+                                
+                                if (startTime.AddSeconds(timeLimit) < DateTime.Now)
                                 {
                                     SetStatus(Conflict);
                                     //trans.Commit();
