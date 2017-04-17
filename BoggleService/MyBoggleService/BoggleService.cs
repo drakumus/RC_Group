@@ -19,7 +19,7 @@ namespace Boggle
     {
         // The connection string to the DB
         private static string BoggleDB;
-        static BoggleService()
+        public BoggleService()
         {
             
             BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
@@ -43,7 +43,7 @@ namespace Boggle
         {
             status = Forbidden;
             string output = "";
-            Regex usersReg = new Regex("@users$");
+            Regex usersReg = new Regex(@"users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
             Regex getGame = new Regex(@"[0-9]+$");

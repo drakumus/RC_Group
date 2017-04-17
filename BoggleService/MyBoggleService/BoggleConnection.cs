@@ -202,8 +202,7 @@ namespace Boggle
 
             BoggleService service = new BoggleService();
             string outputJson = service.RequestParser(type, url, json, out status);
-
-
+            
         }
     }
 }
