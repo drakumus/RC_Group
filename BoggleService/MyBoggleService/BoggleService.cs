@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using Newtonsoft.Json;
 using System.Net;
 using static System.Net.HttpStatusCode;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
+using System.Text.RegularExpressions;
 
 namespace Boggle
 {
@@ -40,6 +42,58 @@ namespace Boggle
         /// </summary>
         /// <param name="nickname"></param>
         /// <returns></returns>
+        /// 
+        public void RequestParser(string url, string result)
+        {
+            HttpStatusCode status;
+            string requestType = "";
+            Regex usersReg = new Regex("@users$");
+            Regex joinReg = new Regex(@"games$");
+            Regex gamesReg = new Regex(@"games*\/[0-9]+$");
+            
+            if(requestType == "POST")
+            {
+                if(usersReg.IsMatch(url)) //POST users (creates user)
+                {
+                    dynamic data = JsonConvert.DeserializeObject(result);
+
+                    PlayerInfo player = new PlayerInfo {
+                        //generate user token somehow UserToken = data.UserToken
+                    };
+                }
+                else if(joinReg.IsMatch(url)) //POST games (join game)
+                {
+
+                }
+                else
+                {
+                    status = HttpStatusCode.BadRequest;
+                }
+            }
+            else if (requestType == "PUT")
+            {
+                if(gamesReg.IsMatch(url)) //PUT games (cancel join)
+                {
+
+                }
+                else if (gamesReg.IsMatch(url)) //PUT games/128 (play word)
+                {
+
+                }
+                else
+                {
+                    status = HttpStatusCode.BadRequest;
+                }
+            }
+            else if (requestType == "GET")
+            {
+                if (gamesReg.IsMatch(url)) //GET games/128
+                {
+                    
+                }
+            }
+        }
+
         public Nickname Register(PlayerInfo player, out HttpStatusCode status)
         {
             if (player.Nickname == null || player.Nickname.Trim().Length == 0)
