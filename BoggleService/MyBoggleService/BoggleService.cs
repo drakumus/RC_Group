@@ -38,16 +38,9 @@ namespace Boggle
             //TODO: need to set status as an out parameter to each of your service methods. 
             //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }*/
-
-        /// <summary>
-        /// Registers a new user.
-        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
-        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
-        /// </summary>
-        /// <param name="nickname"></param>
-        /// <returns></returns>
-        /// 
-        public string RequestParser(string requestType, string url, string result, out HttpStatusCode status)
+        
+        
+        public string RequestParser(string requestType, string url, string result)
         {
             status = Forbidden;
             string output = "";
@@ -145,6 +138,14 @@ namespace Boggle
             return output;
         }
 
+
+        /// <summary>
+        /// Registers a new user.
+        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
+        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <returns></returns>
         public Nickname Register(PlayerInfo player, out HttpStatusCode status)
         {
             if (player.Nickname == null || player.Nickname.Trim().Length == 0)

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using static System.Net.HttpStatusCode;
+using System.Text.RegularExpressions;
 
 namespace Boggle
 {
@@ -83,12 +84,13 @@ namespace Boggle
                 // Convert the bytes into characters and appending to incoming
                 int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
-                Console.WriteLine(incoming);
+                Console.WriteLine(incoming + "\n");
 
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
                     SocketFlags.None, Received, null);
             }
+            ParseReceived();
         }
 
         /// <summary>
@@ -179,6 +181,23 @@ namespace Boggle
                     SendBytes();
                 }
             }
+        }
+
+        private void ParseReceived()
+        {
+            string received = incoming.ToString();
+            RegexOptions options = RegexOptions.Multiline;
+            Regex reg = new Regex(@"^{.*}$", options);
+            Match m = reg.Match(received);
+            if (!m.Success)
+            {
+                return;
+            }
+            string json = m.ToString();
+            string firstLine = received.Split('\n').First();
+            string[] ssize = firstLine.Split(null);
+            string type = ssize.First();
+            string url = ssize[1];
         }
     }
 }
