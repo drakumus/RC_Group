@@ -35,10 +35,18 @@ namespace Boggle
             //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }*/
 
-        public void RequestParser(string url, string result)
+        /// <summary>
+        /// Registers a new user.
+        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
+        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <returns></returns>
+        /// 
+        public string RequestParser(string requestType, string url, string result)
         {
             HttpStatusCode status;
-            string requestType = "";
+            string output = "";
             Regex usersReg = new Regex("@users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
@@ -50,8 +58,10 @@ namespace Boggle
                     dynamic data = JsonConvert.DeserializeObject(result);
 
                     PlayerInfo player = new PlayerInfo {
-                        //generate user token somehow UserToken = data.UserToken
+                        Nickname = data.Nickname
                     };
+                    output = JsonConvert.SerializeObject(Register(player, out status));
+
                 }
                 else if(joinReg.IsMatch(url)) //POST games (join game)
                 {
@@ -84,6 +94,7 @@ namespace Boggle
                     
                 }
             }
+            return output;
         }
 
 
