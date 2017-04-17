@@ -15,13 +15,12 @@ namespace Boggle
     {
         // The connection string to the DB
         private static string BoggleDB;
-        /* Code needs connection string in it now
-        static Boggle()
+        static BoggleService()
         {
             
-            //BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
         }
-        */
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.

@@ -17,7 +17,7 @@ namespace Boggle
         private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
         
         // Buffer size for reading incoming bytes
-        private const int BUFFER_SIZE = 1024;
+        private const int BUFFER_SIZE = 64;
 
         // The socket through which we communicate with the remote client
         private Socket socket;
@@ -198,6 +198,11 @@ namespace Boggle
             string[] ssize = firstLine.Split(null);
             string type = ssize.First();
             string url = ssize[1];
+
+            BoggleService service = new BoggleService();
+            service.RequestParser(type, url, json);
+
+
         }
     }
 }
