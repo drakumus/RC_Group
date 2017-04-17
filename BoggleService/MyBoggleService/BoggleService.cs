@@ -3,11 +3,15 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Net;
 using static System.Net.HttpStatusCode;
+using System.Net.Http;
+using System.Web;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Threading;
 using System.Text.RegularExpressions;
+using System.Dynamic;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace Boggle
 {
@@ -37,11 +41,12 @@ namespace Boggle
         
         public string RequestParser(string requestType, string url, string result)
         {
-            HttpStatusCode status;
+            status = Forbidden;
             string output = "";
             Regex usersReg = new Regex("@users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
+            Regex getGame = new Regex(@"[0-9]+$");
             
             if(requestType == "POST")
             {
@@ -53,11 +58,26 @@ namespace Boggle
                         Nickname = data.Nickname
                     };
                     output = JsonConvert.SerializeObject(Register(player, out status));
-
+                    //string json = JsonConvert.SerializeObject(Register(player, out status));
+                    //var res = new HttpResponseMessage();
+                    //res.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    //res.StatusCode = status;
                 }
                 else if(joinReg.IsMatch(url)) //POST games (join game)
                 {
+                    dynamic data = JsonConvert.DeserializeObject(result);
 
+                    TimeThing time = new TimeThing
+                    {
+                        UserToken = data.UserToken,
+                        TimeLimit = data.TimeLimit
+                    };
+
+                    output = JsonConvert.SerializeObject(JoinGame(time, out status));
+                    //string json = JsonConvert.SerializeObject(JoinGame(time, out status));
+                    ///var res = new HttpResponseMessage();
+                    //res.Content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+                    //res.StatusCode = status;
                 }
                 else
                 {
@@ -68,11 +88,24 @@ namespace Boggle
             {
                 if(gamesReg.IsMatch(url)) //PUT games (cancel join)
                 {
-
+                    dynamic data = JsonConvert.DeserializeObject(result);
+                    WordThing thing = new WordThing
+                    {
+                        UserToken = data.UserToken
+                    };
+                    CancelJoin(thing , out status);
                 }
                 else if (gamesReg.IsMatch(url)) //PUT games/128 (play word)
                 {
+                    dynamic data = JsonConvert.DeserializeObject(result);
 
+                    WordThing thing = new WordThing()
+                    {
+                        UserToken = data.UserToken,
+                        Word = data.Word
+                    };
+
+                    output = JsonConvert.SerializeObject(PlayWord(thing, getGame.Match(url).Value, out status));
                 }
                 else
                 {
@@ -83,7 +116,22 @@ namespace Boggle
             {
                 if (gamesReg.IsMatch(url)) //GET games/128
                 {
-                    
+                    string gameID = getGame.Match(url).Value;
+                    string brief;
+                    dynamic data = JsonConvert.DeserializeObject(result);
+                    try
+                    {
+                        brief = data.Brief;
+                    }
+                    catch (RuntimeBinderException)
+                    {
+                        brief = null;
+                    }
+                    output = JsonConvert.SerializeObject(GameStatus(gameID, brief, out status));
+                }
+                else
+                {
+                    status = HttpStatusCode.BadRequest;
                 }
             }
             return output;
