@@ -43,9 +43,10 @@ namespace Boggle
         /// <param name="nickname"></param>
         /// <returns></returns>
         /// 
-        public void RequestParser(string requestType, string url, string result)
+        public string RequestParser(string requestType, string url, string result)
         {
             HttpStatusCode status;
+            string output = "";
             Regex usersReg = new Regex("@users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
@@ -57,8 +58,10 @@ namespace Boggle
                     dynamic data = JsonConvert.DeserializeObject(result);
 
                     PlayerInfo player = new PlayerInfo {
-                        //generate user token somehow UserToken = data.UserToken
+                        Nickname = data.Nickname
                     };
+                    output = JsonConvert.SerializeObject(Register(player, out status));
+
                 }
                 else if(joinReg.IsMatch(url)) //POST games (join game)
                 {
@@ -91,6 +94,7 @@ namespace Boggle
                     
                 }
             }
+            return output;
         }
 
         public Nickname Register(PlayerInfo player, out HttpStatusCode status)
