@@ -185,6 +185,7 @@ namespace Boggle
 
         private void ParseReceived()
         {
+            System.Net.HttpStatusCode status;
             string received = incoming.ToString();
             RegexOptions options = RegexOptions.Multiline;
             Regex reg = new Regex(@"^{.*}$", options);
@@ -200,7 +201,7 @@ namespace Boggle
             string url = ssize[1];
 
             BoggleService service = new BoggleService();
-            service.RequestParser(type, url, json);
+            string outputJson = service.RequestParser(type, url, json, out status);
 
 
         }
