@@ -60,6 +60,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BoggleBoard.cs" />
+    <Compile Include="BoggleConnection.cs" />
+    <Compile Include="BoggleServer.cs" />
     <Compile Include="BoggleService.cs" />
     <Compile Include="DataModels.cs" />
     <Compile Include="Program.cs" />
@@ -67,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Properties\webjob-publish-settings.json" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BoggleDB.mdf">
