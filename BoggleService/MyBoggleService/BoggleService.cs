@@ -26,11 +26,13 @@ namespace Boggle
         /// an http response is sent.
         /// </summary>
         /// <param name="status"></param>
+
+        /*
         private static void SetStatus(HttpStatusCode status)
         {
             //TODO: need to set status as an out parameter to each of your service methods. 
             //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
-        }
+        }*/
 
         /// <summary>
         /// Registers a new user.
