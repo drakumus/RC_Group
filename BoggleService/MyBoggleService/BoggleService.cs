@@ -38,9 +38,9 @@ namespace Boggle
             //TODO: need to set status as an out parameter to each of your service methods. 
             //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }*/
-        
-        
-        public string RequestParser(string requestType, string url, string result)
+
+
+        public string RequestParser(string requestType, string url, string result, out HttpStatusCode status)
         {
             status = Forbidden;
             string output = "";
