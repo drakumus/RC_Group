@@ -9,11 +9,10 @@ using System.Threading;
 
 namespace Boggle
 {
-    public class Boggle
+    public class BoggleService
     {
         // The connection string to the DB
         private static string BoggleDB;
-
         /* Code needs connection string in it now
         static Boggle()
         {
