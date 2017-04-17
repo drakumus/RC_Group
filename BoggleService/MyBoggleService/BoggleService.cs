@@ -43,10 +43,9 @@ namespace Boggle
         /// <param name="nickname"></param>
         /// <returns></returns>
         /// 
-        public void RequestParser(string url, string result)
+        public void RequestParser(string requestType, string url, string result)
         {
             HttpStatusCode status;
-            string requestType = "";
             Regex usersReg = new Regex("@users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
