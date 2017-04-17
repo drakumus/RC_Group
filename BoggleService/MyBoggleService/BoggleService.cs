@@ -40,11 +40,11 @@ namespace Boggle
         /// </summary>
         /// <param name="nickname"></param>
         /// <returns></returns>
-        public Nickname Register(PlayerInfo player)
+        public Nickname Register(PlayerInfo player, out HttpStatusCode status)
         {
             if (player.Nickname == null || player.Nickname.Trim().Length == 0)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -68,13 +68,13 @@ namespace Boggle
                         // make sure 1 row was modified
                         if (command.ExecuteNonQuery() == 1)
                         {
-                            SetStatus(Created);
+                            status = Created;
                             trans.Commit();
                             Nickname data = new Nickname();
                             data.UserToken = userToken;
                             return data;
                         }
-                        SetStatus(Forbidden);
+                        status = Forbidden;
                         return null;
                     }
                 }
@@ -90,17 +90,17 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="timeLimit"></param>
         /// <returns></returns>
-        public GameIDThing JoinGame(TimeThing player)
+        public GameIDThing JoinGame(TimeThing player, out HttpStatusCode status)
         {
 
             if (player.UserToken == null)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             if (player.TimeLimit < 5 || player.TimeLimit > 120)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -118,7 +118,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // user not found
-                                SetStatus(Forbidden);
+                                status = Forbidden;
                                 //trans.Commit();
                                 return null;
                             }
@@ -147,7 +147,7 @@ namespace Boggle
                     }
                     if (player1 == player.UserToken)
                     {
-                        SetStatus(Conflict);
+                        status = Conflict;
                         return null;
                     }
                     if (game.GameID != 0)
@@ -169,11 +169,11 @@ namespace Boggle
                             {
                                 GameIDThing data = new GameIDThing();
                                 data.GameID = game.GameID;
-                                SetStatus(Created);
+                                status = Created;
                                 trans.Commit();
                                 return data;
                             }
-                            SetStatus(Forbidden);
+                            status = Forbidden;
                             return null;
                         }
                     }
@@ -186,7 +186,7 @@ namespace Boggle
                         command.Parameters.AddWithValue("@TimeLimit", player.TimeLimit);
                         GameIDThing data = new GameIDThing();
                         data.GameID = (int)command.ExecuteScalar();
-                        SetStatus(Accepted);
+                        status = Accepted;
                         trans.Commit();
                         return data;
                     }
@@ -200,11 +200,11 @@ namespace Boggle
         /// Otherwise, removes the UserToken from the pending game and responds with OK.
         /// </summary>
         /// <param name="userToken"></param>
-        public void CancelJoin(WordThing player)
+        public void CancelJoin(WordThing player, out HttpStatusCode status)
         {
             if (player.UserToken == null)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return;
             }
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -218,11 +218,11 @@ namespace Boggle
 
                         if (command.ExecuteNonQuery() == 0)
                         {
-                            SetStatus(Forbidden);
+                            status = Forbidden;
                         }
                         else
                         {
-                            SetStatus(OK);
+                            status = OK;
                         }
                         trans.Commit();
                     }
@@ -242,24 +242,24 @@ namespace Boggle
         /// <param name="userToken"></param>
         /// <param name="player"></param>
         /// <returns></returns>
-        public WordItem PlayWord(WordThing player, string gameID)
+        public WordItem PlayWord(WordThing player, string gameID, out HttpStatusCode status)
         {
             //playerID null check
             if (player.UserToken == null)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             //word null check
             if (player.Word == null || player.Word.Trim().Length == 0)
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             int id;
             if (!int.TryParse(gameID, out id))
             {
-                SetStatus(Forbidden);
+                status = Forbidden;
                 return null;
             }
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -277,7 +277,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // user not found
-                                SetStatus(Forbidden);
+                                status = Forbidden;
                                 trans.Commit();
                                 return null;
                             }
@@ -294,13 +294,13 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // game not found
-                                SetStatus(Forbidden);
+                                status = Forbidden;
                                 //trans.Commit();
                                 return null;
                             }
                             else if (reader["Player2"].ToString() == "")
                             {
-                                SetStatus(Conflict);
+                                status = Conflict;
                                 return null;
                             }
                             else
@@ -313,7 +313,7 @@ namespace Boggle
 
                                 if (startTime.AddSeconds(timeLimit) < DateTime.Now)
                                 {
-                                    SetStatus(Conflict);
+                                    status = Conflict;
                                     //trans.Commit();
                                     return null;
                                 }
@@ -322,7 +322,7 @@ namespace Boggle
                     }
                     if (board == "")
                     {
-                        SetStatus(Forbidden);
+                        status = Forbidden;
                         trans.Commit();
                         return null;
                     }
@@ -357,11 +357,11 @@ namespace Boggle
                         if (command.ExecuteNonQuery() == 1)
                         {
                             word.Word = null;
-                            SetStatus(OK);
+                            status = OK;
                             trans.Commit();
                             return word;
                         }
-                        SetStatus(Forbidden);
+                        status = Forbidden;
                         return null;
                     }
                 }
@@ -377,13 +377,13 @@ namespace Boggle
         /// </summary>
         /// <param name="gameID"></param>
         /// <returns></returns> 
-        public Status GameStatus(string gameID, string brief)
+        public Status GameStatus(string gameID, string brief, out HttpStatusCode outStatus)
         {
             int id;
 
             if (!int.TryParse(gameID, out id))
             {
-                SetStatus(Forbidden);
+                outStatus = Forbidden;
                 return null;
             }
             using (SqlConnection conn = new SqlConnection(BoggleDB))
@@ -403,12 +403,12 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // game not found
-                                SetStatus(Forbidden);
+                                outStatus = Forbidden;
                                 //trans.Commit();
                                 return null;
                             }
                             reader.Read();
-                            SetStatus(OK);
+                            outStatus = OK;
                             if (reader["Player2"].ToString() == "")
                             {
                                 status.GameState = "pending";
@@ -499,7 +499,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // game not found
-                                SetStatus(Forbidden);
+                                outStatus= Forbidden;
                                 trans.Commit();
                                 return null;
                             }
@@ -520,7 +520,7 @@ namespace Boggle
                             if (!reader.HasRows)
                             {
                                 // game not found
-                                SetStatus(Forbidden);
+                                outStatus = Forbidden;
                                 trans.Commit();
                                 return null;
                             }
@@ -581,9 +581,9 @@ namespace Boggle
         /// Returns a Stream version of index.html.
         /// </summary>
         /// <returns></returns>
-        public Stream API()
+        public Stream API(out HttpStatusCode status)
         {
-            SetStatus(OK);
+            status = OK;
             //WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
