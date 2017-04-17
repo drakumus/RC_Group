@@ -35,14 +35,6 @@ namespace Boggle
             //WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }*/
 
-        /// <summary>
-        /// Registers a new user.
-        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
-        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
-        /// </summary>
-        /// <param name="nickname"></param>
-        /// <returns></returns>
-        /// 
         public void RequestParser(string url, string result)
         {
             HttpStatusCode status;
@@ -94,6 +86,14 @@ namespace Boggle
             }
         }
 
+
+        /// <summary>
+        /// Registers a new user.
+        /// If nickname is null or is empty after trimming, responds with status code Forbidden.
+        /// Otherwise, creates a user, returns the user's token, and responds with status code Created. 
+        /// </summary>
+        /// <param name="nickname"></param>
+        /// <returns></returns>
         public Nickname Register(PlayerInfo player, out HttpStatusCode status)
         {
             if (player.Nickname == null || player.Nickname.Trim().Length == 0)
