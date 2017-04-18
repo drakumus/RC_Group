@@ -89,8 +89,8 @@ namespace Boggle
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
                     SocketFlags.None, Received, null);
+                ParseReceived();
             }
-            ParseReceived();
         }
 
         /// <summary>
@@ -194,6 +194,8 @@ namespace Boggle
             {
                 return;
             }
+
+            Console.WriteLine(incoming + "\n");
             string json = m.ToString();
             string firstLine = received.Split('\n').First();
             string[] ssize = firstLine.Split(null);
