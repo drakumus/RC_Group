@@ -46,6 +46,7 @@ namespace Boggle
             Regex usersReg = new Regex(@"users$");
             Regex joinReg = new Regex(@"games$");
             Regex gamesReg = new Regex(@"games*\/[0-9]+$");
+            Regex briefReg = new Regex(@"games\/(\d+)\?brief=(\w*)$");
             Regex getGame = new Regex(@"[0-9]+$");
             
             if(requestType == "POST")
@@ -117,21 +118,19 @@ namespace Boggle
                 if (gamesReg.IsMatch(url)) //GET games/128
                 {
                     string gameID = getGame.Match(url).Value;
-                    string brief;
-                    dynamic data = JsonConvert.DeserializeObject(result);
-                    try
-                    {
-                        brief = data.Brief;
-                    }
-                    catch (RuntimeBinderException)
-                    {
-                        brief = null;
-                    }
+                    string brief = "";
+                    output = JsonConvert.SerializeObject(GameStatus(gameID, brief, out status));
+                }
+                else if (briefReg.IsMatch(url))
+                {
+                    string gameID = briefReg.Match(url).Groups[1].Value;
+                    string brief = briefReg.Match(url).Groups[2].Value;
+
                     output = JsonConvert.SerializeObject(GameStatus(gameID, brief, out status));
                 }
                 else
                 {
-                    status = HttpStatusCode.BadRequest;
+                    status = HttpStatusCode.Forbidden;
                 }
             }
             return output;

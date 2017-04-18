@@ -18,7 +18,7 @@ namespace Boggle
         private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
         
         // Buffer size for reading incoming bytes
-        private const int BUFFER_SIZE = 1024;
+        private const int BUFFER_SIZE = 1;
 
         // The socket through which we communicate with the remote client
         private Socket socket;
@@ -189,7 +189,7 @@ namespace Boggle
             RegexOptions options = RegexOptions.Multiline;
             Regex reg = new Regex(@"^{.*}$", options);
             Match m = reg.Match(received);
-            Console.WriteLine(incoming + "\n");
+            //Console.WriteLine(incoming + "\n");
             string[] lines = received.Split('\n');
             string firstLine = lines.First();
             string[] ssize = firstLine.Split(null);
@@ -223,7 +223,7 @@ namespace Boggle
             string contentLength = "Content-Length: " + encoding.GetByteCount(outputJson).ToString();
             string contentType = "Content-Type: application/json; charset=utf-8";
             output += "\r\n" + contentLength + "\r\n" + contentType + "\r\n" + "\r\n" + outputJson;
-            Console.WriteLine(output);
+            //Console.WriteLine(output);
             Send(output);
         }
     }
