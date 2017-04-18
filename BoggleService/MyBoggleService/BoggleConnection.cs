@@ -84,7 +84,7 @@ namespace Boggle
                 // Convert the bytes into characters and appending to incoming
                 int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
-                Console.WriteLine(incoming + "\n");
+                //Console.WriteLine(incoming + "\n");
 
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
@@ -202,7 +202,13 @@ namespace Boggle
 
             BoggleService service = new BoggleService();
             string outputJson = service.RequestParser(type, url, json, out status);
-            
+            int code = (int)status;
+            string output = "HTTP/1.1 " + code.ToString() + " " + status.ToString();
+            string contentLength = "Content-Length: " + outputJson.Length.ToString();
+            string contentType = "Content-Type: application/json; charset=utf-8";
+            output += "\r\n" + contentLength + "\r\n" + contentType + "\r\n" + "\r\n" + outputJson;
+            Console.WriteLine(output);
+            Send(output);
         }
     }
 }
