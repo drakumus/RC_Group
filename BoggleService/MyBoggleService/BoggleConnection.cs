@@ -88,10 +88,6 @@ namespace Boggle
                 //Console.WriteLine(incoming + "\n");
 
                 ParseReceived();
-
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, Received, null);
             }
         }
 
@@ -195,6 +191,9 @@ namespace Boggle
             Match m = reg.Match(received);
             if (!m.Success)
             {
+                // Ask for some more data
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, Received, null);
                 return;
             }
 
@@ -212,7 +211,7 @@ namespace Boggle
             string contentLength = "Content-Length: " + encoding.GetByteCount(outputJson).ToString();
             string contentType = "Content-Type: application/json; charset=utf-8";
             output += "\r\n" + contentLength + "\r\n" + contentType + "\r\n" + "\r\n" + outputJson;
-            Console.WriteLine(output);
+            //Console.WriteLine(output);
             Send(output);
         }
     }
