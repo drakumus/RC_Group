@@ -86,7 +86,7 @@ namespace Boggle
             }
             else if (requestType == "PUT")
             {
-                if(gamesReg.IsMatch(url)) //PUT games (cancel join)
+                if(joinReg.IsMatch(url)) //PUT games (cancel join)
                 {
                     dynamic data = JsonConvert.DeserializeObject(result);
                     WordThing thing = new WordThing
