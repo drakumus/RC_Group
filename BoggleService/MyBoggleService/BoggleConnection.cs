@@ -161,7 +161,8 @@ namespace Boggle
         private void Sent(IAsyncResult result)
         {
             // Find out how many bytes were actually sent
-            int bytesSent = socket.EndSend(result);
+            int bytesSent;
+            bytesSent = socket.EndSend(result);
             Console.WriteLine("\t" + bytesSent + " bytes were successfully sent");
 
             // Get exclusive access to send mechanism
