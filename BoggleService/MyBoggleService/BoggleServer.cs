@@ -43,13 +43,13 @@ namespace Boggle
             // are passing back the IAsyncResult object.
             Socket s = server.EndAcceptSocket(result);
 
-            // We ask the server to listen for another connection request.  As before, this
-            // will happen on another thread.
-            server.BeginAcceptSocket(ConnectionRequested, null);
-
             // We create a new ClientConnection, which will take care of communicating with
             // the remote client.
             new BoggleConnection(s);
+
+            // We ask the server to listen for another connection request.  As before, this
+            // will happen on another thread.
+            server.BeginAcceptSocket(ConnectionRequested, null);
         }
     }
 }

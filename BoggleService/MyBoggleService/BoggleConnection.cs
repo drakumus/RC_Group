@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using static System.Net.HttpStatusCode;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace Boggle
 {
@@ -17,7 +18,7 @@ namespace Boggle
         private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
         
         // Buffer size for reading incoming bytes
-        private const int BUFFER_SIZE = 64;
+        private const int BUFFER_SIZE = 1024;
 
         // The socket through which we communicate with the remote client
         private Socket socket;
@@ -86,10 +87,11 @@ namespace Boggle
                 incoming.Append(incomingChars, 0, charsRead);
                 //Console.WriteLine(incoming + "\n");
 
+                ParseReceived();
+
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
                     SocketFlags.None, Received, null);
-                ParseReceived();
             }
         }
 
@@ -195,7 +197,7 @@ namespace Boggle
                 return;
             }
 
-            Console.WriteLine(incoming + "\n");
+            //Console.WriteLine(incoming + "\n");
             string json = m.ToString();
             string firstLine = received.Split('\n').First();
             string[] ssize = firstLine.Split(null);
@@ -206,10 +208,10 @@ namespace Boggle
             string outputJson = service.RequestParser(type, url, json, out status);
             int code = (int)status;
             string output = "HTTP/1.1 " + code.ToString() + " " + status.ToString();
-            string contentLength = "Content-Length: " + outputJson.Length.ToString();
+            string contentLength = "Content-Length: " + encoding.GetByteCount(outputJson).ToString();
             string contentType = "Content-Type: application/json; charset=utf-8";
             output += "\r\n" + contentLength + "\r\n" + contentType + "\r\n" + "\r\n" + outputJson;
-            Console.WriteLine(output);
+            //Console.WriteLine(output);
             Send(output);
         }
     }
