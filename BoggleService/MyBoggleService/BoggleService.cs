@@ -109,7 +109,7 @@ namespace Boggle
                 }
                 else
                 {
-                    status = HttpStatusCode.BadRequest;
+                    status = HttpStatusCode.Forbidden;
                 }
             }
             else if (requestType == "GET")
