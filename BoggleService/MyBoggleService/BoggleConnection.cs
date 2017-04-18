@@ -189,19 +189,31 @@ namespace Boggle
             RegexOptions options = RegexOptions.Multiline;
             Regex reg = new Regex(@"^{.*}$", options);
             Match m = reg.Match(received);
-            if (!m.Success)
-            {
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, Received, null);
-                return;
-            }
-
             Console.WriteLine(incoming + "\n");
-            string json = m.ToString();
-            string firstLine = received.Split('\n').First();
+            string[] lines = received.Split('\n');
+            string firstLine = lines.First();
             string[] ssize = firstLine.Split(null);
             string type = ssize.First();
+            if (!m.Success)
+            {
+                if(type != "GET")
+                {
+                    // Ask for some more data
+                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, Received, null);
+                    return;
+                }
+                if(lines.Length < 3)
+                {
+                    // Ask for some more data
+                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, Received, null);
+                    return;
+                }
+            }
+
+            //Console.WriteLine(incoming + "\n");
+            string json = m.ToString();
             string url = ssize[1];
 
             BoggleService service = new BoggleService();
