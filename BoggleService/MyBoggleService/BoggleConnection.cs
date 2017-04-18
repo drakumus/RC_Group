@@ -197,7 +197,7 @@ namespace Boggle
                 return;
             }
 
-            //Console.WriteLine(incoming + "\n");
+            Console.WriteLine(incoming + "\n");
             string json = m.ToString();
             string firstLine = received.Split('\n').First();
             string[] ssize = firstLine.Split(null);
@@ -211,7 +211,7 @@ namespace Boggle
             string contentLength = "Content-Length: " + encoding.GetByteCount(outputJson).ToString();
             string contentType = "Content-Type: application/json; charset=utf-8";
             output += "\r\n" + contentLength + "\r\n" + contentType + "\r\n" + "\r\n" + outputJson;
-            //Console.WriteLine(output);
+            Console.WriteLine(output);
             Send(output);
         }
     }
