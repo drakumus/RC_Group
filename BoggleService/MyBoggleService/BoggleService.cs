@@ -22,7 +22,7 @@ namespace Boggle
         public BoggleService()
         {
             
-            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDataBase"].ConnectionString;
         }
 
         /// <summary>
