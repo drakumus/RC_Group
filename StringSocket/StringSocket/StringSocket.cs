@@ -56,11 +56,35 @@ namespace CustomNetworking
 
     public class StringSocket : IDisposable
     {
+        // Buffer size for reading incoming bytes
+        private const int BUFFER_SIZE = 1;
+
         // Underlying socket
         private Socket socket;
 
         // Encoding used for sending and receiving
         private Encoding encoding;
+
+        // Text that has been received from the client but not yet dealt with
+        private StringBuilder incoming;
+
+        // Text that needs to be sent to the client but which we have not yet started sending
+        private StringBuilder outgoing;
+
+        // Buffers that will contain incoming bytes and characters
+        private byte[] incomingBytes = new byte[BUFFER_SIZE];
+        private char[] incomingChars = new char[BUFFER_SIZE];
+
+        // Records whether an asynchronous send attempt is ongoing
+        private bool sendIsOngoing = false;
+
+        // For synchronizing sends
+        private readonly object sendSync = new object();
+
+        // Bytes that we are actively trying to send, along with the
+        // index of the leftmost byte whose send has not yet been completed
+        private byte[] pendingBytes = new byte[0];
+        private int pendingIndex = 0;
 
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
@@ -72,6 +96,8 @@ namespace CustomNetworking
         {
             socket = s;
             encoding = e;
+            incoming = new StringBuilder();
+            outgoing = new StringBuilder();
             // TODO: Complete implementation of StringSocket
         }
 
@@ -117,7 +143,89 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
-            // TODO: Implement BeginSend
+            // Get exclusive access to send mechanism
+            lock (sendSync)
+            {
+                // Append the message to the outgoing lines
+                outgoing.Append(s);
+
+                // If there's not a send ongoing, start one.
+                if (!sendIsOngoing)
+                {
+                    Console.WriteLine("Appending a " + s.Length + " char line, starting send mechanism");
+                    sendIsOngoing = true;
+                    SendBytes();
+                }
+                else
+                {
+                    Console.WriteLine("\tAppending a " + s.Length + " char line, send mechanism already running");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to send the entire outgoing string.
+        /// This method should not be called unless sendSync has been acquired.
+        /// </summary>
+        private void SendBytes()
+        {
+            // If we're in the middle of the process of sending out a block of bytes,
+            // keep doing that.
+            if (pendingIndex < pendingBytes.Length)
+            {
+                Console.WriteLine("\tSending " + (pendingBytes.Length - pendingIndex) + " bytes");
+                socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
+                                 SocketFlags.None, Sent, null);
+            }
+
+            // If we're not currently dealing with a block of bytes, make a new block of bytes
+            // out of outgoing and start sending that.
+            else if (outgoing.Length > 0)
+            {
+                pendingBytes = encoding.GetBytes(outgoing.ToString());
+                pendingIndex = 0;
+                Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
+                outgoing.Clear();
+                socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
+                                 SocketFlags.None, Sent, null);
+            }
+
+            // If there's nothing to send, shut down for the time being.
+            else
+            {
+                Console.WriteLine("Shutting down send mechanism\n");
+                sendIsOngoing = false;
+            }
+        }
+
+        /// <summary>
+        /// Called when data has been successfully sent
+        /// </summary>
+        /// <param name="result"></param>
+        private void Sent(IAsyncResult result)
+        {
+            // Find out how many bytes were actually sent
+            int bytesSent;
+            bytesSent = socket.EndSend(result);
+            Console.WriteLine("\t" + bytesSent + " bytes were successfully sent");
+
+            // Get exclusive access to send mechanism
+            lock (sendSync)
+            {
+                // The socket has been closed
+                if (bytesSent == 0)
+                {
+                    socket.Close();
+                    Console.WriteLine("Socket closed");
+                }
+
+                // Update the pendingIndex and keep trying
+                else
+                {
+                    pendingIndex += bytesSent;
+                    SendBytes();
+                }
+            }
         }
 
         /// <summary>
@@ -171,5 +279,8 @@ namespace CustomNetworking
             Shutdown(SocketShutdown.Both);
             Close();
         }
+
+
+
     }
 }
