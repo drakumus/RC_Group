@@ -86,6 +86,12 @@ namespace CustomNetworking
         private byte[] pendingBytes = new byte[0];
         private int pendingIndex = 0;
 
+        private SendCallback sendCallback;
+        private object sendPayload;
+
+        private ReceiveCallback receiveCallback;
+        private object receivePayload;
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -146,6 +152,8 @@ namespace CustomNetworking
             // Get exclusive access to send mechanism
             lock (sendSync)
             {
+                sendCallback = callback;
+                sendPayload = payload;
                 // Append the message to the outgoing lines
                 outgoing.Append(s);
 
@@ -195,6 +203,7 @@ namespace CustomNetworking
             {
                 Console.WriteLine("Shutting down send mechanism\n");
                 sendIsOngoing = false;
+                sendCallback(true, sendPayload);
             }
         }
 
@@ -217,6 +226,7 @@ namespace CustomNetworking
                 {
                     socket.Close();
                     Console.WriteLine("Socket closed");
+                    sendCallback(false, sendPayload);
                 }
 
                 // Update the pendingIndex and keep trying
@@ -269,6 +279,7 @@ namespace CustomNetworking
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
             // TODO: Implement BeginReceive
+            throw new NotImplementedException();
         }
 
         /// <summary>
