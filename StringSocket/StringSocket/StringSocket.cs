@@ -336,7 +336,7 @@ namespace CustomNetworking
                         receiveCallback(incString.Substring(0, index), receivePayload);
                         incoming.Remove(0, index+1);
                     }
-                }
+                }*/
 
                 if (bytesRead == BUFFER_SIZE || !newLine)
                 {
