@@ -318,6 +318,15 @@ namespace CustomNetworking
 
                 
                 String incString = incoming.ToString();
+                String[] returns = incString.Split('\n');
+                foreach(string s in returns)
+                {
+                    if(s.Length > 0)
+                    {
+                        receiveCallback(s, receivePayload);
+                    }
+                }
+                /*
                 while (incString.Contains('\n')) {
                     newLine = true;
                     incString = incoming.ToString();
