@@ -306,12 +306,6 @@ namespace CustomNetworking
                 socket.Close();
                 receiveCallback(null, receivePayload);
             }
-            else if(bytesRead < BUFFER_SIZE)
-            {
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, Received, null);
-            }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
@@ -320,18 +314,20 @@ namespace CustomNetworking
                 int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
 
+                
                 String incString = incoming.ToString();
-                if (incString.Contains('\n'))
+                while (incString.Contains('\n')) {
+                    incString = incoming.ToString();
+                    int index = incString.IndexOf('\n');
+                    receiveCallback(incString.Substring(0, index), receivePayload);
+                    incoming.Remove(0, index+1);
+                }
+
+                if (bytesRead <= BUFFER_SIZE)
                 {
-                    incoming.Clear();
-                    foreach (string s in incString.Split('\n'))
-                    {
-                        receiveCallback(incString.Split('\n')[0], receivePayload);
-                        incString.Remove(0, incString.IndexOf('\n'));
-                        incoming.Clear();
-                        incoming.Append(incString);
-                        incString = incoming.ToString();
-                    }
+                    // Ask for some more data
+                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, Received, null);
                 }
             }
         }
