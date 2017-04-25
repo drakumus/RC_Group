@@ -66,7 +66,7 @@ namespace CustomNetworking
         private Encoding encoding;
 
         // Text that has been received from the client but not yet dealt with
-        private StringBuilder incoming;
+        private static StringBuilder incoming;
 
         // Text that needs to be sent to the client but which we have not yet started sending
         private StringBuilder outgoing;
@@ -153,7 +153,10 @@ namespace CustomNetworking
                     Payload = payload
                 };
                 // Append the message to the outgoing lines
-                outgoing.Append(s);
+                lock (outgoing)
+                {
+                    outgoing.Append(s);
+                }
 
                 // If there's not a send ongoing, start one.
                 if (!sendIsOngoing)
@@ -190,10 +193,13 @@ namespace CustomNetworking
             // out of outgoing and start sending that.
             else if (outgoing.Length > 0)
             {
-                pendingBytes = encoding.GetBytes(outgoing.ToString());
-                pendingIndex = 0;
-                Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
-                outgoing.Clear();
+                lock (outgoing)
+                {
+                    pendingBytes = encoding.GetBytes(outgoing.ToString());
+                    pendingIndex = 0;
+                    Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
+                    outgoing.Clear();
+                }
                 socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
                                  SocketFlags.None, new AsyncCallback(Sent), obj);
             }
@@ -287,8 +293,11 @@ namespace CustomNetworking
                 Payload = payload
             };
 
-            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, new AsyncCallback(Received), obj);
+            lock (sendSync)
+            {
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, new AsyncCallback(Received), obj);
+            }
         }
 
         bool newLine = false;
@@ -318,49 +327,44 @@ namespace CustomNetworking
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
             {
-                // Convert the bytes into characters and appending to incoming
-                int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-                incoming.Append(incomingChars, 0, charsRead);
 
-                
-                String incString = incoming.ToString(); //ArgumentOutOfRangeException
-                StateObject obj = new StateObject()
+                lock (incoming)
                 {
-                    Callback = callback,
-                    Payload = payload
-                };
-
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                        SocketFlags.None, new AsyncCallback(Received), obj);
-                if (incString.Contains('\n'))
-                {
-                    newLine = true;
-                    String[] returns = incString.Split('\n');
-                    foreach (string s in returns)
+                    lock (sendSync)
                     {
-                        if (s.Length > 0)
+                        // Convert the bytes into characters and appending to incoming
+                        int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+
+                        incoming.Append(incomingChars, 0, charsRead);
+                    }
+
+
+                    String incString = incoming.ToString();
+                    String[] returns = incString.Split('\n');
+                    // clear incoming
+                    incoming.Clear();
+                    for (int i = 0; i < returns.Length; i++)
+                    {
+                        if (i != returns.Length - 1)
                         {
-                            callback(s, payload);
+                            newLine = true;
+                            callback(returns[i], payload);
+                        }
+                        else
+                        {
+                            incoming.Append(returns[i]);
                         }
                     }
                 }
-                /*
-                while (incString.Contains('\n')) {
-                    newLine = true;
-                    incString = incoming.ToString();
-                    int index = incString.IndexOf('\n');
-                    if (index >= 0)
-                    {
-                        receiveCallback(incString.Substring(0, index), receivePayload);
-                        incoming.Remove(0, index+1);
-                    }
-                }*/
 
                 if (bytesRead == BUFFER_SIZE || !newLine)
                 {
-                    // Ask for some more data
-                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                        SocketFlags.None, new AsyncCallback(Received), obj);
+                    lock (sendSync)
+                    {
+                        // Ask for some more data
+                        socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                                    SocketFlags.None, new AsyncCallback(Received), obj);
+                    }
                 }
             }
         }
