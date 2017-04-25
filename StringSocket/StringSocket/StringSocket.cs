@@ -57,7 +57,7 @@ namespace CustomNetworking
     public class StringSocket : IDisposable
     {
         // Buffer size for reading incoming bytes
-        private const int BUFFER_SIZE = 1;
+        private const int BUFFER_SIZE = 1024;
 
         // Underlying socket
         private Socket socket;
@@ -313,7 +313,7 @@ namespace CustomNetworking
                 // Convert the bytes into characters and appending to incoming
                 int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
-                //Console.WriteLine(incoming + "\n");
+
                 String incString = incoming.ToString();
                 if (incString.Contains('\n'))
                 { 
