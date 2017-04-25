@@ -279,14 +279,14 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            //lock (receiveSync)
-            //{
+            lock (receiveSync)
+            {
                 receiveCallback = callback;
                 receivePayload = payload;
 
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
                     SocketFlags.None, Received, null);
-            //}
+            }
         }
 
         /// <summary>
@@ -319,8 +319,11 @@ namespace CustomNetworking
                 while (incString.Contains('\n')) {
                     incString = incoming.ToString();
                     int index = incString.IndexOf('\n');
-                    receiveCallback(incString.Substring(0, index), receivePayload);
-                    incoming.Remove(0, index+1);
+                    if (index >= 0)
+                    {
+                        receiveCallback(incString.Substring(0, index), receivePayload);
+                        incoming.Remove(0, index + 1);
+                    }
                 }
 
                 if (bytesRead <= BUFFER_SIZE)
