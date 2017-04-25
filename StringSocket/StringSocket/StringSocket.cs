@@ -303,9 +303,16 @@ namespace CustomNetworking
             else
             {
                 // Convert the bytes into characters and appending to incoming
-                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+                int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
                 //Console.WriteLine(incoming + "\n");
+                String incString = incoming.ToString();
+                if (incString.Contains('\n'))
+                { 
+                    receiveCallback(incString.Split('\n')[0], receivePayload);
+                    incoming.Clear();
+                    incoming.Append(incString.Split('\n')[1]);
+                }
 
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
