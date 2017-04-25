@@ -87,11 +87,6 @@ namespace CustomNetworking
         private byte[] pendingBytes = new byte[0];
         private int pendingIndex = 0;
 
-        private SendCallback sendCallback;
-        private object sendPayload;
-        
-        private object receivePayload;
-
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -152,8 +147,11 @@ namespace CustomNetworking
             // Get exclusive access to send mechanism
             lock (sendSync)
             {
-                sendCallback = callback;
-                sendPayload = payload;
+                StateObject obj = new StateObject()
+                {
+                    Callback = callback,
+                    Payload = payload
+                };
                 // Append the message to the outgoing lines
                 outgoing.Append(s);
 
@@ -162,7 +160,7 @@ namespace CustomNetworking
                 {
                     Console.WriteLine("Appending a " + s.Length + " char line, starting send mechanism");
                     sendIsOngoing = true;
-                    SendBytes();
+                    SendBytes(obj);
                 }
                 else
                 {
@@ -175,15 +173,17 @@ namespace CustomNetworking
         /// Attempts to send the entire outgoing string.
         /// This method should not be called unless sendSync has been acquired.
         /// </summary>
-        private void SendBytes()
+        private void SendBytes(StateObject obj)
         {
+            SendCallback callback = (SendCallback)obj.Callback;
+            object payload = obj.Payload;
             // If we're in the middle of the process of sending out a block of bytes,
             // keep doing that.
             if (pendingIndex < pendingBytes.Length)
             {
                 Console.WriteLine("\tSending " + (pendingBytes.Length - pendingIndex) + " bytes");
                 socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
-                                 SocketFlags.None, Sent, null);
+                                 SocketFlags.None, new AsyncCallback(Sent), obj);
             }
 
             // If we're not currently dealing with a block of bytes, make a new block of bytes
@@ -195,7 +195,7 @@ namespace CustomNetworking
                 Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
                 outgoing.Clear();
                 socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
-                                 SocketFlags.None, Sent, null);
+                                 SocketFlags.None, new AsyncCallback(Sent), obj);
             }
 
             // If there's nothing to send, shut down for the time being.
@@ -203,7 +203,7 @@ namespace CustomNetworking
             {
                 Console.WriteLine("Shutting down send mechanism\n");
                 sendIsOngoing = false;
-                sendCallback(true, sendPayload);
+                callback(true, payload);
             }
         }
 
@@ -213,6 +213,9 @@ namespace CustomNetworking
         /// <param name="result"></param>
         private void Sent(IAsyncResult result)
         {
+            StateObject obj = (StateObject)result.AsyncState;
+            SendCallback callback = (SendCallback)obj.Callback;
+            object payload = obj.Payload;
             // Find out how many bytes were actually sent
             int bytesSent;
             bytesSent = socket.EndSend(result);
@@ -226,14 +229,14 @@ namespace CustomNetworking
                 {
                     socket.Close();
                     Console.WriteLine("Socket closed");
-                    sendCallback(false, sendPayload);
+                    callback(false, payload);
                 }
 
                 // Update the pendingIndex and keep trying
                 else
                 {
                     pendingIndex += bytesSent;
-                    SendBytes();
+                    SendBytes(obj);
                 }
             }
         }
@@ -278,14 +281,17 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            StateObject obj = new StateObject()
+            lock (sendSync)
             {
-                Callback = callback,
-                Payload = payload
-            };
-            
-            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, new AsyncCallback(Received), obj);
+                StateObject obj = new StateObject()
+                {
+                    Callback = callback,
+                    Payload = payload
+                };
+
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, new AsyncCallback(Received), obj);
+            }
         }
 
         bool newLine = false;
