@@ -89,8 +89,7 @@ namespace CustomNetworking
 
         private SendCallback sendCallback;
         private object sendPayload;
-
-        private ReceiveCallback receiveCallback;
+        
         private object receivePayload;
 
         /// <summary>
@@ -279,11 +278,14 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            receiveCallback = callback;
-            receivePayload = payload;
-
+            StateObject obj = new StateObject()
+            {
+                Callback = callback,
+                Payload = payload
+            };
+            
             socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                SocketFlags.None, Received, null);
+                    SocketFlags.None, new AsyncCallback(Received), obj);
         }
 
         bool newLine = false;
@@ -294,6 +296,10 @@ namespace CustomNetworking
         /// <param name="result"></param>
         private void Received(IAsyncResult result)
         {
+            StateObject obj = (StateObject)result.AsyncState;
+            ReceiveCallback callback = (ReceiveCallback)obj.Callback;
+            object payload = obj.Payload;
+
             // Figure out how many bytes have come in
             int bytesRead = socket.EndReceive(result);
 
@@ -303,7 +309,7 @@ namespace CustomNetworking
             {
                 Console.WriteLine("Socket closed");
                 socket.Close();
-                receiveCallback(null, receivePayload);
+                callback(null, payload);
             }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
@@ -324,7 +330,7 @@ namespace CustomNetworking
                     {
                         if (s.Length > 0)
                         {
-                            receiveCallback(s, receivePayload);
+                            callback(s, payload);
                         }
                     }
                 }
@@ -344,7 +350,7 @@ namespace CustomNetworking
                 {
                     // Ask for some more data
                     socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                        SocketFlags.None, Received, null);
+                        SocketFlags.None, new AsyncCallback(Received), obj);
                 }
             }
         }
@@ -360,5 +366,11 @@ namespace CustomNetworking
 
 
 
+    }
+
+    class StateObject
+    {
+        public object Callback { get; set; }
+        public object Payload { get; set; }
     }
 }
