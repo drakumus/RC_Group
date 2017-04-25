@@ -279,14 +279,11 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            lock (receiveSync)
-            {
-                receiveCallback = callback;
-                receivePayload = payload;
+            receiveCallback = callback;
+            receivePayload = payload;
 
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, Received, null);
-            }
+            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                SocketFlags.None, Received, null);
         }
 
         bool newLine = false;
@@ -318,12 +315,17 @@ namespace CustomNetworking
 
                 
                 String incString = incoming.ToString();
-                String[] returns = incString.Split('\n');
-                foreach(string s in returns)
+
+                if(incoming.ToString().Contains('\n'))
                 {
-                    if(s.Length > 0)
+                    newLine = true;
+                    String[] returns = incString.Split('\n');
+                    foreach (string s in returns)
                     {
-                        receiveCallback(s, receivePayload);
+                        if (s.Length > 0)
+                        {
+                            receiveCallback(s, receivePayload);
+                        }
                     }
                 }
                 /*
