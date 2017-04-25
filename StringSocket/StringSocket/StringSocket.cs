@@ -281,17 +281,14 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            lock (sendSync)
+            StateObject obj = new StateObject()
             {
-                StateObject obj = new StateObject()
-                {
-                    Callback = callback,
-                    Payload = payload
-                };
+                Callback = callback,
+                Payload = payload
+            };
 
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                        SocketFlags.None, new AsyncCallback(Received), obj);
-            }
+            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, new AsyncCallback(Received), obj);
         }
 
         bool newLine = false;
@@ -326,9 +323,16 @@ namespace CustomNetworking
                 incoming.Append(incomingChars, 0, charsRead);
 
                 
-                String incString = incoming.ToString();
+                String incString = incoming.ToString(); //ArgumentOutOfRangeException
+                StateObject obj = new StateObject()
+                {
+                    Callback = callback,
+                    Payload = payload
+                };
 
-                if(incoming.ToString().Contains('\n'))
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                        SocketFlags.None, new AsyncCallback(Received), obj);
+                if (incString.Contains('\n'))
                 {
                     newLine = true;
                     String[] returns = incString.Split('\n');
@@ -374,6 +378,10 @@ namespace CustomNetworking
 
     }
 
+
+    /// <summary>
+    /// Helper class for async callbacl
+    /// </summary>
     class StateObject
     {
         public object Callback { get; set; }
