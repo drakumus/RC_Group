@@ -289,6 +289,8 @@ namespace CustomNetworking
             }
         }
 
+        bool newLine = false;
+
         /// <summary>
         /// Called when some data has been received.
         /// </summary>
@@ -317,16 +319,17 @@ namespace CustomNetworking
                 
                 String incString = incoming.ToString();
                 while (incString.Contains('\n')) {
+                    newLine = true;
                     incString = incoming.ToString();
                     int index = incString.IndexOf('\n');
                     if (index >= 0)
                     {
                         receiveCallback(incString.Substring(0, index), receivePayload);
-                        incoming.Remove(0, index + 1);
+                        incoming.Remove(0, index+1);
                     }
                 }
 
-                if (bytesRead <= BUFFER_SIZE)
+                if (bytesRead == BUFFER_SIZE || !newLine)
                 {
                     // Ask for some more data
                     socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
