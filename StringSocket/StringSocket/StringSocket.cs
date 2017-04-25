@@ -278,8 +278,39 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            // TODO: Implement BeginReceive
-            throw new NotImplementedException();
+            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                SocketFlags.None, Received, null);
+        }
+
+        /// <summary>
+        /// Called when some data has been received.
+        /// </summary>
+        /// <param name="result"></param>
+        private void Received(IAsyncResult result)
+        {
+            // Figure out how many bytes have come in
+            int bytesRead = socket.EndReceive(result);
+
+            // If no bytes were received, it means the client closed its side of the socket.
+            // Report that to the console and close our socket.
+            if (bytesRead == 0)
+            {
+                Console.WriteLine("Socket closed");
+                socket.Close();
+            }
+
+            // Otherwise, decode and display the incoming bytes.  Then request more bytes.
+            else
+            {
+                // Convert the bytes into characters and appending to incoming
+                int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
+                incoming.Append(incomingChars, 0, charsRead);
+                //Console.WriteLine(incoming + "\n");
+
+                // Ask for some more data
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, Received, null);
+            }
         }
 
         /// <summary>
