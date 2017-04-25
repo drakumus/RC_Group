@@ -320,7 +320,11 @@ namespace CustomNetworking
                     incoming.Clear();
                     foreach (string s in incString.Split('\n'))
                     {
-                        incoming.AppendLine(s);
+                        receiveCallback(incString.Split('\n')[0], receivePayload);
+                        incString.Remove(0, incString.IndexOf('\n'));
+                        incoming.Clear();
+                        incoming.Append(incString);
+                        incString = incoming.ToString();
                     }
                 }
 
