@@ -306,6 +306,12 @@ namespace CustomNetworking
                 socket.Close();
                 receiveCallback(null, receivePayload);
             }
+            else if(bytesRead < BUFFER_SIZE)
+            {
+                // Ask for some more data
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, Received, null);
+            }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
@@ -323,10 +329,6 @@ namespace CustomNetworking
                         incoming.AppendLine(s);
                     }
                 }
-
-                // Ask for some more data
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                    SocketFlags.None, Received, null);
             }
         }
 
