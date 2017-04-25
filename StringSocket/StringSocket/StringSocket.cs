@@ -80,6 +80,7 @@ namespace CustomNetworking
 
         // For synchronizing sends
         private readonly object sendSync = new object();
+        private readonly object receiveSync = new object();
 
         // Bytes that we are actively trying to send, along with the
         // index of the leftmost byte whose send has not yet been completed
@@ -278,8 +279,14 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                SocketFlags.None, Received, null);
+            //lock (receiveSync)
+            //{
+                receiveCallback = callback;
+                receivePayload = payload;
+
+                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                    SocketFlags.None, Received, null);
+            //}
         }
 
         /// <summary>
@@ -297,6 +304,7 @@ namespace CustomNetworking
             {
                 Console.WriteLine("Socket closed");
                 socket.Close();
+                receiveCallback(null, receivePayload);
             }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
@@ -306,6 +314,8 @@ namespace CustomNetworking
                 int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
                 //Console.WriteLine(incoming + "\n");
+
+
 
                 // Ask for some more data
                 socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
