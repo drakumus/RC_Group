@@ -316,6 +316,15 @@ namespace CustomNetworking
 
                 
                 String incString = incoming.ToString();
+                String[] returns = incString.Split('\n');
+                foreach(string s in returns)
+                {
+                    if(s.Length > 0)
+                    {
+                        receiveCallback(s, receivePayload);
+                    }
+                }
+                /*
                 while (incString.Contains('\n')) {
                     incString = incoming.ToString();
                     int index = incString.IndexOf('\n');
@@ -325,7 +334,7 @@ namespace CustomNetworking
                         incoming.Remove(0, index + 1);
                     }
                 }
-
+                */
                 if (bytesRead <= BUFFER_SIZE)
                 {
                     // Ask for some more data
