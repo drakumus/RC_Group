@@ -274,8 +274,6 @@ namespace CustomNetworking
             }
         }
 
-        bool newLine = false;
-
         /// <summary>
         /// Called when some data has been received.
         /// </summary>
@@ -301,7 +299,7 @@ namespace CustomNetworking
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
             {
-
+                bool newLine = false;
                 lock (incoming)
                 {
                     // Convert the bytes into characters and appending to incoming
