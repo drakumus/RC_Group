@@ -87,7 +87,6 @@ namespace CustomNetworking
             encoding = e;
             incoming = new StringBuilder();
             outgoing = new StringBuilder();
-            // TODO: Complete implementation of StringSocket
         }
 
         /// <summary>
