@@ -309,7 +309,7 @@ namespace CustomNetworking
                     int charsRead = encoding.GetDecoder().GetChars(obj.incomingBytes, 0, bytesRead, obj.incomingChars, 0, false);
                     incoming.Append(obj.incomingChars, 0, charsRead);
 
-
+                    // Find all of the new lines and call back for each string before it
                     String incString = incoming.ToString();
                     String[] returns = incString.Split('\n');
                     // clear incoming
@@ -350,7 +350,6 @@ namespace CustomNetworking
 
 
 
-
         /// <summary>
         /// Helper class for async callback
         /// </summary>
@@ -368,6 +367,6 @@ namespace CustomNetworking
             public byte[] incomingBytes = new byte[BUFFER_SIZE];
             public char[] incomingChars = new char[BUFFER_SIZE];
         }
-
     }
+
 }
