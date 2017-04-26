@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace CustomNetworking
 {
@@ -71,21 +72,8 @@ namespace CustomNetworking
         // Text that needs to be sent to the client but which we have not yet started sending
         private StringBuilder outgoing;
 
-        // Buffers that will contain incoming bytes and characters
-        private byte[] incomingBytes = new byte[BUFFER_SIZE];
-        private char[] incomingChars = new char[BUFFER_SIZE];
-
-        // Records whether an asynchronous send attempt is ongoing
-        private bool sendIsOngoing = false;
-
         // For synchronizing sends
         private readonly object sendSync = new object();
-        private readonly object receiveSync = new object();
-
-        // Bytes that we are actively trying to send, along with the
-        // index of the leftmost byte whose send has not yet been completed
-        private byte[] pendingBytes = new byte[0];
-        private int pendingIndex = 0;
 
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
@@ -158,17 +146,7 @@ namespace CustomNetworking
                     outgoing.Append(s);
                 }
 
-                // If there's not a send ongoing, start one.
-                if (!sendIsOngoing)
-                {
-                    Console.WriteLine("Appending a " + s.Length + " char line, starting send mechanism");
-                    sendIsOngoing = true;
-                    SendBytes(obj);
-                }
-                else
-                {
-                    Console.WriteLine("\tAppending a " + s.Length + " char line, send mechanism already running");
-                }
+                SendBytes(obj);
             }
         }
 
@@ -178,14 +156,11 @@ namespace CustomNetworking
         /// </summary>
         private void SendBytes(StateObject obj)
         {
-            SendCallback callback = (SendCallback)obj.Callback;
-            object payload = obj.Payload;
             // If we're in the middle of the process of sending out a block of bytes,
             // keep doing that.
-            if (pendingIndex < pendingBytes.Length)
+            if (obj.pendingIndex < obj.pendingBytes.Length)
             {
-                Console.WriteLine("\tSending " + (pendingBytes.Length - pendingIndex) + " bytes");
-                socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
+                socket.BeginSend(obj.pendingBytes, obj.pendingIndex, obj.pendingBytes.Length - obj.pendingIndex,
                                  SocketFlags.None, new AsyncCallback(Sent), obj);
             }
 
@@ -195,21 +170,21 @@ namespace CustomNetworking
             {
                 lock (outgoing)
                 {
-                    pendingBytes = encoding.GetBytes(outgoing.ToString());
-                    pendingIndex = 0;
-                    Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
+                    obj.pendingBytes = encoding.GetBytes(outgoing.ToString());
+                    obj.pendingIndex = 0;
                     outgoing.Clear();
                 }
-                socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
+                socket.BeginSend(obj.pendingBytes, 0, obj.pendingBytes.Length,
                                  SocketFlags.None, new AsyncCallback(Sent), obj);
             }
 
             // If there's nothing to send, shut down for the time being.
             else
             {
-                Console.WriteLine("Shutting down send mechanism\n");
-                sendIsOngoing = false;
-                callback(true, payload);
+                SendCallback callback = (SendCallback)obj.Callback;
+                object payload = obj.Payload;
+                Task t = new Task(() => callback(true, payload));
+                t.Start();
             }
         }
 
@@ -233,15 +208,15 @@ namespace CustomNetworking
                 // The socket has been closed
                 if (bytesSent == 0)
                 {
-                    socket.Close();
-                    Console.WriteLine("Socket closed");
-                    callback(false, payload);
+                    Task t = new Task(() => callback(false, payload));
+                    t.Start();
+                    Close();
                 }
 
                 // Update the pendingIndex and keep trying
                 else
                 {
-                    pendingIndex += bytesSent;
+                    obj.pendingIndex += bytesSent;
                     SendBytes(obj);
                 }
             }
@@ -295,7 +270,7 @@ namespace CustomNetworking
 
             lock (sendSync)
             {
-                socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
+                socket.BeginReceive(obj.incomingBytes, 0, obj.incomingBytes.Length,
                         SocketFlags.None, new AsyncCallback(Received), obj);
             }
         }
@@ -319,9 +294,9 @@ namespace CustomNetworking
             // Report that to the console and close our socket.
             if (bytesRead == 0)
             {
-                Console.WriteLine("Socket closed");
-                socket.Close();
-                callback(null, payload);
+                Task t = new Task(() => callback(null, payload));
+                t.Start();
+                Close();
             }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
@@ -330,13 +305,9 @@ namespace CustomNetworking
 
                 lock (incoming)
                 {
-                    lock (sendSync)
-                    {
-                        // Convert the bytes into characters and appending to incoming
-                        int charsRead = encoding.GetDecoder().GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
-
-                        incoming.Append(incomingChars, 0, charsRead);
-                    }
+                    // Convert the bytes into characters and appending to incoming
+                    int charsRead = encoding.GetDecoder().GetChars(obj.incomingBytes, 0, bytesRead, obj.incomingChars, 0, false);
+                    incoming.Append(obj.incomingChars, 0, charsRead);
 
 
                     String incString = incoming.ToString();
@@ -348,7 +319,9 @@ namespace CustomNetworking
                         if (i != returns.Length - 1)
                         {
                             newLine = true;
-                            callback(returns[i], payload);
+                            int current = i;
+                            Task t = new Task(() => callback(returns[current], payload));
+                            t.Start();
                         }
                         else
                         {
@@ -359,12 +332,9 @@ namespace CustomNetworking
 
                 if (bytesRead == BUFFER_SIZE || !newLine)
                 {
-                    lock (sendSync)
-                    {
-                        // Ask for some more data
-                        socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                                    SocketFlags.None, new AsyncCallback(Received), obj);
-                    }
+                    // Ask for some more data
+                    socket.BeginReceive(obj.incomingBytes, 0, obj.incomingBytes.Length,
+                                SocketFlags.None, new AsyncCallback(Received), obj);
                 }
             }
         }
@@ -380,15 +350,24 @@ namespace CustomNetworking
 
 
 
-    }
 
+        /// <summary>
+        /// Helper class for async callback
+        /// </summary>
+        class StateObject
+        {
+            public object Callback { get; set; }
+            public object Payload { get; set; }
 
-    /// <summary>
-    /// Helper class for async callbacl
-    /// </summary>
-    class StateObject
-    {
-        public object Callback { get; set; }
-        public object Payload { get; set; }
+            // Bytes that we are actively trying to send, along with the
+            // index of the leftmost byte whose send has not yet been completed
+            public byte[] pendingBytes = new byte[0];
+            public int pendingIndex = 0;
+
+            // Buffers that will contain incoming bytes and characters
+            public byte[] incomingBytes = new byte[BUFFER_SIZE];
+            public char[] incomingChars = new char[BUFFER_SIZE];
+        }
+
     }
 }
