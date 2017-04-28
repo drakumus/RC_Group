@@ -209,7 +209,7 @@ namespace CustomNetworking
                 {
                     Task t = new Task(() => callback(false, payload));
                     t.Start();
-                    Close();
+                    Dispose();
                 }
 
                 // Update the pendingIndex and keep trying
@@ -267,11 +267,8 @@ namespace CustomNetworking
                 Payload = payload
             };
 
-            lock (sendSync)
-            {
-                socket.BeginReceive(obj.incomingBytes, 0, obj.incomingBytes.Length,
+            socket.BeginReceive(obj.incomingBytes, 0, obj.incomingBytes.Length,
                         SocketFlags.None, new AsyncCallback(Received), obj);
-            }
         }
 
         /// <summary>
@@ -293,7 +290,7 @@ namespace CustomNetworking
             {
                 Task t = new Task(() => callback(null, payload));
                 t.Start();
-                Close();
+                Dispose();
             }
 
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
@@ -306,7 +303,7 @@ namespace CustomNetworking
                     int charsRead = encoding.GetDecoder().GetChars(obj.incomingBytes, 0, bytesRead, obj.incomingChars, 0, false);
                     incoming.Append(obj.incomingChars, 0, charsRead);
 
-                    // Find all of the new lines and call back for each string before it
+                    // Find all of the new lines and callback for each string before them
                     String incString = incoming.ToString();
                     String[] returns = incString.Split('\n');
                     // clear incoming
