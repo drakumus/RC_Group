@@ -66,12 +66,6 @@ namespace CustomNetworking
         // Encoding used for sending and receiving
         private Encoding encoding;
 
-        // Text that has been received from the client but not yet dealt with
-        private static StringBuilder incoming;
-
-        // Text that needs to be sent to the client but which we have not yet started sending
-        private StringBuilder outgoing;
-
         // For synchronizing sends
         private readonly object sendSync = new object();
 
@@ -85,8 +79,6 @@ namespace CustomNetworking
         {
             socket = s;
             encoding = e;
-            incoming = new StringBuilder();
-            outgoing = new StringBuilder();
         }
 
         /// <summary>
@@ -139,11 +131,8 @@ namespace CustomNetworking
                     Callback = callback,
                     Payload = payload
                 };
-                // Append the message to the outgoing lines
-                lock (outgoing)
-                {
-                    outgoing.Append(s);
-                }
+
+                obj.pendingText.Append(s);
 
                 SendBytes(obj);
             }
@@ -155,6 +144,7 @@ namespace CustomNetworking
         /// </summary>
         private void SendBytes(StateObject obj)
         {
+
             // If we're in the middle of the process of sending out a block of bytes,
             // keep doing that.
             if (obj.pendingIndex < obj.pendingBytes.Length)
@@ -165,14 +155,12 @@ namespace CustomNetworking
 
             // If we're not currently dealing with a block of bytes, make a new block of bytes
             // out of outgoing and start sending that.
-            else if (outgoing.Length > 0)
+            else if (obj.pendingText.Length > 0)
             {
-                lock (outgoing)
-                {
-                    obj.pendingBytes = encoding.GetBytes(outgoing.ToString());
-                    obj.pendingIndex = 0;
-                    outgoing.Clear();
-                }
+                obj.pendingBytes = encoding.GetBytes(obj.pendingText.ToString());
+                obj.pendingIndex = 0;
+                obj.pendingText.Clear();
+
                 socket.BeginSend(obj.pendingBytes, 0, obj.pendingBytes.Length,
                                  SocketFlags.None, new AsyncCallback(Sent), obj);
             }
@@ -297,32 +285,30 @@ namespace CustomNetworking
             else
             {
                 bool newLine = false;
-                lock (incoming)
-                {
-                    // Convert the bytes into characters and appending to incoming
-                    int charsRead = encoding.GetDecoder().GetChars(obj.incomingBytes, 0, bytesRead, obj.incomingChars, 0, false);
-                    incoming.Append(obj.incomingChars, 0, charsRead);
+                // Convert the bytes into characters and appending to incoming
+                int charsRead = encoding.GetDecoder().GetChars(obj.incomingBytes, 0, bytesRead, obj.incomingChars, 0, false);
+                obj.pendingText.Append(obj.incomingChars, 0, charsRead);
 
-                    // Find all of the new lines and callback for each string before them
-                    String incString = incoming.ToString();
-                    String[] returns = incString.Split('\n');
-                    // clear incoming
-                    incoming.Clear();
-                    for (int i = 0; i < returns.Length; i++)
+                // Find all of the new lines and callback for each string before them
+                String incString = obj.pendingText.ToString();
+                String[] returns = incString.Split('\n');
+                // clear incoming
+                obj.pendingText.Clear();
+                for (int i = 0; i < returns.Length; i++)
+                {
+                    if (i != returns.Length - 1)
                     {
-                        if (i != returns.Length - 1)
-                        {
-                            newLine = true;
-                            int current = i;
-                            Task t = new Task(() => callback(returns[current], payload));
-                            t.Start();
-                        }
-                        else
-                        {
-                            incoming.Append(returns[i]);
-                        }
+                        newLine = true;
+                        int current = i;
+                        Task t = new Task(() => callback(returns[current], payload));
+                        t.Start();
+                    }
+                    else
+                    {
+                        obj.pendingText.Append(returns[i]);
                     }
                 }
+
 
                 if (bytesRead == BUFFER_SIZE || !newLine)
                 {
@@ -360,6 +346,9 @@ namespace CustomNetworking
             // Buffers that will contain incoming bytes and characters
             public byte[] incomingBytes = new byte[BUFFER_SIZE];
             public char[] incomingChars = new char[BUFFER_SIZE];
+            
+            // Text that has not yet been dealt with
+            public StringBuilder pendingText = new StringBuilder();
         }
     }
 
