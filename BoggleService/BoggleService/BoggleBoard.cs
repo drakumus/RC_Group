@@ -9,7 +9,7 @@ namespace Boggle
     /// </summary>
     public class BoggleBoard
     {
-        // The 4x4 Boggle board
+        // The 4x4 Boggle board 
         private char[,] board;
 
         // The 16 cubes that make up a standard Boggle Board
