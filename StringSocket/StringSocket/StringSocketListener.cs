@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CustomNetworking
 {
-    /// <summary>
+    /// <summary> 
     /// The type of delegate that is called when a StringSocketListener has
     /// opened a StringSocket.
     /// </summary>
