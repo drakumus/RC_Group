@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Formulas
 {
-    /// <summary>
+    /// <summary> 
     /// Represents formulas written in standard infix notation using standard precedence
     /// rules.  Provides a means to evaluate Formulas.  Formulas can be composed of
     /// non-negative floating-point numbers, variables, left and right parentheses, and
